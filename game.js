@@ -83,7 +83,7 @@ const WDEF={
   cleave:{cls:'warden',name:'Fury Strikes',desc:'A fast 3-hit combo; the third hit heals you. Enemies under 25% health are Executed for triple damage. Every hit builds Rage.',evo:'Rampage',evoD:'Every finisher unleashes 4 extra lightning-fast strikes.'},
   whirl:{cls:'warden',name:'Whirlwind',desc:'Spends 30 Rage to spin through everything around you, then you become Enraged: attacks 30% faster for 4 seconds.',evo:'Maelstrom',evoD:'Spins longer and drags enemies into the blades.'},
   slam:{cls:'warden',name:'Thunder Clap',desc:'A shockwave that launches crowds of 5+ enemies.',evo:'Fault Line',evoD:'Leaves a burning crack that keeps hurting.'},
-  shield:{cls:'warden',name:'Thrown Shield',desc:'Hurls your shield; it bounces between 3 enemies.',evo:'Ricochet Saint',evoD:'The shield bounces 7 times.'},
+  shield:{cls:'warden',name:'Hurled Axe',desc:'Hurls a spare axe; it bounces between 3 enemies.',evo:'Axe Storm',evoD:'The axe bounces 7 times.'},
   riposte:{cls:'warden',name:'Riposte',desc:'When you are hit, strike back all around you.',evo:'Iron Answer',evoD:'Each riposte also heals you 6.'},
   beam:{cls:'lamp',name:'Lantern Beam',desc:'A steady beam at the nearest enemy that grows hotter the longer it holds. Shine it through your partner to heal them.',evo:'Sunthread',evoD:'Heats up to 4× and pierces everything behind the target.'},
   prism:{cls:'lamp',name:'Prism',desc:'Your beam splits off to hit another nearby enemy.',evo:'Kaleidoscope',evoD:'Splits to 4 more enemies.'},
@@ -744,24 +744,49 @@ function line(g,x0,y0,x1,y1,c){x0=Math.round(x0);y0=Math.round(y0);x1=Math.round
 function circ(g,cx,cy,r,col){g.fillStyle=col;for(let dy=-r;dy<=r;dy++){const w=Math.floor(Math.sqrt(r*r-dy*dy+r*.6));g.fillRect(Math.round(cx)-w,Math.round(cy)+dy,w*2+1,1)}}
 function drawWarden(c){const g=c.g,m=c.m;g.clearRect(0,0,S,S);m.clearRect(0,0,S,S);
   const mv=c.moving||c.dash>0||!!c.leap,wp=c.walk*TAU,s1=mv?Math.sin(wp):0;const bob=mv?-Math.round(Math.abs(Math.cos(wp))*1.5):(Math.sin(c.t*2.6)>.3?1:0);
-  let ang=1.05,lean=0;
-  if(c.ww>0||c.bs>0){ang=(tAll*(c.bs>0?26:20))%TAU;lean=0}
-  else if(c.atk>0){const p=1-c.atk/c.atkDur,hv=c.heavy===1,rv=c.heavy===2,at=hv?.4:.32;if(rv){if(p<at){ang=1.05+p/at*.9;lean=-1}else{const k=Math.min(1,(p-at)/.12);ang=1.95-k*4.2;lean=2}}else if(p<at){const k=p/at;ang=hv?-1.0-k*1.7:-.6-k*1.8;lean=-1}else{const k=Math.min(1,(p-at)/.12);ang=(hv?-2.7:-2.4)+k*(hv?4.3:3.6);lean=hv?3:2}}
-  if(c.cast){ang=-1.57;lean=-1}else if(c.pose>0)ang=-1.2;if(c.dash>0){ang=.25;lean=3}
-  const y0=bob,L=lean,sway=(mv?-2:0)-(c.dash>0?5:0);
-  for(let r=0;r<23;r++){const w=5+Math.floor(r*.42),x=28+L-Math.floor(r*(mv?.32:.14))+Math.round(Math.sin(c.t*5-r*.28)*(r/23)*1.6+sway*(r/23));R(g,x-w,30+r+y0,w+2,1,r%6===5?'#2e2756':'#221c3d');R(g,x-w,30+r+y0,1,1,'#433a7a')}
-  const shx=22+L,shy=39+y0;if(!(dome&&c.cls==='warden')&&!c.weapons.some(w=>w.id==='shield'&&proj.some(p=>p.k==='shield'))){circ(g,shx,shy,9,C.gold);circ(g,shx,shy,8,'#1b1f38');circ(g,shx,shy,5,'#3b8ea0');circ(g,shx,shy,4,'#1b1f38');R(g,shx-1,shy-1,3,3,C.gold);for(let i=0;i<8;i++){const a=i/8*TAU;R(g,shx+Math.cos(a)*6.5,shy+Math.sin(a)*6.5,1,1,C.goldD)}}
+  let ang=1.0,ang2=2.1,lean=0;
+  if(c.ww>0||c.bs>0){ang=(tAll*(c.bs>0?26:20))%TAU;ang2=ang+Math.PI}
+  else if(c.atk>0){const p=1-c.atk/c.atkDur,hv=c.heavy===1,rv=c.heavy===2,at=hv?.4:.32;let s;
+    if(p<at){const k=p/at;s=hv?-1.0-k*1.7:-.6-k*1.8;lean=-1}else{const k=Math.min(1,(p-at)/.12);s=(hv?-2.7:-2.4)+k*(hv?4.3:3.6);lean=hv?3:2}
+    if(rv){ang2=s;ang=-.5}else if(hv){ang=s;ang2=s-.4}else ang=s}
+  if(c.cast){ang=-1.6;ang2=-1.95;lean=-1}else if(c.pose>0){ang=-1.2;ang2=-1.7}
+  if(c.leap||(c.z||0)>2){ang=-2.3;ang2=-1.1;lean=1}else if(c.dash>0){ang=.25;lean=3}
+  const y0=bob,L=lean;
+  const SK='#a8714c',SKD='#74472f',SKL='#d39a6c',HAIR='#17121f',IRON='#3a4170',IRONL='#5a66a8',LEA='#2b2234',FUR='#4a3830',FURL='#6e5444',STEEL='#c9d6ee';
+  const axe=(hx,hy,a,front)=>{const ca=Math.cos(a),sa=Math.sin(a),nx=-sa,ny=ca;
+    line(g,hx-ca*3,hy-sa*3,hx+ca*13,hy+sa*13,front?'#6a4a30':'#46301f');
+    for(let d=8;d<=14;d++){const w=(d<=8||d>=14)?2:(d<=9||d>=13)?4:6;for(let k=1;k<=w;k++)R(g,hx+ca*d+nx*k,hy+sa*d+ny*k,1,1,k===w?'#f2fbff':front?'#9aa8c4':'#646e8a');
+      R(m,hx+ca*d+nx*w,hy+sa*d+ny*w,1,1,front?'rgba(79,240,255,.95)':'rgba(79,240,255,.55)')}
+    line(g,hx+ca*10-nx,hy+sa*10-ny,hx+ca*11-nx*3,hy+sa*11-ny*3,front?STEEL:'#646e8a');R(g,hx+ca*7,hy+sa*7,1,1,C.gold);R(g,hx+ca*14,hy+sa*14,1,1,C.gold)};
+  const arm=(sx,sy,a,front)=>{const ex=sx+Math.cos(a)*8,ey=sy+Math.sin(a)*8,col=front?SK:SKD;
+    for(const [ox,oy] of [[0,0],[1,0],[0,1],[1,1],[-1,0]])line(g,sx+ox,sy+oy,ex+ox,ey+oy,col);if(front)line(g,sx,sy-1,ex,ey-1,SKL);
+    R(g,ex-1,ey-1,3,3,front?C.gold:C.goldD);axe(ex,ey,a,front)};
+  // back arm + axe (behind the body)
+  arm(23+L,30+y0,ang2,false);
+  // legs
   const lx1=Math.round(s1*3),lx2=-lx1,lf1=mv&&s1>0?-Math.round(s1*2):0,lf2=mv&&s1<0?Math.round(s1*2):0;
-  R(g,28+lx2,46+y0,4,8+lf2-(y0<0?y0:0),'#1b1f3a');R(g,27+lx2,54+lf2,6,2,'#11142a');R(g,33+lx1,46+y0,4,8+lf1-(y0<0?y0:0),'#2f3560');R(g,33+lx1,46+y0,1,7,'#4a5590');R(g,32+lx1,54+lf1,7,2,'#141729');R(g,38+lx1,54+lf1,1,1,C.gold);
-  const tx=26+L,ty=30+y0;R(g,tx,ty,12,11,'#2a2f52');R(g,tx,ty,1,11,'#4a5590');R(g,tx+11,ty,1,11,'#1b1f3a');R(g,tx+1,ty,10,1,C.gold);R(g,tx+4,ty+3,1,1,C.gold);R(g,tx+5,ty+4,1,1,C.gold);R(g,tx+6,ty+5,1,1,C.goldL);R(g,tx+7,ty+4,1,1,C.gold);R(g,tx+8,ty+3,1,1,C.gold);
-  R(g,tx+1,ty+11,10,8,'#1a2348');R(g,tx+1,ty+11,1,8,'#26336a');R(g,tx+1,ty+18,10,1,C.gold);R(g,tx,ty+11,12,1,C.gold);R(g,tx+5,ty+11,2,1,C.cyan);R(m,tx+5,ty+11,2,1,C.cyan);R(g,tx+5,ty+14,2,2,C.gold);R(g,tx+4,ty+13,1,1,C.goldD);R(g,tx+7,ty+13,1,1,C.goldD);R(g,tx+4,ty+16,1,1,C.goldD);R(g,tx+7,ty+16,1,1,C.goldD);
-  const hx=27+L,hy=16+y0;R(g,hx,hy,11,12,'#3a4170');R(g,hx,hy,11,1,'#5a66a8');R(g,hx,hy,1,12,'#5a66a8');R(g,hx,hy+11,11,1,'#1b1f3a');R(g,hx+8,hy+2,3,9,'#262b4c');
-  R(g,hx+3,hy-2,5,2,C.gold);R(g,hx+4,hy-4,3,2,C.gold);R(g,hx+5,hy-6,1,2,C.goldL);R(g,hx+4,hy-2,1,1,C.goldL);R(g,hx+2,hy+1,7,1,C.goldD);
-  R(g,hx+5,hy+6,6,1,C.cyan);R(g,hx+9,hy+5,1,4,C.cyan);R(m,hx+5,hy+6,6,1,C.cyan);R(m,hx+9,hy+5,1,4,C.cyan);
-  const px=33+L,py=27+y0;R(g,px+1,py,5,1,C.gold);R(g,px,py+1,8,3,'#3d4680');R(g,px,py+1,8,1,'#5a66a8');R(g,px,py+4,8,1,'#2a2f52');R(g,px,py+5,8,1,C.gold);
-  const shX=37+L,shY=33+y0,hdX=shX+Math.cos(ang)*5,hdY=shY+Math.sin(ang)*5;line(g,shX,shY,hdX,hdY,'#3d4680');line(g,shX+1,shY,hdX+1,hdY,'#2a2f52');R(g,hdX-1,hdY-1,3,3,C.gold);
-  const ca=Math.cos(ang),sa=Math.sin(ang),nx=-sa,ny=ca,bl=19;for(let k=-2;k<=2;k++)R(g,hdX+ca*2+nx*k,hdY+sa*2+ny*k,1,1,k===0?C.goldL:C.gold);
-  line(g,hdX+ca*3,hdY+sa*3,hdX+ca*bl,hdY+sa*bl,'#e3efff');line(g,hdX+ca*3+nx,hdY+sa*3+ny,hdX+ca*(bl-1)+nx,hdY+sa*(bl-1)+ny,'#9fb6dd');line(m,hdX+ca*5,hdY+sa*5,hdX+ca*bl,hdY+sa*bl,'rgba(79,240,255,.7)');R(g,hdX-ca*2,hdY-sa*2,1,1,C.gold)}
+  R(g,27+lx2,45+y0,5,9+lf2-(y0<0?y0:0),LEA);R(g,26+lx2,53+lf2,7,3,'#15101c');R(g,27+lx2,50+lf2,5,1,'#5a4630');
+  R(g,33+lx1,45+y0,5,9+lf1-(y0<0?y0:0),'#3a2e48');R(g,33+lx1,45+y0,1,8,'#52446a');R(g,32+lx1,53+lf1,8,3,'#1d1626');R(g,33+lx1,50+lf1,5,1,'#6e5638');R(g,39+lx1,54+lf1,1,1,C.gold);
+  // fur kilt + belt
+  for(let i=0;i<16;i++)R(g,24+L+i,43+y0,1,4+((i*7)%3),i%3?FUR:FURL);
+  R(g,24+L,41+y0,16,2,'#2a1e18');R(g,30+L,41+y0,4,2,C.gold);R(g,31+L,41+y0,2,1,C.goldL);
+  // bare torso
+  for(let r=0;r<14;r++){const w=18-Math.floor(r*.35),x=Math.round(32+L-w/2);R(g,x,27+r+y0,w,1,SK);R(g,x,27+r+y0,2,1,SKD);R(g,x+w-1,27+r+y0,1,1,SKL)}
+  R(g,29+L,32+y0,4,1,SKD);R(g,35+L,32+y0,4,1,SKD);R(g,33+L,33+y0,1,7,SKD);R(g,31+L,36+y0,5,1,SKD);R(g,31+L,38+y0,5,1,SKD);R(g,30+L,30+y0,3,1,SKL);R(g,36+L,30+y0,2,1,SKL);
+  line(g,25+L,28+y0,39+L,40+y0,LEA);line(g,25+L,29+y0,38+L,40+y0,LEA);for(let i=0;i<4;i++)R(g,27+L+i*3.5,30+y0+i*3,1,1,C.gold);
+  R(g,20+L,26+y0,7,5,'#2a3058');R(g,20+L,26+y0,7,1,IRON);R(g,20+L,30+y0,7,1,C.goldD);
+  // head
+  R(g,30+L,23+y0,5,4,SKD);R(g,28+L,13+y0,10,11,SK);R(g,27+L,19+y0,12,5,SK);R(g,28+L,13+y0,2,10,SKD);R(g,37+L,15+y0,1,6,SKL);
+  R(g,32+L,16+y0,6,1,SKD);R(g,33+L,17+y0,3,1,'#120c18');R(g,37+L,17+y0,1,1,'#120c18');R(g,34+L,17+y0,2,1,C.cyan);R(m,34+L,17+y0,2,1,C.cyan);R(g,37+L,17+y0,1,1,C.cyan);R(m,37+L,17+y0,1,1,C.cyan);
+  R(g,32+L,18+y0,6,1,'#c0284a');R(g,38+L,18+y0,1,2,SK);
+  R(g,31+L,21+y0,8,4,HAIR);R(g,30+L,20+y0,2,2,HAIR);R(g,35+L,20+y0,3,1,'#5a2a2a');R(g,34+L,25+y0,2,4,HAIR);R(g,34+L,29+y0,2,1,C.gold);R(g,29+L,19+y0,1,2,C.gold);
+  R(g,29+L,9+y0,6,5,HAIR);R(g,30+L,7+y0,4,2,HAIR);R(g,31+L,6+y0,2,1,HAIR);R(g,31+L,7+y0,1,6,'#2c2440');R(g,32+L,7+y0,1,5,C.cyan);R(m,32+L,7+y0,1,5,C.cyan);
+  R(g,25+L,11+y0,4,2,HAIR);R(g,24+L,13+y0,3,6,HAIR);R(g,24+L,19+y0,2,2,C.gold);
+  // front pauldron
+  R(g,36+L,25+y0,9,5,IRON);R(g,36+L,25+y0,9,1,IRONL);R(g,36+L,29+y0,9,1,C.gold);R(g,40+L,27+y0,1,1,C.cyan);R(m,40+L,27+y0,1,1,C.cyan);
+  R(g,37+L,22+y0,1,3,STEEL);R(g,40+L,21+y0,1,4,STEEL);R(g,43+L,23+y0,1,2,STEEL);
+  // front arm + axe
+  arm(40+L,30+y0,ang,true)}
 function drawLamp(c){const g=c.g,m=c.m;g.clearRect(0,0,S,S);m.clearRect(0,0,S,S);
   const mv=c.moving,wp=c.walk*TAU,s1=mv?Math.sin(wp):0;const y0=mv?-Math.round(Math.abs(Math.cos(wp))*1.5):(Math.sin(c.t*3.2)>0?1:0);const tw=c.atk>0?1-c.atk/c.atkDur:-1;
   for(let i=0;i<8;i++){const wy=Math.round(Math.sin(c.t*7-i*.9)*(mv?1.8:1)*(i/8+.3));R(g,27-i*2-(mv?i*.6:0),39+y0+wy+(i>3?1:0)+Math.floor(i/3),3,2,i%2?'#e24fb0':'#ff7fc8');if(i===7)R(g,25-i*2-(mv?i*.6:0),41+y0+wy+2,2,1,'#ff7fc8')}
@@ -901,7 +926,7 @@ function effects(){
   for(const p of proj){const x=Math.round(p.x+ox),y=Math.round(p.y+oy);
     if(p.k==='mote'){const lv=p.lv||1;circ(eg,x,y,3+(lv>=3?1:0)+(lv>=5?1:0),WCOL.twirl);circ(lg,x,y,lv>=3?2:1,'#fff6d8');lg.fillStyle='#ffffff';lg.fillRect(x,y,1,1)}
     else if(p.k==='moth'){const up=Math.sin(tAll*28+p.x)>0,ws=(p.lv||1)>=5?4:3;lg.fillStyle='#ffd3ec';if(up){lg.fillRect(x-ws,y-3,ws,3);lg.fillRect(x+1,y-3,ws,3)}else{lg.fillRect(x-ws,y,ws,2);lg.fillRect(x+1,y,ws,2)}lg.fillStyle='#ffffff';lg.fillRect(x,y-2,1,4);eg.fillStyle=WCOL.moths;eg.fillRect(x-ws-1,y-3,ws*2+3,5)}
-    else if(p.k==='shield'){const a=tAll*20;circ(lg,x,y,4,C.gold);circ(lg,x,y,3,'#1b1f38');R(lg,x+Math.round(Math.cos(a)*2),y+Math.round(Math.sin(a)*2),1,1,C.cyan);circ(eg,x,y,4,'rgba(79,240,255,.5)')}
+    else if(p.k==='shield'){const a=tAll*22,ca=Math.cos(a),sa=Math.sin(a);line(lg,x-ca*5,y-sa*5,x+ca*5,y+sa*5,'#6a4a30');for(let k=1;k<=4;k++){R(lg,x+ca*4-sa*k,y+sa*4+ca*k,2,1,k===4?'#f2fbff':'#9aa8c4')}R(eg,x+ca*4-sa*4,y+sa*4+ca*4,2,2,C.cyan);circ(eg,x,y,4,'rgba(79,240,255,.35)')}
     else if(p.k==='blade'){crescent(eg,x,y,6,14,p.a-1.2,p.a+1.2,C.cyan,.9);crescent(lg,x,y,10,13,p.a-1,p.a+1,'#f2fdff',.9)}
     else if(p.k==='refl'){lg.fillStyle=C.cyan;lg.fillRect(x-1,y-1,3,3);eg.fillStyle=C.cyan;eg.fillRect(x-2,y-2,5,5)}
     else if(p.k==='candle'){lg.fillStyle='rgba(0,0,0,.4)';lg.fillRect(x-3,y,7,2);lg.fillStyle='#f3e6c8';lg.fillRect(x-2,y-9,4,9);lg.fillStyle='#d9c9a8';lg.fillRect(x+1,y-9,1,9);lg.fillStyle=C.gold;lg.fillRect(x-3,y-1,7,2);const fl=Math.sin(tAll*25)>0;lg.fillStyle=fl?'#ffffff':'#fff1c4';lg.fillRect(x-1,y-13,2,3);lg.fillStyle=WCOL.candle;lg.fillRect(x-1,y-11,2,1);circ(eg,x,y-12,3,WCOL.candle);
