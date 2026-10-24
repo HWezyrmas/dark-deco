@@ -38,6 +38,12 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:
 .hp.mate{width:90px;height:6px}
 .hprow.down .hp b{background:var(--danger)}
 .hptxt{font-family:var(--pix);font-size:8px;color:var(--fog);min-width:46px}
+.hpname.rgn{font-family:var(--pix);font-size:8px;letter-spacing:.3em;color:#ff5a7a}
+.hp.rage{height:6px;border-color:#5a1a2e}.hp.rage b{background:linear-gradient(90deg,#7a0f2a,#ff2a5c);width:0;transition:width .1s}
+#rowRage.full .hp b{background:linear-gradient(90deg,#ff2a5c,#fff0f4,#ff2a5c);box-shadow:0 0 10px #ff2a5c;animation:rgp .5s infinite alternate}
+#rowRage.full .rgn{color:#fff;text-shadow:0 0 8px #ff2a5c}
+@keyframes rgp{from{filter:brightness(1)}to{filter:brightness(1.6)}}
+.tb.storm{border-color:#ff2a5c;color:#fff;box-shadow:0 0 18px #ff2a5c,inset 0 0 14px rgba(255,42,92,.6);animation:rgp .4s infinite alternate}
 .mid{display:flex;flex-direction:column;align-items:center;gap:4px}
 #timer{font-family:var(--pix);font-size:14px;letter-spacing:.06em;color:var(--moon);text-shadow:2px 2px 0 #1a0f2e}
 #lvl{font-family:var(--pix);font-size:8px;color:var(--neon);letter-spacing:.14em}
@@ -195,6 +201,7 @@ body.touch .keys.kb{display:none} .keys.tch{display:none} body.touch .keys.tch{d
     <div class="top">
       <div class="who">
         <div class="hprow" id="rowMe"><span class="hpname" id="name">Warden</span><span class="hp"><b id="hpMe"></b></span><span class="hptxt" id="hpMeT"></span></div>
+        <div class="hprow" id="rowRage" hidden><span class="hpname rgn">RAGE</span><span class="hp rage"><b id="rageB"></b></span></div>
         <div class="hprow" id="rowMate"><span class="hpname" id="mateName" style="font-size:14px">Partner</span><span class="hp mate"><b id="hpMate"></b></span></div>
         <div id="kit"></div>
         <span id="net"></span>
@@ -212,7 +219,7 @@ body.touch .keys.kb{display:none} .keys.tch{display:none} body.touch .keys.tch{d
 <div id="combo"><span id="cnum">0</span><span id="clbl">HITS</span></div>
 <div id="msg"></div>
 <div id="learn" aria-live="polite"><div class="lt" id="learnT"></div><div class="ln" id="learnN"></div><div class="ld" id="learnD"></div></div>
-<div id="tc"><div class="tb" id="b1">BASH</div><div class="tb" id="b2">DOME</div></div>
+<div id="tc"><div class="tb" id="b1">LEAP</div><div class="tb" id="b2">DOME</div></div>
 
 <div class="scr" id="sMenu">
   <div class="card">
@@ -238,12 +245,12 @@ body.touch .keys.kb{display:none} .keys.tch{display:none} body.touch .keys.tch{d
     <div class="rule"></div>
     <h2>Choose a class</h2>
     <div class="classes">
-      <button class="cls" data-c="warden" aria-pressed="false"><span class="role">Protector · 140 health</span><b>Warden</b><span>Greatsword sweeps, every third one a slam. Bash launches enemies. Dome shields you both and blasts the swarm back.</span></button>
+      <button class="cls" data-c="warden" aria-pressed="false"><span class="role">Protector · 140 health</span><b>Warden</b><span>A fury of blades: fast combos build Rage, Whirlwind spends it, and at full Rage he unleashes Bladestorm. Heroic Leap crashes into crowds. Dome shields you both and blasts the swarm back.</span></button>
       <button class="cls" data-c="lamp" aria-pressed="false"><span class="role">Healer · 90 health</span><b>Lamplighter</b><span>A beam that grows hotter the longer it holds. Shine it through the Warden to heal him. Solar Lance: aim a huge beam; through your partner it heals and powers them up.</span></button>
     </div>
     <div class="picks"><span id="pickMe">You: ·</span><span class="m" id="pickMate"></span></div>
-    <div class="keys kb"><b>WASD</b><span>Move</span><b>Q or Space</b><span>Bash / Step</span><b>E</b><span>Dome / Flare</span></div>
-    <div class="keys tch"><b>Left thumb</b><span>Move</span><b>Small button</b><span>Bash / Step</span><b>Big button</b><span>Dome / Flare</span></div>
+    <div class="keys kb"><b>WASD</b><span>Move</span><b>Q or Space</b><span>Leap (Storm at full Rage) / Step</span><b>E</b><span>Dome / Flare</span></div>
+    <div class="keys tch"><b>Left thumb</b><span>Move</span><b>Small button</b><span>Leap (Storm at full Rage) / Step</span><b>Big button</b><span>Dome / Flare</span></div>
     <p class="small">Stay close and your Bond fills: you heal each other and hit harder. Apart, it fades; reunite to rekindle it. Fire the Lance into the Dome and it splits into six beams.</p>
     <div class="btns"><button class="btn" id="bStart" disabled>Start</button><button class="btn ghost" id="bLeave">Leave</button></div>
   </div>
