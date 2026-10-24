@@ -41,6 +41,11 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:
 .mid{display:flex;flex-direction:column;align-items:center;gap:4px}
 #timer{font-family:var(--pix);font-size:14px;letter-spacing:.06em;color:var(--moon);text-shadow:2px 2px 0 #1a0f2e}
 #lvl{font-family:var(--pix);font-size:8px;color:var(--neon);letter-spacing:.14em}
+#bondW{display:flex;flex-direction:column;align-items:center;gap:3px;font-family:var(--pix);font-size:7px;letter-spacing:.2em;color:var(--gold)}
+#bondW i{display:block;width:96px;height:6px;background:#1a1530;border:1px solid #5a4a2a;position:relative}
+#bondW b{position:absolute;inset:0 auto 0 0;background:linear-gradient(90deg,var(--heal),var(--gold));box-shadow:0 0 8px var(--gold);transition:width .2s}
+#bondW.low{color:#7f8fc8}#bondW.low i{border-color:#3a4570}#bondW.low b{background:#5a6aa8;box-shadow:none}
+#bondW.full span{text-shadow:0 0 8px var(--gold)}
 .tr{display:flex;gap:6px;pointer-events:auto;flex-wrap:wrap;justify-content:flex-end}
 .hb{font:600 10px var(--ui);letter-spacing:.16em;text-transform:uppercase;color:var(--moon);background:rgba(13,11,28,.6);border:1px solid #4a4370;padding:8px 9px 6px;cursor:pointer;white-space:nowrap}
 #kit{display:flex;gap:5px;flex-wrap:wrap;margin-top:3px;max-width:62vw}
@@ -149,7 +154,7 @@ body.touch .keys.kb{display:none} .keys.tch{display:none} body.touch .keys.tch{d
         <div id="kit"></div>
         <span id="net"></span>
       </div>
-      <div class="mid"><span id="timer">00:00</span><span id="lvl">LV 1</span></div>
+      <div class="mid"><span id="timer">00:00</span><span id="lvl">LV 1</span><div id="bondW"><span>BOND</span><i><b id="bondF"></b></i></div></div>
       <div class="tr"><button class="hb" id="mute" aria-pressed="false">Sound</button><button class="hb" id="swap" hidden>Swap</button><button class="hb" id="leave">Leave</button></div>
     </div>
   </div>
@@ -189,12 +194,12 @@ body.touch .keys.kb{display:none} .keys.tch{display:none} body.touch .keys.tch{d
     <h2>Choose a class</h2>
     <div class="classes">
       <button class="cls" data-c="warden" aria-pressed="false"><span class="role">Protector · 140 health</span><b>Warden</b><span>Greatsword sweeps, every third one a slam. Bash launches enemies. Dome shields you both and blasts the swarm back.</span></button>
-      <button class="cls" data-c="lamp" aria-pressed="false"><span class="role">Healer · 90 health</span><b>Lamplighter</b><span>Lantern twirls that fling homing sparks. Step blinks and leaves healing light. Flare heals and powers you both.</span></button>
+      <button class="cls" data-c="lamp" aria-pressed="false"><span class="role">Healer · 90 health</span><b>Lamplighter</b><span>A beam that grows hotter the longer it holds. Shine it through the Warden to heal him. Solar Lance: aim a huge beam; through your partner it heals and powers them up.</span></button>
     </div>
     <div class="picks"><span id="pickMe">You: ·</span><span class="m" id="pickMate"></span></div>
     <div class="keys kb"><b>WASD</b><span>Move</span><b>Q or Space</b><span>Bash / Step</span><b>E</b><span>Dome / Flare</span></div>
     <div class="keys tch"><b>Left thumb</b><span>Move</span><b>Small button</b><span>Bash / Step</span><b>Big button</b><span>Dome / Flare</span></div>
-    <p class="small">Stay close: standing near each other slowly heals you both. If one of you falls, the other stands beside them to revive.</p>
+    <p class="small">Stay close and your Bond fills: you heal each other and hit harder. Apart, it fades; reunite to rekindle it. Fire the Lance into the Dome and it splits into six beams.</p>
     <div class="btns"><button class="btn" id="bStart" disabled>Start</button><button class="btn ghost" id="bLeave">Leave</button></div>
   </div>
 </div>
