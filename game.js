@@ -752,39 +752,48 @@ function drawWarden(c){const g=c.g,m=c.m;g.clearRect(0,0,S,S);m.clearRect(0,0,S,
   if(c.cast){ang=-1.6;ang2=-1.95;lean=-1}else if(c.pose>0){ang=-1.2;ang2=-1.7}
   if(c.leap||(c.z||0)>2){ang=-2.3;ang2=-1.1;lean=1}else if(c.dash>0){ang=.25;lean=3}
   const y0=bob,L=lean;
-  const SK='#a8714c',SKD='#74472f',SKL='#d39a6c',HAIR='#17121f',IRON='#3a4170',IRONL='#5a66a8',LEA='#2b2234',FUR='#4a3830',FURL='#6e5444',STEEL='#c9d6ee';
-  const axe=(hx,hy,a,front)=>{const ca=Math.cos(a),sa=Math.sin(a),nx=-sa,ny=ca;
-    line(g,hx-ca*3,hy-sa*3,hx+ca*13,hy+sa*13,front?'#6a4a30':'#46301f');
-    for(let d=8;d<=14;d++){const w=(d<=8||d>=14)?2:(d<=9||d>=13)?4:6;for(let k=1;k<=w;k++)R(g,hx+ca*d+nx*k,hy+sa*d+ny*k,1,1,k===w?'#f2fbff':front?'#9aa8c4':'#646e8a');
-      R(m,hx+ca*d+nx*w,hy+sa*d+ny*w,1,1,front?'rgba(79,240,255,.95)':'rgba(79,240,255,.55)')}
-    line(g,hx+ca*10-nx,hy+sa*10-ny,hx+ca*11-nx*3,hy+sa*11-ny*3,front?STEEL:'#646e8a');R(g,hx+ca*7,hy+sa*7,1,1,C.gold);R(g,hx+ca*14,hy+sa*14,1,1,C.gold)};
-  const arm=(sx,sy,a,front)=>{const ex=sx+Math.cos(a)*8,ey=sy+Math.sin(a)*8,col=front?SK:SKD;
-    for(const [ox,oy] of [[0,0],[1,0],[0,1],[1,1],[-1,0]])line(g,sx+ox,sy+oy,ex+ox,ey+oy,col);if(front)line(g,sx,sy-1,ex,ey-1,SKL);
-    R(g,ex-1,ey-1,3,3,front?C.gold:C.goldD);axe(ex,ey,a,front)};
-  // back arm + axe (behind the body)
+  const SK='#b07650',SKD='#7a4a30',SKL='#dca472',HAIR='#141019',NV='#1d2036',NVL='#30365a',NVD='#10111d',MAG='#d0246e',MAGD='#7a1446',ST='#3c425c',STL='#6a7392',GO=C.gold,GD=C.goldD,GL=C.goldL,CY=C.cyan;
+  const glow=(x,y,w,h)=>{R(g,x,y,w,h,CY);R(m,x,y,w,h,CY)};
+  const axe=(hx,hy,a,front)=>{const ca=Math.cos(a),sa=Math.sin(a),nx=-sa,ny=ca,P=(d,k,col)=>R(g,hx+ca*d+nx*k,hy+sa*d+ny*k,1,1,col);
+    for(let d=-3;d<=14;d++){P(d,0,front?'#4a2c1c':'#2e1c12');P(d,-1,front?'#2e1c12':'#1e120c')}
+    for(const d of [-3,1,6])P(d,0,GO);P(3,0,MAG);P(4,0,MAG);P(3,-1,MAGD);
+    const wd=[2,4,6,7,7,7,6,4,2];for(let i=0;i<wd.length;i++){const d=7+i,w=wd[i];for(let k=1;k<=w;k++)P(d,k,k===w?(front?'#e9fdff':'#9fdfe8'):(k===3&&i>1&&i<7)?(front?GD:'#6a5320'):front?(k<3?STL:ST):(k<3?ST:NVD));
+      R(m,hx+ca*d+nx*w,hy+sa*d+ny*w,1,1,front?'rgba(79,240,255,1)':'rgba(79,240,255,.55)');if(front)R(m,hx+ca*d+nx*(w+1),hy+sa*d+ny*(w+1),1,1,'rgba(79,240,255,.45)')}
+    for(let d=9;d<=12;d++){P(d,-1,front?ST:NVD);P(d,-2,front?STL:ST)}P(10,-3,front?'#c9d6ee':STL);P(15,0,front?STL:ST);P(16,0,front?'#c9d6ee':STL);P(11,4,front?CY:'#2a8a94');if(front)R(m,hx+ca*11+nx*4,hy+sa*11+ny*4,1,1,CY)};
+  const arm=(sx,sy,a,front)=>{const ca=Math.cos(a),sa=Math.sin(a),ex=sx+ca*8,ey=sy+sa*8,col=front?SK:SKD;
+    for(const [ox,oy] of [[0,0],[1,0],[0,1],[1,1],[-1,0]])line(g,sx+ox,sy+oy,ex+ox,ey+oy,col);if(front){line(g,sx,sy-1,sx+ca*4,sy+sa*4-1,SKL);R(g,sx+ca*2+1,sy+sa*2,1,1,CY);R(m,sx+ca*2+1,sy+sa*2,1,1,CY)}
+    for(const [ox,oy] of [[0,0],[1,0],[0,1],[1,1],[-1,0]])line(g,sx+ca*5+ox,sy+sa*5+oy,ex+ox,ey+oy,front?NV:NVD);R(g,sx+ca*5,sy+sa*5,2,1,front?GO:GD);R(g,sx+ca*7,sy+sa*7,2,1,front?MAG:MAGD);
+    axe(ex,ey,a,front);R(g,ex-1,ey-1,3,3,front?SK:SKD);R(g,ex-1,ey-1,3,1,front?SKL:SK)};
+  const paul=(x,y,front)=>{const b=front?NV:NVD,l=front?NVL:NV;R(g,x+1,y,8,1,b);R(g,x,y+1,10,5,b);R(g,x+1,y+6,8,1,b);R(g,x+1,y+1,8,1,l);R(g,x,y+5,10,1,front?GO:GD);R(g,x+4,y+1,2,5,front?GO:GD);R(g,x+4,y+3,2,1,front?CY:'#2a8a94');
+    R(g,x+1,y-1,8,1,front?CY:'#2a8a94');if(front){R(m,x+1,y-1,8,1,CY);R(m,x+4,y+3,2,1,CY)}R(g,x+2,y-3,1,2,front?STL:ST);R(g,x+7,y-3,1,2,front?STL:ST);R(g,x+2,y-4,1,1,'#c9d6ee');R(g,x+7,y-4,1,1,'#c9d6ee')};
+  // back arm + axe + back pauldron
   arm(23+L,30+y0,ang2,false);
-  // legs
+  // legs: armored greaves + boots
   const lx1=Math.round(s1*3),lx2=-lx1,lf1=mv&&s1>0?-Math.round(s1*2):0,lf2=mv&&s1<0?Math.round(s1*2):0;
-  R(g,27+lx2,45+y0,5,9+lf2-(y0<0?y0:0),LEA);R(g,26+lx2,53+lf2,7,3,'#15101c');R(g,27+lx2,50+lf2,5,1,'#5a4630');
-  R(g,33+lx1,45+y0,5,9+lf1-(y0<0?y0:0),'#3a2e48');R(g,33+lx1,45+y0,1,8,'#52446a');R(g,32+lx1,53+lf1,8,3,'#1d1626');R(g,33+lx1,50+lf1,5,1,'#6e5638');R(g,39+lx1,54+lf1,1,1,C.gold);
-  // fur kilt + belt
-  for(let i=0;i<16;i++)R(g,24+L+i,43+y0,1,4+((i*7)%3),i%3?FUR:FURL);
-  R(g,24+L,41+y0,16,2,'#2a1e18');R(g,30+L,41+y0,4,2,C.gold);R(g,31+L,41+y0,2,1,C.goldL);
-  // bare torso
-  for(let r=0;r<14;r++){const w=18-Math.floor(r*.35),x=Math.round(32+L-w/2);R(g,x,27+r+y0,w,1,SK);R(g,x,27+r+y0,2,1,SKD);R(g,x+w-1,27+r+y0,1,1,SKL)}
-  R(g,29+L,32+y0,4,1,SKD);R(g,35+L,32+y0,4,1,SKD);R(g,33+L,33+y0,1,7,SKD);R(g,31+L,36+y0,5,1,SKD);R(g,31+L,38+y0,5,1,SKD);R(g,30+L,30+y0,3,1,SKL);R(g,36+L,30+y0,2,1,SKL);
-  line(g,25+L,28+y0,39+L,40+y0,LEA);line(g,25+L,29+y0,38+L,40+y0,LEA);for(let i=0;i<4;i++)R(g,27+L+i*3.5,30+y0+i*3,1,1,C.gold);
-  R(g,20+L,26+y0,7,5,'#2a3058');R(g,20+L,26+y0,7,1,IRON);R(g,20+L,30+y0,7,1,C.goldD);
+  const leg=(x,lf,front)=>{const h=9+lf-(y0<0?y0:0);R(g,x,46+y0,6,h,front?NV:NVD);R(g,x,48+y0,6,1,front?MAG:MAGD);R(g,x+1,46+y0,4,2,front?GO:GD);R(g,x+2,47+y0,2,1,front?CY:'#2a8a94');if(front)R(m,x+2,47+y0,2,1,CY);
+    R(g,x-1,53+lf,8,3,front?NVD:'#0a0b14');R(g,x-1,53+lf,8,1,front?GO:GD);R(g,x+5,55+lf,2,1,front?GL:GD)};
+  leg(26+lx2,lf2,false);leg(33+lx1,lf1,true);
+  // kilt: navy plates with gold edges + magenta tabard
+  for(let i=0;i<5;i++){const x=24+L+i*3+(i>2?1:0);R(g,x,43+y0,3,5+(i%2),NV);R(g,x,43+y0,1,5+(i%2),NVL);R(g,x,47+y0+(i%2),3,1,GD)}
+  R(g,30+L,43+y0,5,8,MAG);R(g,30+L,43+y0,1,8,MAGD);R(g,31+L,45+y0,3,1,GO);R(g,32+L,46+y0,1,2,GO);R(g,31+L,49+y0,3,1,GO);R(g,30+L,51+y0,5,1,MAGD);
+  // belt + sunburst buckle
+  R(g,24+L,40+y0,17,3,NV);R(g,24+L,40+y0,17,1,GD);R(g,24+L,42+y0,17,1,GD);R(g,26+L,41+y0,1,1,MAG);R(g,38+L,41+y0,1,1,MAG);
+  R(g,30+L,39+y0,5,5,GO);R(g,31+L,39+y0,3,1,GL);R(g,29+L,40+y0,1,3,GD);R(g,35+L,40+y0,1,3,GD);glow(32+L,41+y0,1,1);R(g,31+L,41+y0,1,1,GD);R(g,33+L,41+y0,1,1,GD);
+  // bare torso with neon tattoos
+  for(let r=0;r<13;r++){const w=19-Math.floor(r*.4),x=Math.round(32.5+L-w/2);R(g,x,27+r+y0,w,1,SK);R(g,x,27+r+y0,2,1,SKD);R(g,x+w-1,27+r+y0,1,1,SKL)}
+  R(g,28+L,32+y0,4,1,SKD);R(g,34+L,32+y0,4,1,SKD);R(g,32+L,34+y0,1,6,SKD);R(g,30+L,36+y0,5,1,SKD);R(g,30+L,38+y0,5,1,SKD);R(g,29+L,30+y0,3,1,SKL);R(g,35+L,30+y0,2,1,SKL);
+  for(const [x,y] of [[26,28],[27,29],[28,30],[38,28],[37,29],[36,30],[27,33],[27,34],[27,35],[38,33],[38,34],[38,35]]){R(g,x+L,y+y0,1,1,CY);R(m,x+L,y+y0,1,1,'rgba(79,240,255,.4)')}
+  glow(32+L,30+y0,1,3);glow(31+L,31+y0,3,1);R(g,32+L,31+y0,1,1,'#eafcff');
   // head
-  R(g,30+L,23+y0,5,4,SKD);R(g,28+L,13+y0,10,11,SK);R(g,27+L,19+y0,12,5,SK);R(g,28+L,13+y0,2,10,SKD);R(g,37+L,15+y0,1,6,SKL);
-  R(g,32+L,16+y0,6,1,SKD);R(g,33+L,17+y0,3,1,'#120c18');R(g,37+L,17+y0,1,1,'#120c18');R(g,34+L,17+y0,2,1,C.cyan);R(m,34+L,17+y0,2,1,C.cyan);R(g,37+L,17+y0,1,1,C.cyan);R(m,37+L,17+y0,1,1,C.cyan);
-  R(g,32+L,18+y0,6,1,'#c0284a');R(g,38+L,18+y0,1,2,SK);
-  R(g,31+L,21+y0,8,4,HAIR);R(g,30+L,20+y0,2,2,HAIR);R(g,35+L,20+y0,3,1,'#5a2a2a');R(g,34+L,25+y0,2,4,HAIR);R(g,34+L,29+y0,2,1,C.gold);R(g,29+L,19+y0,1,2,C.gold);
-  R(g,29+L,9+y0,6,5,HAIR);R(g,30+L,7+y0,4,2,HAIR);R(g,31+L,6+y0,2,1,HAIR);R(g,31+L,7+y0,1,6,'#2c2440');R(g,32+L,7+y0,1,5,C.cyan);R(m,32+L,7+y0,1,5,C.cyan);
-  R(g,25+L,11+y0,4,2,HAIR);R(g,24+L,13+y0,3,6,HAIR);R(g,24+L,19+y0,2,2,C.gold);
-  // front pauldron
-  R(g,36+L,25+y0,9,5,IRON);R(g,36+L,25+y0,9,1,IRONL);R(g,36+L,29+y0,9,1,C.gold);R(g,40+L,27+y0,1,1,C.cyan);R(m,40+L,27+y0,1,1,C.cyan);
-  R(g,37+L,22+y0,1,3,STEEL);R(g,40+L,21+y0,1,4,STEEL);R(g,43+L,23+y0,1,2,STEEL);
+  R(g,30+L,23+y0,5,4,SKD);R(g,28+L,13+y0,10,11,SK);R(g,27+L,19+y0,12,5,SK);R(g,28+L,13+y0,2,10,SKD);R(g,37+L,15+y0,1,6,SKL);R(g,29+L,17+y0,2,3,SKD);R(g,29+L,18+y0,1,1,SK);
+  R(g,32+L,16+y0,6,1,SKD);R(g,33+L,17+y0,3,1,'#120c18');R(g,37+L,17+y0,1,1,'#120c18');glow(34+L,17+y0,2,1);glow(37+L,17+y0,1,1);
+  R(g,33+L,19+y0,2,1,MAG);R(g,36+L,19+y0,2,1,MAG);R(g,38+L,18+y0,1,2,SK);
+  R(g,31+L,21+y0,8,4,HAIR);R(g,30+L,20+y0,2,2,HAIR);R(g,35+L,21+y0,3,1,'#5a2a2a');R(g,34+L,25+y0,2,5,HAIR);R(g,34+L,26+y0,2,1,GO);R(g,34+L,28+y0,2,1,GO);R(g,34+L,30+y0,2,1,HAIR);
+  // spiky mohawk with neon streak
+  R(g,29+L,10+y0,7,4,HAIR);R(g,30+L,7+y0,5,3,HAIR);R(g,31+L,5+y0,3,2,HAIR);R(g,32+L,3+y0,2,2,HAIR);R(g,27+L,9+y0,2,2,HAIR);R(g,26+L,8+y0,1,1,HAIR);R(g,36+L,9+y0,1,2,HAIR);
+  glow(32+L,4+y0,1,8);glow(33+L,6+y0,1,5);R(g,31+L,8+y0,1,4,'#2c2440');
+  // pauldrons
+  paul(18+L,26+y0,false);paul(35+L,25+y0,true);
   // front arm + axe
   arm(40+L,30+y0,ang,true)}
 function drawLamp(c){const g=c.g,m=c.m;g.clearRect(0,0,S,S);m.clearRect(0,0,S,S);
