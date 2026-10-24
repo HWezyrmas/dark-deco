@@ -32,7 +32,7 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:
 .who{display:flex;flex-direction:column;gap:5px;min-width:0}
 .eyebrow{font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:var(--fog)}
 .hprow{display:flex;align-items:center;gap:8px}
-.hpname{font-family:var(--display);font-size:18px;letter-spacing:.08em;line-height:1;width:104px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hpname{font-family:var(--display);font-size:18px;letter-spacing:.08em;line-height:1;width:128px;flex:0 0 auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hp{width:120px;height:8px;background:#1a1530;border:1px solid #3a3456;position:relative}
 .hp b{position:absolute;inset:0 auto 0 0;background:var(--heal);width:100%;transition:width .15s}
 .hp.mate{width:90px;height:6px}
@@ -43,9 +43,17 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:
 #lvl{font-family:var(--pix);font-size:8px;color:var(--neon);letter-spacing:.14em}
 .tr{display:flex;gap:6px;pointer-events:auto;flex-wrap:wrap;justify-content:flex-end}
 .hb{font:600 10px var(--ui);letter-spacing:.16em;text-transform:uppercase;color:var(--moon);background:rgba(13,11,28,.6);border:1px solid #4a4370;padding:8px 9px 6px;cursor:pointer;white-space:nowrap}
-#kit{display:flex;gap:5px;flex-wrap:wrap;margin-top:2px}
-.kw{font-family:var(--pix);font-size:7px;letter-spacing:.06em;padding:4px 5px 3px;border:1px solid #3a3456;background:rgba(13,11,28,.55);color:var(--moon)}
-.kw.evo{border-color:var(--gold);color:var(--gold)}
+#kit{display:flex;gap:5px;flex-wrap:wrap;margin-top:3px;max-width:62vw}
+.kw{position:relative;display:flex;flex-direction:column;gap:3px;font-family:var(--pix);font-size:7px;letter-spacing:.04em;padding:5px 6px 6px 7px;border:1px solid #3a3456;border-left:3px solid var(--wc);background:rgba(13,11,28,.7);color:var(--wc);min-width:64px;transition:transform .08s}
+.kw .pp{display:flex;gap:2px}.kw .pp i{width:5px;height:5px;background:#2a2545;display:block}.kw .pp i.on{background:var(--wc);box-shadow:0 0 4px var(--wc)}
+.kw .cdb{position:absolute;left:0;right:0;bottom:0;height:2px;background:#1a1530}.kw .cdb b{display:block;height:100%;width:100%;background:var(--wc);opacity:.7}
+.kw.evo{border-color:var(--gold);box-shadow:0 0 10px rgba(214,168,78,.35)}
+.kw.fire{transform:scale(1.12);background:color-mix(in srgb,var(--wc) 22%,rgba(13,11,28,.8))}
+#learn{position:fixed;left:50%;bottom:calc(150px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) scale(.9);text-align:center;pointer-events:none;opacity:0;transition:opacity .25s,transform .25s;width:min(92vw,520px)}
+#learn.on{opacity:1;transform:translateX(-50%) scale(1)}
+#learn .lt{font-family:var(--pix);font-size:9px;letter-spacing:.24em;color:var(--fog)}
+#learn .ln{font-family:var(--display);font-size:30px;letter-spacing:.08em;line-height:1.1;text-shadow:0 0 16px currentColor}
+#learn .ld{font-size:13px;color:var(--moon);margin-top:4px;text-wrap:balance}
 #boss{position:fixed;left:50%;transform:translateX(-50%);top:calc(64px + env(safe-area-inset-top,0px));width:min(420px,70vw);text-align:center;pointer-events:none}
 #boss .n{font-family:var(--display);font-size:16px;letter-spacing:.16em;color:#ff8aa5}
 #boss .bar{height:7px;background:#1a1530;border:1px solid #5a2440;margin-top:3px;position:relative}
@@ -153,6 +161,7 @@ body.touch .keys.kb{display:none} .keys.tch{display:none} body.touch .keys.tch{d
 <div id="boss" hidden><div class="n" id="bossName">The Foreman</div><div class="bar"><b id="bossHp"></b></div></div>
 <div id="combo"><span id="cnum">0</span><span id="clbl">HITS</span></div>
 <div id="msg"></div>
+<div id="learn" aria-live="polite"><div class="lt" id="learnT"></div><div class="ln" id="learnN"></div><div class="ld" id="learnD"></div></div>
 <div id="tc"><div class="tb" id="b1">BASH</div><div class="tb" id="b2">DOME</div></div>
 
 <div class="scr" id="sMenu">
