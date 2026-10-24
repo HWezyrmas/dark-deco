@@ -1052,7 +1052,15 @@ function drawBeamsAndLances(){
     circ(eg,sx,sy,Math.round(wd*.9),'#fff6d8');lg.globalAlpha=1;
     for(let i=0;i<3;i++){const k=rnd(),off=(rnd()-.5)*wd*1.6;parts.push({x:sx-ox+Ln.dx*LEN*k+nx*off,y:sy-oy+Ln.dy*LEN*k+ny*off,vx:Ln.dx*160,vy:Ln.dy*110,life:.25,max:.25,col:rnd()<.5?'#fff0a8':C.amber,em:true,streak:1})}
     for(let i=0;i<2&&parts.length<480;i++){const k=rnd(),off=(rnd()-.5)*wd*2.4;parts.push({x:sx-ox+Ln.dx*LEN*k+nx*off,y:sy-oy+Ln.dy*LEN*k+ny*off,vx:(rnd()-.5)*20,vy:-20,life:.5,max:.5,col:rnd()<.6?'#ff6fb4':'#ffffff',em:true,star:3})}
-    if(Ln.refr&&dome){const cx=dome.x+ox,cy=dome.y-14+oy;for(let i=0;i<6;i++){const a=i/6*TAU+Ln.t*1.2;beamLine(cx,cy,cx+Math.cos(a)*150,cy+Math.sin(a)*90,5,'#fff0a8','#ffffff',fade*.9)}circ(eg,cx,cy,8,'#ffffff')}
+    if(Ln.refr&&dome){const cx=dome.x+ox,cy=dome.y-14+oy,RB=['#ff4f6a','#ffa040','#ffe760','#5fe08a','#4fb8ff','#a46bff'];
+      // rainbow halo bands shimmering across the dome
+      for(let i=0;i<6;i++){eg.globalAlpha=fade*(.28+.12*Math.sin(tAll*6+i));eg.strokeStyle=RB[i];eg.lineWidth=2;eg.beginPath();eg.ellipse(Math.round(cx),Math.round(cy+14),30-i*3.2,26-i*3,0,Math.PI,TAU);eg.stroke()}eg.lineWidth=1;eg.globalAlpha=1;
+      // dispersion fan where the lance enters
+      const ex0=cx-Ln.dx*34,ey0=cy-Ln.dy*20;for(let i=0;i<6;i++){const sp=(i-2.5)*.07,ca=Math.cos(sp),sa=Math.sin(sp),dx=Ln.dx*ca-Ln.dy*sa,dy=Ln.dx*sa+Ln.dy*ca;beamLine(ex0,ey0,ex0+dx*40,ey0+dy*28,2,RB[i],RB[i],fade*.8)}
+      // refracted beams, one per colour of the spectrum
+      for(let i=0;i<6;i++){const a=i/6*TAU+Ln.t*1.2;beamLine(cx,cy,cx+Math.cos(a)*150,cy+Math.sin(a)*90,6,RB[i],'#ffffff',fade*.95)}
+      circ(eg,cx,cy,8,'#ffffff');
+      for(let i=0;i<3&&parts.length<500;i++){const a=rnd()*TAU,r=rnd()*34;parts.push({x:dome.x+Math.cos(a)*r,y:dome.y-14+Math.sin(a)*r*.7,vx:Math.cos(a)*20,vy:-18-rnd()*12,life:.5,max:.5,col:RB[(rnd()*6)|0],em:true,star:rnd()<.4?3:0})}}
     eg.globalAlpha=lg.globalAlpha=1}
   // Lance drag preview
   if(aimDrag){const me2=meC(),dx0=aimDrag.x-aimDrag.ox,dy0=aimDrag.y-aimDrag.oy,l0=len(dx0,dy0);if(me2&&l0>18){const dx=dx0/l0,dy=dy0/l0,[lx,ly]=lanternPos(me2),sx=lx+ox,sy=ly+oy,wd=13*(me2.mods.has('brightflare')?1.4:1);
