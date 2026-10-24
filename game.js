@@ -68,6 +68,7 @@ const SFX={
   level(){[523,659,784,1046].forEach((f,i)=>tn(f,f,.35,'triangle',.12,.07*i,.005))},
   pick(){tn(880,1320,.15,'triangle',.15)},
   blast(){if(!ok('bl',80))return;tn(90,35,.45,'sine',.9);nz(.4,2400,100,.6,.6,'lowpass')},
+  bolt(){if(!ok('bolt',55))return;const p=1+(rnd()-.5)*.2;tn(1500*p,800*p,.07,'triangle',.07);tn(2400*p,2400*p,.04,'sine',.03)},
   zap(){if(!ok('zap',70))return;nz(.12,5000,1500,4,.2);tn(2400,600,.1,'square',.06)},
   shot(){if(!ok('shot',90))return;nz(.08,3000,800,1,.25);tn(500,200,.08,'square',.06)},
   warn(){[220,208,196].forEach((f,i)=>tn(f,f,.4,'sawtooth',.08,.18*i,.02))},
@@ -85,8 +86,8 @@ const WDEF={
   slam:{cls:'warden',name:'Thunder Clap',desc:'A shockwave that launches crowds of 5+ enemies.',evo:'Fault Line',evoD:'Leaves a burning crack that keeps hurting.'},
   shield:{cls:'warden',name:'Hurled Axe',desc:'Hurls a spare axe; it bounces between 3 enemies.',evo:'Axe Storm',evoD:'The axe bounces 7 times.'},
   riposte:{cls:'warden',name:'Riposte',desc:'When you are hit, strike back all around you.',evo:'Iron Answer',evoD:'Each riposte also heals you 6.'},
-  beam:{cls:'lamp',name:'Lantern Beam',desc:'A steady beam at the nearest enemy that grows hotter the longer it holds. Shine it through your partner to heal them.',evo:'Sunthread',evoD:'Heats up to 4× and pierces everything behind the target.'},
-  prism:{cls:'lamp',name:'Prism',desc:'Your beam splits off to hit another nearby enemy.',evo:'Kaleidoscope',evoD:'Splits to 4 more enemies.'},
+  beam:{cls:'lamp',name:'Light Bolts',desc:'Fires bolts of lantern light at the nearest enemy, faster the longer you keep shooting. Bolts that fly through your partner heal them.',evo:'Sunthread',evoD:'Bolts fire faster and pierce through 3 enemies.'},
+  prism:{cls:'lamp',name:'Prism',desc:'Each bolt that hits splits into a smaller bolt toward another enemy.',evo:'Kaleidoscope',evoD:'Splits into 4 bolts.'},
   lighthouse:{cls:'lamp',name:'Lighthouse',desc:'A beam slowly sweeps around you like a lighthouse.',evo:'Twin Lights',evoD:'Two beams sweep around you.'},
   flies:{cls:'lamp',name:'Fireflies',desc:'Fireflies orbit you and burn what they touch.',evo:'Halo',evoD:'A ring of 6 bright fireflies.'},
   moths:{cls:'lamp',name:'Moth Swarm',desc:'Releases homing moths at enemies farther away.',evo:'Night Bloom',evoD:'Six moths, and each hit spawns another.'},
@@ -115,7 +116,7 @@ const CL={
 };
 const WCOL={cleave:'#bff9ff',whirl:'#7fd7ff',slam:'#6fb0ff',shield:'#f2cf7a',riposte:'#ffffff',twirl:'#ffc861',flies:'#d8ff6a',moths:'#ff8fd0',candle:'#ff9a3c',chain:'#fff07a',beam:'#fff0a8',prism:'#c9a0ff',lighthouse:'#ffe08a',lance:'#fff0a8'};
 function wCount(id,lv){if(lv<1)return 0;if(id==='twirl')return lv>=5?7:2+lv;if(id==='moths')return lv>=5?6:3+Math.floor((lv-1)/2);if(id==='candle')return lv>=5?3:lv>=3?2:1;if(id==='chain')return lv>=5?9:3+lv;if(id==='flies')return lv>=5?6:2+(lv>=2)+(lv>=4);if(id==='shield')return lv>=5?7:3+Math.floor((lv-1)/2);if(id==='prism')return lv>=5?4:1+Math.floor((lv-1)/2);if(id==='lighthouse')return lv>=5?2:1;return 0}
-const UNIT={prism:'extra beams',lighthouse:'beams',twirl:'sparks',moths:'moths',candle:'candles',chain:'jumps',flies:'fireflies',shield:'bounces'};
+const UNIT={prism:'split bolts',lighthouse:'beams',twirl:'sparks',moths:'moths',candle:'candles',chain:'jumps',flies:'fireflies',shield:'bounces'};
 function upText(id,lv){const n0=wCount(id,lv-1),n1=wCount(id,lv),p=[];if(UNIT[id]&&n1>n0)p.push(n0+' → '+n1+' '+UNIT[id]);p.push('+25% damage');if(['cleave','whirl','slam','twirl','flies','candle'].includes(id))p.push('bigger');p.push('faster');return p.join(' · ')}
 function lvm(w){return{d:1+.25*(w.lv-1)+(w.lv>=5?.25:0),c:1-.07*(w.lv-1),a:1+.08*(w.lv-1)}}
 function cd1Max(c){return CL[c.cls].cd1-(c.mods.has('quickbash')||c.mods.has('quickstep')?1.5:0)}
@@ -175,6 +176,7 @@ const FXF={
   rekindle(x,y){waves.push({x,y,t:0,dur:.6,r:110,col:C.gold,w:5},{x,y,t:-.1,dur:.75,r:150,col:'#fff1c4',w:2});FXF.star(x,y-12,C.gold);puff(x,y-10,30,C.gold,140,.7,true,20,1);
     flashA=Math.max(flashA,.35);zoom=Math.max(zoom,1.06);kick(0,1,6);SFX.revive();SFX.boom();for(const c of chars)banners.push({c,txt:'REKINDLED',col:C.gold,t:0});say('Together again',2)},
   gem(){SFX.gem()},
+  pop(x,y,small){for(let i=0;i<(small?4:7)&&parts.length<500;i++){const a=rnd()*TAU,s=40+rnd()*70;parts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s*.6-30,life:.3,max:.3,col:i%2?'#fff1c4':'#ff9ccf',em:true,grav:1})}parts.push({x,y,vx:0,vy:0,life:.1,max:.1,col:'#ffffff',em:true,star:small?3:5})},
   recoil(ci,dx,dy,m){const c=chars.find(q=>q.idx===ci);if(c){c.rx=-dx*m;c.ry=-dy*m*.6}},
   starburst(x,y){for(let i=0;i<18&&parts.length<500;i++){const a=i/18*TAU+rnd()*.2,s=60+rnd()*60;parts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s*.62,life:.5,max:.5,col:i%3===0?'#ffffff':i%3===1?'#ff6fb4':C.amber,em:true,star:i%3===0?4:3})}
     for(let i=0;i<4;i++){const a=i/4*TAU+Math.PI/4;parts.push({x:x+Math.cos(a)*14,y:y+Math.sin(a)*9,vx:0,vy:-8,life:.7,max:.7,col:'#ff9ccf',em:true,star:6})}
@@ -412,15 +414,14 @@ function distSeg(px,py,x1,y1,x2,y2){const dx=x2-x1,dy=y2-y1,l2=dx*dx+dy*dy||1;le
 function lanternPos(c){return[c.x+((c.lantern?c.lantern[0]:44)-FX)*c.f,c.y+(c.lantern?c.lantern[1]:22)-FY]}
 function beamWeapons(c,dt){c.beams=[];const rate=cdRate(c);
   const bw=c.weapons.find(w=>w.id==='beam');
-  if(bw){const L=lvm(bw),evo=bw.lv>=5,R=90*L.a,maxH=evo?2:1;
-    if(!c.bT||!alive(c.bT)||len(c.bT.x-c.x,(c.bT.y-c.y)*1.4)>R+24){const n=nearestEnemy(c,R);if(n!==c.bT){c.bT=n;c.heat=c.bT&&c.heat>0?c.heat*.5:0}}
-    if(c.bT){const t=c.bT,[sx,sy]=lanternPos(c),tx=t.x,ty=t.y-8-t.z;c.heat=Math.min(maxH,c.heat+dt*rate*.6);c.f=t.x>=c.x?1:-1;
-      c.beams.push([sx,sy,tx,ty,c.heat/maxH,0]);
-      c.bTick=(c.bTick||0)-dt*rate;const tick=c.bTick<=0;if(tick){c.bTick=.12;const dmg=2.6*L.d*(1+c.heat);hitE(t,dmg,c,{quiet:1,w:'beam',col:WCOL.beam,crit:false,kx:(t.x-c.x)*.15,ky:(t.y-c.y)*.15});
-        if(evo){const dx=t.x-c.x,dy=t.y-c.y,d=len(dx,dy)||1;for(const e of en){if(e===t||!alive(e))continue;const px=e.x-c.x,py=e.y-c.y,along=(px*dx+py*dy)/d;if(along<d||along>d+100)continue;if(Math.abs(px*dy-py*dx)/d<9)hitE(e,dmg*.6,c,{quiet:1,w:'beam',col:WCOL.beam,crit:false})}}
-        const p=partnerOf(c);if(p&&p.state==='ok'&&distSeg(p.x,p.y-12,sx,sy,tx,ty)<11){healP(p,.7*(1+bond),false);p.lit=1.2;c.thruT=.25;if(rnd()<.4)emit('heal',p.idx)}}
-      const pw=c.weapons.find(w=>w.id==='prism');if(pw){const n=wCount('prism',pw.lv),sk=new Set([t]);for(let i=0;i<n;i++){const e2=nearestEnemy(t,60,sk);if(!e2)break;sk.add(e2);c.beams.push([tx,ty,e2.x,e2.y-8-e2.z,.35,1]);if(tick)hitE(e2,2.2*lvm(pw).d*(1+c.heat*.5),c,{quiet:1,w:'prism',col:WCOL.prism,crit:false})}}}
-    else c.heat=Math.max(0,c.heat-dt*2)}
+  if(bw){const L=lvm(bw),evo=bw.lv>=5,R=95*L.a;
+    if(!c.bT||!alive(c.bT)||len(c.bT.x-c.x,(c.bT.y-c.y)*1.4)>R+24){const n=nearestEnemy(c,R);if(n!==c.bT){c.bT=n;c.heat=c.bT&&c.heat>0?c.heat*.6:0}}
+    if(c.bT){const t=c.bT,[sx,sy]=lanternPos(c);c.heat=Math.min(1,(c.heat||0)+dt*rate*.45);c.f=t.x>=c.x?1:-1;
+      c.shotCd=(c.shotCd||0)-dt*rate*(1+c.heat*.8)*(evo?1.3:1);
+      if(c.shotCd<=0){c.shotCd=.32;const tx=t.x,ty=t.y-8-t.z,dx=tx-sx,dy=ty-sy,d=len(dx,dy)||1,sp=270;
+        proj.push({k:'lbolt',x:sx,y:sy,vx:dx/d*sp,vy:dy/d*sp,a:Math.atan2(dy,dx),life:.75,tgt:t,dmg:7*L.d*(1+c.heat*.4),src:c,heat:c.heat,pierce:evo?3:0,hit:new Set(),lv:bw.lv,healed:false});
+        emit('sfx','bolt');c.recoilT=.06}}
+    else c.heat=Math.max(0,(c.heat||0)-dt*1.5)}
   const lh=c.weapons.find(w=>w.id==='lighthouse');
   if(lh){const L2=lvm(lh),n=wCount('lighthouse',lh.lv),ln=85*L2.a;c.lhA=(c.lhA||0)+dt*1.5;c.lhTick=(c.lhTick||0)-dt;const tk=c.lhTick<=0;if(tk)c.lhTick=.22;
     for(let i=0;i<n;i++){const a=c.lhA+i*Math.PI,ex=c.x+Math.cos(a)*ln,ey=c.y-12+Math.sin(a)*ln*.6;c.beams.push([c.x,c.y-14,ex,ey,.55,2]);
@@ -465,6 +466,12 @@ function updProj(dt){
       p.x+=p.vx*dt;p.y+=p.vy*dt}
     else if(p.k==='shield'){if(!p.tgt||!alive(p.tgt))p.tgt=nearestEnemy(p,120,p.hit);if(!p.tgt){p.life=0;continue}const dx=p.tgt.x-p.x,dy=p.tgt.y-10-p.y,d=len(dx,dy)||1,sp=260;p.x+=dx/d*sp*dt;p.y+=dy/d*sp*dt;
       if(d<8){p.hit.add(p.tgt);hitE(p.tgt,p.dmg,p.src,{w:'shield',kx:dx/d*140,ky:dy/d*100,col:C.cyan});emit('sfx','hit',0);p.bounce--;p.tgt=p.bounce>0?nearestEnemy(p,110,p.hit):null;if(!p.tgt)p.life=0}}
+    else if(p.k==='lbolt'){if(p.tgt&&alive(p.tgt)&&!p.child){const dx=p.tgt.x-p.x,dy=p.tgt.y-8-p.tgt.z-p.y,d=len(dx,dy)||1,v=len(p.vx,p.vy);p.vx+=(dx/d*v-p.vx)*Math.min(1,dt*7);p.vy+=(dy/d*v-p.vy)*Math.min(1,dt*7)}
+      p.x+=p.vx*dt;p.y+=p.vy*dt;p.a=Math.atan2(p.vy,p.vx);
+      const mate=partnerOf(p.src);if(mate&&mate.state==='ok'&&!p.healed&&len(mate.x-p.x,(mate.y-12-p.y)*1.3)<10){p.healed=true;healP(mate,2.2*(1+bond),false);mate.lit=1.2;emit('heal',mate.idx)}
+      for(const e of en){if(!alive(e)||p.hit.has(e))continue;if(len(e.x-p.x,(e.y-8-e.z-p.y)*1.3)<5+rad(e)*.5){p.hit.add(e);hitE(e,p.dmg,p.src,{w:p.child?'prism':'beam',col:WCOL.beam,kx:p.vx*.25,ky:p.vy*.2,crit:rnd()<.08,dir:p.a});emit('pop',p.x,p.y,p.child?1:0);
+          const pw=!p.child&&p.src.weapons.find(w=>w.id==='prism');if(pw){const n=wCount('prism',pw.lv),sk=new Set(p.hit);for(let i=0;i<n;i++){const e2=nearestEnemy(e,70,sk);if(!e2)break;sk.add(e2);const dx=e2.x-p.x,dy=e2.y-8-e2.z-p.y,d=len(dx,dy)||1;proj.push({k:'lbolt',x:p.x,y:p.y,vx:dx/d*240,vy:dy/d*240,a:Math.atan2(dy,dx),life:.4,tgt:e2,dmg:p.dmg*.6*lvm(pw).d,src:p.src,heat:.2,pierce:0,hit:new Set([e]),lv:1,child:1,healed:true})}}
+          if(p.pierce>0)p.pierce--;else{p.life=0;break}}}}
     else if(p.k==='blade'||p.k==='refl'){p.x+=p.vx*dt;p.y+=p.vy*dt;for(const e of en){if(!alive(e)||p.hit.has(e))continue;if(len(e.x-p.x,(e.y-8-p.y)*1.3)<(p.k==='blade'?14:7)){p.hit.add(e);hitE(e,p.dmg,p.src,{kx:p.vx*.6,ky:p.vy*.6,col:C.cyan});if(p.k==='refl'){p.life=0;break}}}}
     else if(p.k==='candle'){p.fuse-=dt;if(p.fuse<=0){p.life=0;emit('sfx','blast');emit('wave',p.x,p.y,.4,p.r*1.3,WCOL.candle,5,0);emit('puff',p.x,p.y-6,22,WCOL.candle,100,.5,true,20,1);emit('star',p.x,p.y-6,'#ffd0a0');emit('shake',0,1,3,p.src.idx);
         for(const e of en){if(!alive(e))continue;const dx=e.x-p.x,dy=e.y-p.y,d=len(dx,dy*1.4)||1;if(d<p.r)hitE(e,p.dmg,p.src,{kx:dx/d*180,ky:dy/d*120,up:90,col:WCOL.candle,w:'candle',dir:Math.atan2(dy,dx)})}}}}
@@ -656,9 +663,9 @@ function bot(c,dt){if(c.state!=='ok'){moveChar(c,0,0,dt);return}const lead=meC()
 
 /* ================= sync ================= */
 let snapT=0,inT=0;
-const PK={mote:0,moth:1,shield:2,blade:3,candle:4,refl:5};
+const PK={mote:0,moth:1,shield:2,blade:3,candle:4,refl:5,lbolt:6};
 function snapshot(){
-  const PR=proj.map(p=>[PK[p.k],r1(p.x),r1(p.y),p.k==='blade'?r2(p.a):p.k==='candle'?r2(p.fuse):0,p.lv||1]);
+  const PR=proj.map(p=>[PK[p.k],r1(p.x),r1(p.y),p.k==='blade'||p.k==='lbolt'?r2(p.a):p.k==='candle'?r2(p.fuse):0,p.k==='lbolt'?(p.child?0:Math.round(1+p.heat*4)):(p.lv||1)]);
   for(const c of chars)if(c.flyPos)for(const f of c.flyPos)PR.push([9,r1(f[0]),r1(f[1]),0,c.flyLv||1]);
   send({t:'s',T:r1(T),lv:level,xp:r1(xp),k:kills,tth:tether,bd:r2(bond),BM:chars.flatMap(c=>(c.beams||[]).map(b=>b.map(r1))),LA:chars.filter(c=>c.lance).map(c=>{const L=c.lance;return[r1(L.sx||c.x),r1(L.sy||c.y),r2(L.dx),r2(L.dy),r2(L.t),r2(L.dur),L.refr?1:0,L.wide]}),
     C:chars.map(c=>[c.ch>0?r2(c.ch):0,r2(c.aim?c.aim[0]:(c.mx||0)),r2(c.aim?c.aim[1]:(c.my||0)),c.idx,r1(c.x),r1(c.y),c.f,r2(Math.max(0,c.atk)),r2(c.atkDur),c.heavy|0,r2(c.adir),r2(Math.max(0,c.pow)),c.cast?(c.cast.k==='dome'?1:2):0,c.cast?r2(c.cast.t):0,c.cast?r2(c.cast.dur):0,c.dash>0?1:0,r2(Math.max(0,c.hit)),r1(c.hp),r1(c.max),c.state,r2(c.rev),r1(c.down),c.tp||0,Math.round(c.rage||0),r2(Math.max(0,c.enr||0)),r2(Math.max(0,c.ww||0)),r2(Math.max(0,c.bs||0)),r1(c.z||0)]),
@@ -1010,6 +1017,9 @@ function effects(){
     else if(p.k==='moth'){const up=Math.sin(tAll*28+p.x)>0,ws=(p.lv||1)>=5?4:3;lg.fillStyle='#ffd3ec';if(up){lg.fillRect(x-ws,y-3,ws,3);lg.fillRect(x+1,y-3,ws,3)}else{lg.fillRect(x-ws,y,ws,2);lg.fillRect(x+1,y,ws,2)}lg.fillStyle='#ffffff';lg.fillRect(x,y-2,1,4);eg.fillStyle=WCOL.moths;eg.fillRect(x-ws-1,y-3,ws*2+3,5)}
     else if(p.k==='shield'){const a=tAll*22,ca=Math.cos(a),sa=Math.sin(a);line(lg,x-ca*5,y-sa*5,x+ca*5,y+sa*5,'#6a4a30');for(let k=1;k<=4;k++){R(lg,x+ca*4-sa*k,y+sa*4+ca*k,2,1,k===4?'#f2fbff':'#9aa8c4')}R(eg,x+ca*4-sa*4,y+sa*4+ca*4,2,2,C.cyan);circ(eg,x,y,4,'rgba(79,240,255,.35)')}
     else if(p.k==='blade'){crescent(eg,x,y,6,14,p.a-1.2,p.a+1.2,C.cyan,.9);crescent(lg,x,y,10,13,p.a-1,p.a+1,'#f2fdff',.9)}
+    else if(p.k==='lbolt'){const a=p.a||0,ca=Math.cos(a),sa=Math.sin(a),chd=p.child||p.lv===0,h=chd?0:(p.heat!==undefined?p.heat*4:(p.lv||1)-1),Ln=5+h*1.5,r=chd?1:2+(h>2?1:0);
+      for(let i=0;i<Ln;i++){const k=i/Ln;eg.globalAlpha=(1-k)*.8;eg.fillStyle=i<2?'#fff1c4':(i%2?C.amber:'#ff9ccf');eg.fillRect(Math.round(x-ca*i)-1,Math.round(y-sa*i)-1,2,2)}eg.globalAlpha=1;
+      circ(eg,x,y,r+1,'rgba(255,200,97,.8)');circ(lg,x,y,r,'#fff1c4');lg.fillStyle='#ffffff';lg.fillRect(x,y,1,1)}
     else if(p.k==='refl'){lg.fillStyle=C.cyan;lg.fillRect(x-1,y-1,3,3);eg.fillStyle=C.cyan;eg.fillRect(x-2,y-2,5,5)}
     else if(p.k==='candle'){lg.fillStyle='rgba(0,0,0,.4)';lg.fillRect(x-3,y,7,2);lg.fillStyle='#f3e6c8';lg.fillRect(x-2,y-9,4,9);lg.fillStyle='#d9c9a8';lg.fillRect(x+1,y-9,1,9);lg.fillStyle=C.gold;lg.fillRect(x-3,y-1,7,2);const fl=Math.sin(tAll*25)>0;lg.fillStyle=fl?'#ffffff':'#fff1c4';lg.fillRect(x-1,y-13,2,3);lg.fillStyle=WCOL.candle;lg.fillRect(x-1,y-11,2,1);circ(eg,x,y-12,3,WCOL.candle);
       const pr=clamp(1-(p.fuse??1),0,1),rr=34*(1+.08*((p.lv||1)-1));eg.globalAlpha=.5+.4*pr;eg.strokeStyle=WCOL.candle;eg.lineWidth=2;eg.beginPath();eg.ellipse(x,y,rr,rr*.45,0,0,TAU);eg.stroke();eg.lineWidth=1;lg.globalAlpha=.18*pr+.05;lg.fillStyle=WCOL.candle;lg.beginPath();lg.ellipse(x,y,rr*pr,rr*.45*pr,0,0,TAU);lg.fill();lg.globalAlpha=eg.globalAlpha=1}}
