@@ -709,7 +709,7 @@ function update(dt){tAll+=dt;if(msgT>0){msgT-=dt;if(msgT<=0)$('msg').style.opaci
   for(const c of chars){c.t+=dt;c.sq*=Math.pow(.0004,dt);if(c.blink>0)c.blink-=dt;else if(rnd()<dt*.35)c.blink=.12;
     const remote=!(c.idx===ME||(solo&&isHost));
     if(remote){const p=interp(c.hist,performance.now()-IDELAY);if(p&&!(c.lance)){c.x=p[1];c.y=p[2]}else{const k=Math.min(1,dt*16);c.x+=(c.tx-c.x)*k;c.y+=(c.ty-c.y)*k}if(len(c.tx-c.x,c.ty-c.y)>120){c.x=c.tx;c.y=c.ty;c.hist=[]}const sp=len(c.x-c.px,c.y-c.py)/Math.max(dt,1e-3);c.moving=sp>8;c.vx=(c.x-c.px)/Math.max(dt,1e-3)}
-    if(c.moving&&!paused)c.walk+=dt*(c.cls==='lamp'?2.4:1.9);c.px=c.x;c.py=c.y;
+    if(c.moving&&!paused){const w0=c.walk;c.walk+=dt*(c.cls==='lamp'?2.2:1.9);if(c.cls==='lamp'&&Math.floor(c.walk)!==Math.floor(w0)){c.sq=-.2;puff(c.x,c.y,3,'#3a3660',22,.3,false,4,1)}}c.px=c.x;c.py=c.y;if(c.cls==='lamp'&&!paused)updHair(c,dt);
     if(c.dash>0&&rnd()<.9)ghosts.push({c,x:c.x,y:c.y,f:c.f,life:.2,col:C.cyan});
     if(c.moving&&rnd()<dt*6)parts.push({x:c.x-c.f*3,y:c.y,vx:-c.f*8,vy:-6,life:.35,max:.35,col:'#3a3660',sz:1});
     c.swv+=(-c.sw*40-c.vx*.06-c.swv*3)*dt;c.sw+=c.swv*dt;
@@ -796,17 +796,35 @@ function drawWarden(c){const g=c.g,m=c.m;g.clearRect(0,0,S,S);m.clearRect(0,0,S,
   paul(18+L,26+y0,false);paul(35+L,25+y0,true);
   // front arm + axe
   arm(40+L,30+y0,ang,true)}
+function lampHop(c){if(!c.moving)return{y0:Math.sin(c.t*3.2)>0?1:0,air:0};const ph=c.walk%1,h=Math.sin(ph*Math.PI);return{y0:-Math.round(h*5),air:h,ph}}
+function updHair(c,dt){const hop=lampHop(c),ax=26,ay=26+hop.y0;
+  if(!c.hair||c.hairF!==c.f){c.hair=c.hair?c.hair.map(p=>({x:64-p.x,y:p.y,px:64-p.px,py:p.py})):Array.from({length:9},(_,i)=>({x:ax-i*.6,y:ay+i*3,px:ax-i*.6,py:ay+i*3}));c.hairF=c.f}
+  const mvx=(c.x-(c.hpx??c.x))*c.f;c.hpx=c.x;dt=Math.min(dt,.05);const H=c.hair;H[0].x=ax;H[0].y=ay;H[0].px=ax;H[0].py=ay;
+  for(let i=1;i<H.length;i++){const p=H[i],vx=(p.x-p.px)*.86,vy=(p.y-p.py)*.86;p.px=p.x;p.py=p.y;p.x+=vx-mvx*.3*(i/H.length)-40*dt*dt;p.y+=vy+520*dt*dt}
+  for(let k=0;k<3;k++)for(let i=1;i<H.length;i++){const a=H[i-1],p=H[i],dx=p.x-a.x,dy=p.y-a.y,d=Math.hypot(dx,dy)||1,L=3;const f=(d-L)/d;p.x-=dx*f;p.y-=dy*f;if(p.x>a.x+2.5)p.x=a.x+2.5;if(p.y<a.y-2.5)p.y=a.y-2.5;if(p.y>55)p.y=55}}
 function drawLamp(c){const g=c.g,m=c.m;g.clearRect(0,0,S,S);m.clearRect(0,0,S,S);
-  const mv=c.moving,wp=c.walk*TAU,s1=mv?Math.sin(wp):0;const y0=mv?-Math.round(Math.abs(Math.cos(wp))*1.5):(Math.sin(c.t*3.2)>0?1:0);const tw=c.atk>0?1-c.atk/c.atkDur:-1;
-  for(let i=0;i<8;i++){const wy=Math.round(Math.sin(c.t*7-i*.9)*(mv?1.8:1)*(i/8+.3));R(g,27-i*2-(mv?i*.6:0),39+y0+wy+(i>3?1:0)+Math.floor(i/3),3,2,i%2?'#e24fb0':'#ff7fc8');if(i===7)R(g,25-i*2-(mv?i*.6:0),41+y0+wy+2,2,1,'#ff7fc8')}
-  const lx=Math.round(s1*2);R(g,28-lx,53+(mv&&s1<0?-1:0),4,3,'#2a1d33');R(g,34+lx,53+(mv&&s1>0?-1:0),4,3,'#3a2848');R(g,36+lx,53+(mv&&s1>0?-1:0),1,1,C.gold);
-  for(let y=39;y<=53;y++){const hw=5+Math.floor((y-39)*.5),yy=y+y0;R(g,32-hw,yy,hw*2+1,1,'#3d2a58');R(g,32-hw,yy,1,1,'#56407e');R(g,32+hw,yy,1,1,'#2a1d42')}
-  R(g,25,53+y0,15,1,'#ff7fc8');R(g,32,44+y0,1,1,C.gold);R(g,32,48+y0,1,1,C.gold);R(g,29,40+y0,7,1,'#56407e');
-  circ(g,32,31+y0,10,'#4b3368');R(g,24,25+y0,5,1,'#6a4b91');R(g,23,27+y0,1,6,'#6a4b91');R(g,26,23+y0,6,1,'#6a4b91');
-  for(const [ex,dir] of [[25,-1],[38,1]]){R(g,ex,19+y0,1,2,'#4b3368');R(g,ex-(dir<0?0:1),21+y0,2,1,'#4b3368');R(g,ex-(dir<0?0:2),22+y0,3,2,'#4b3368');R(g,ex+(dir<0?1:-1),21+y0,1,1,'#ff9ccf')}
-  R(g,22,30+y0,1,1,C.gold);const fw=[6,8,9,10,10,10,9,8,6];for(let i=0;i<fw.length;i++)R(g,35-Math.floor(fw[i]/2),28+i+y0,fw[i],1,'#120c1a');
-  const eh=c.state==='down'?1:c.blink>0?1:3;for(const ex of [31,37]){R(g,ex,31+y0+(3-eh),2,eh,C.amber);R(m,ex,31+y0+(3-eh),2,eh,C.amber);if(eh===3)R(g,ex,31+y0,1,1,'#fff6d8')}
-  R(g,30,35+y0,2,1,'#ff7fc8');R(g,38,35+y0,2,1,'#ff7fc8');R(g,34,35+y0,1,1,'#ff9ccf');R(g,35,36+y0,1,1,'#ff9ccf');R(g,36,35+y0,1,1,'#ff9ccf');
+  const mv=c.moving,hop=lampHop(c),y0=hop.y0,tw=c.atk>0?1-c.atk/c.atkDur:-1;
+  const HR='#6b3f24',HD='#45271a',HL='#9a6236',HH='#c88a50',SKN='#e2a983',SKS='#bf8566';
+  // long hair (behind everything)
+  if(!c.hair)updHair(c,0);const Hh=c.hair;
+  for(let i=Hh.length-1;i>=1;i--){const p=Hh[i],r=Math.max(1,Math.round(4.2-i*.35));circ(g,p.x,p.y,r+1,HD)}
+  for(let i=Hh.length-1;i>=1;i--){const p=Hh[i],r=Math.max(1,Math.round(4.2-i*.35));circ(g,p.x,p.y,r,i%2?HR:HL)}
+  for(let i=1;i<Hh.length-1;i++){const a=Hh[i],b=Hh[i+1];line(g,a.x+1,a.y-1,b.x+1,b.y-1,HH)}
+  const tip=Hh[Hh.length-1];R(g,tip.x-1,tip.y+1,2,1,HD);
+  // feet: tucked while airborne
+  const air=hop.air>.35,ff=mv?(hop.ph<.5?1:-1):0;
+  R(g,28-ff,53+y0+(air?-1:0),4,3,'#2a1d33');R(g,34+ff,53+y0+(air?-2:0),4,3,'#3a2848');R(g,36+ff,53+y0+(air?-2:0),1,1,C.gold);
+  // dress
+  for(let y=39;y<=53;y++){const hw=5+Math.floor((y-39)*.5)+(air&&y>48?1:0),yy=y+y0;R(g,32-hw,yy,hw*2+1,1,'#3d2a58');R(g,32-hw,yy,1,1,'#56407e');R(g,32+hw,yy,1,1,'#2a1d42')}
+  R(g,25-(air?1:0),53+y0,15+(air?2:0),1,'#ff7fc8');R(g,32,44+y0,1,1,C.gold);R(g,32,48+y0,1,1,C.gold);R(g,28,39+y0,9,2,'#ff7fc8');R(g,29,40+y0,7,1,'#e24fb0');
+  // head
+  circ(g,32,29+y0,10,HD);circ(g,32,29+y0,9,HR);R(g,25,24+y0,6,2,HL);R(g,27,22+y0,6,1,HH);
+  circ(g,35,32+y0,7,SKN);R(g,29,34+y0,2,3,SKS);
+  // bangs
+  for(const [x,h] of [[29,4],[30,5],[31,6],[32,4],[33,5],[34,3],[35,4],[36,5],[37,3],[38,4],[39,2],[40,3]])R(g,x,23+y0,1,h,x%3?HR:HL);R(g,30,23+y0,10,1,HL);R(g,33,24+y0,3,1,HH);
+  R(g,40,26+y0,2,9,HR);R(g,41,27+y0,1,7,HD);R(g,40,35+y0,2,1,HD);
+  const eh=c.state==='down'?1:c.blink>0?1:3;for(const ex of [32,37]){if(eh===3){R(g,ex,30+y0,2,4,'#2a160e');R(g,ex,32+y0,2,2,C.amber);R(m,ex,32+y0,2,1,'rgba(255,200,97,.8)');R(g,ex,30+y0,1,1,'#ffffff')}else R(g,ex,32+y0,2,1,'#2a160e')}
+  R(g,31,35+y0,2,1,'#ff9ccf');R(g,38,35+y0,2,1,'#ff9ccf');R(g,35,36+y0,2,1,'#c0566a');
   const hx=38,hy=45+y0;R(g,35,42+y0,3,3,'#3d2a58');R(g,hx-1,hy-1,3,3,'#f6dce9');let lx2,ly2;
   if(tw>=0){const a=-1.57+tw*TAU*1.15;lx2=32+Math.cos(a)*18;ly2=38+Math.sin(a)*10;line(g,hx,hy,lx2,ly2,'#8a6a3a')}
   else{const top=c.cast||c.pose>0||c.ch>0?[36,6]:[41,17+y0];line(g,hx,hy,top[0],top[1],'#8a6a3a');R(g,top[0],top[1]-1,1,1,C.gold);R(g,top[0]+1,top[1]-2,2,1,C.gold);R(g,top[0]+3,top[1]-1,1,2,C.gold);
