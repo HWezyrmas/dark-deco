@@ -123,7 +123,7 @@ function cd2Max(c){return CL[c.cls].cd2}
 
 /* ================= characters ================= */
 const S=64,FX=32,FY=56;
-function mkChar(idx,cls,x,y){const D=CL[cls],SZ=cls==='lamp'&&window.DD_LAMP?S*2:S;const c={idx,cls,x,y,tx:x,ty:y,px:x,py:y,vx:0,vy:0,f:1,walk:0,moving:false,t:rnd()*10,atk:0,atkDur:.3,adir:0,heavy:false,swing:0,struck:false,flung:false,
+function mkChar(idx,cls,x,y){const D=CL[cls],SZ=S;const c={idx,cls,x,y,tx:x,ty:y,px:x,py:y,vx:0,vy:0,f:1,walk:0,moving:false,t:rnd()*10,atk:0,atkDur:.3,adir:0,heavy:false,swing:0,struck:false,flung:false,
   dash:0,dx:0,dy:0,mx:1,my:0,sq:0,cd1:0,cd2:0,hit:0,inv:0,pow:0,cast:null,pose:0,blink:0,sw:0,swv:0,lantern:[44,22],hitSet:null,
   hp:D.hp,max:D.hp,state:'ok',down:0,rev:0,out:0,weapons:cls==='warden'?[{id:'cleave',lv:1,cd:0},{id:'whirl',lv:1,cd:0}]:[{id:D.start,lv:1,cd:0}],rage:0,rT:0,enr:0,ww:0,bs:0,z:0,leap:null,leapT:0,mods:new Set(),st:{dmg:1,spd:1,cdr:0,mag:1,hpm:1},fireT:0,
   spr:mk(SZ,SZ),sem:mk(SZ,SZ),fin:mk(SZ,SZ),tint:mk(SZ,SZ),ol:mk(SZ,SZ)};c.g=c.spr.getContext('2d');c.m=c.sem.getContext('2d');return c}
@@ -855,6 +855,8 @@ function drawLamp(c){const g=c.g,m=c.m;g.clearRect(0,0,S,S);m.clearRect(0,0,S,S)
   R(g,28,37+y0,9,2,WH);R(g,28,38+y0,2,1,WHD);R(g,35,38+y0,2,1,WHD);
   R(g,30,38+y0,2,2,PK);R(g,34,38+y0,2,2,PK);R(m,30,38+y0,6,2,'rgba(255,79,154,.5)');R(g,32,38+y0,2,2,PKD);R(g,31,40+y0,1,2,PK);R(g,34,40+y0,1,2,PK);
   R(g,26,43+y0,13,2,'#3a2030');R(g,31,43+y0,3,2,GO);R(g,32,43+y0,1,1,'#fff1c4');R(g,24,43+y0,3,2,PK);R(g,23,45+y0,2,2,PKD);
+  const useArt=LAMP&&LIMG.complete&&LIMG.naturalWidth;c.hiHead=!!useArt;
+  if(!useArt){
   // head: hair mass, face, bangs
   circ(g,32,28+y0,11,HD);circ(g,32,28+y0,10,HR);R(g,24,22+y0,6,2,HL);R(g,26,20+y0,7,1,HH);R(g,23,26+y0,2,6,HL);for(const [x,y] of [[22,27],[22,28],[22,29],[23,24],[24,22],[25,21],[27,19]]){R(g,x,y+y0,1,1,NEON);R(m,x,y+y0,1,1,'rgba(255,79,154,.5)')}
   circ(g,35,31+y0,7,SK);R(g,36,37+y0,4,1,SK);R(g,29,33+y0,2,3,SKS);circ(g,29,31+y0,2,SK);R(g,29,31+y0,1,1,SKS);
@@ -868,6 +870,7 @@ function drawLamp(c){const g=c.g,m=c.m;g.clearRect(0,0,S,S);m.clearRect(0,0,S,S)
   const eh=c.state==='down'?1:c.blink>0?1:4;
   for(const ex of [31,36]){if(eh===4&&ex===36&&c.wink>0){R(g,ex,31+y0,3,1,'#1c0c08');R(g,ex-1,30+y0,1,1,'#1c0c08');R(g,ex+3,30+y0,1,1,'#1c0c08')}else if(eh===4){R(g,ex,29+y0,3,4,'#1c0c08');R(g,ex,31+y0,3,2,'#c06a1c');R(g,ex+1,32+y0,1,1,'#ffc060');R(g,ex,29+y0,1,2,'#ffffff');R(g,ex+2,31+y0,1,1,'#fff6d8');R(g,ex-1,30+y0,1,1,'#1c0c08');R(m,ex,32+y0,3,1,'rgba(255,190,90,.55)')}else{R(g,ex,31+y0,3,1,'#2a160e')}}
   R(g,30,34+y0,2,1,'#ff9cb8');R(g,38,34+y0,2,1,'#ff9cb8');R(g,35,35+y0,3,1,'#7a2a34');R(g,36,36+y0,1,1,'#ff7a9a');R(g,34,34+y0,1,1,SKS);
+  }
   // front arm, staff, lantern
   const hx=39,hy=45+y0;circ(g,39,39+y0,3,LV);R(g,38,37+y0,2,1,LVL);R(g,41,40+y0,1,2,LVD);R(g,38,42+y0,3,1,WH);R(g,38,43+y0,2,2,SK);let lx2,ly2;
   if(tw>=0){const a=-1.57+tw*TAU*1.15;lx2=32+Math.cos(a)*18;ly2=38+Math.sin(a)*10;line(g,hx,hy,lx2,ly2,'#5a3420');line(g,hx+1,hy,lx2+1,ly2,'#3a2014')}
@@ -966,13 +969,18 @@ function drawEnemy(e){const x=Math.round(e.x+ox)+(e.hit>0.04?(Math.floor(tAll*60
   if(kind===1||kind===4){const bw=kind===4?36:24,p=Math.max(0,e.hp/e.max),top=yb-(kind===4?38:34);lg.fillStyle='#0a0812';lg.fillRect(x-bw/2-1,top,bw+2,3);lg.fillStyle=C.red;lg.fillRect(x-bw/2,top+1,Math.round(bw*p),1);eg.fillStyle=C.red;eg.fillRect(x-bw/2,top+1,Math.round(bw*p),1)}
   if(kind===2&&e.st===1){const lock=e.stt<=.25;eg.globalAlpha=lock?.95:.45;eg.strokeStyle=C.red;if(!lock)eg.setLineDash([4,4]);eg.beginPath();eg.moveTo(x,yb-9);eg.lineTo(x+e.ax*240,yb-9+e.ay*190);eg.stroke();eg.setLineDash([]);eg.globalAlpha=1}}
 let hiQ=[];
+function queueHead(c,x,y,F,sx,sy,al,rot){if(!c.hc)c.hc=mk(S*2,S*2);const h=c.hc.getContext('2d');h.clearRect(0,0,S*2,S*2);
+  const hop=lampHop(c),p=LAMP.head,r=p.r,hx=69,hy=76+hop.y0*2,hb=Math.sin(c.t*2.2)*.03;h.save();h.translate(hx,hy);h.rotate(hb);h.drawImage(LIMG,r[0],r[1],r[2],r[3],-Math.round(p.pv[0]),-Math.round(p.pv[1]),r[2],r[3]);
+  const lids=(c.blink>0||c.state==='down')?[LAMP.eyeL,LAMP.eyeR]:c.wink>0?[LAMP.eyeR]:[];for(const e of lids){const ex=e[0]-p.pv[0],ey=e[1]-p.pv[1];h.fillStyle=LAMP.skin;h.fillRect(Math.round(ex-3),Math.round(ey-3),6,6);h.fillStyle='#3a1a10';h.fillRect(Math.round(ex-3),Math.round(ey+1),6,1)}
+  h.restore();if(c.hit>0){h.globalCompositeOperation='source-atop';h.fillStyle='rgba(255,255,255,.85)';h.fillRect(0,0,S*2,S*2);h.globalCompositeOperation='source-over'}
+  hiQ.push([c.hc,x,y,F,sx,sy,al,rot]);hiQ.ys=c.y}
 function hblit(c,img,x,y,f,sx=1,sy=1,al=1,rot=0){if(c.spr.width<=S){if(img===c.fin)c._fb=[x,y,f,sx,sy,al,rot,tAll];return blit(lg,img,x,y,f,sx,sy,al,rot)}c.snaps=c.snaps||[];const i=c.snapN++;let s=c.snaps[i];if(!s){s=mk(img.width,img.height);c.snaps[i]=s}const sg=s.getContext('2d');sg.clearRect(0,0,s.width,s.height);sg.drawImage(img,0,0);hiQ.push([s,x,y,f,sx,sy,al,rot]);hiQ.ys=c.y}
 function drawChar(c){c.snapN=0;if(c.state==='out')return;if(c.cls==='warden')drawWarden(c);else if(c.spr.width>S&&LIMG.complete&&LIMG.naturalWidth)drawLampArt(c);else drawLamp(c);
   let sx=1,sy=1,rot=0;if(c.dash>0){sx=1.3;sy=.82}else if(c.sq){sx=1-c.sq;sy=1+c.sq}if(c.cast){const k=clamp(c.cast.t/c.cast.dur,0,1);sx=1+k*.12;sy=1-k*.12}
   const x=c.x+ox,y0=c.y+oy,zz=Math.round(c.z||0),y=y0-zz,F=(c.ww>0||c.bs>0||c.twl>0)?(Math.floor(tAll*(c.bs>0?18:14))%2?1:-1):c.f;if(zz>2){sx*=1.1;sy*=1.1}lg.fillStyle='rgba(0,0,0,.45)';lg.beginPath();lg.ellipse(Math.round(x),Math.round(y0),(c.cls==='warden'?10:8)*(1-zz/60),3,0,0,TAU);lg.fill();if(c.state==='ok'){eg.globalAlpha=c.idx===ME?.85:.5;eg.strokeStyle=CL[c.cls].color;eg.beginPath();eg.ellipse(Math.round(x),Math.round(y0)+1,c.cls==='warden'?13:11,5,0,0,TAU);eg.stroke();eg.globalAlpha=1}
   if(c.state==='down'){rot=c.f*1.3;sx=1;sy=1}
   const inv=c.inv>0&&c.state==='ok'&&Math.floor(tAll*20)%2;
-  const fin=buildFin(c,c.pow>0?C.amber:c.enr>0||c.bs>0?C.red:'#05040a');hblit(c,fin,x,y-(c.state==='down'?4:0),F,sx,sy,c.state==='down'?.7:inv?.55:1,rot);if(c.state!=='down')blit(eg,c.sem,x,y,F,sx,sy);
+  const fin=buildFin(c,c.pow>0?C.amber:c.enr>0||c.bs>0?C.red:'#05040a');if(c.hiHead&&c.cls==='lamp')queueHead(c,x,y-(c.state==='down'?4:0),F,sx,sy,c.state==='down'?.7:inv?.55:1,rot);hblit(c,fin,x,y-(c.state==='down'?4:0),F,sx,sy,c.state==='down'?.7:inv?.55:1,rot);if(c.state!=='down')blit(eg,c.sem,x,y,F,sx,sy);
   if((c.pow>0||c.enr>0||c.bs>0)&&c.state==='ok'){const o=c.ol.getContext('2d');o.clearRect(0,0,c.ol.width,c.ol.width);o.drawImage(fin,0,0);o.globalCompositeOperation='destination-out';o.drawImage(c.spr,0,0);o.globalCompositeOperation='source-over';blit(eg,c.ol,x,y,F,sx,sy,.6+.2*Math.sin(tAll*8))}
   if(c.cast){blit(eg,tintOf(c,c.cls==='warden'?C.cyan:C.amber),x,y,F,sx,sy,clamp(c.cast.t/c.cast.dur,0,1)*.5)}
   if(c.hit>0)hblit(c,tintOf(c,'#ffffff'),x,y,F,sx,sy,.9,rot);
@@ -1070,7 +1078,7 @@ function render(){
   for(const p of PROPS)if(p.k==='pylon')L(p.x,p.y-19,28,p.c===C.cyan?'rgba(79,240,255,A)':'rgba(255,79,216,A)',.15);
   ctx.globalAlpha=1;for(let i=0;i<2;i++){const a=-Math.PI/2+Math.sin(tAll*.3+i*2.1)*.55,bx=(i?.85:.15)*W*DPR,by=H*DPR*1.05,Ln=Math.max(W,H)*1.6*DPR;const g=ctx.createLinearGradient(bx,by,bx+Math.cos(a)*Ln,by+Math.sin(a)*Ln);g.addColorStop(0,'rgba(180,170,255,.09)');g.addColorStop(1,'rgba(180,170,255,0)');ctx.fillStyle=g;ctx.beginPath();ctx.moveTo(bx,by);ctx.lineTo(bx+Math.cos(a-.06)*Ln,by+Math.sin(a-.06)*Ln);ctx.lineTo(bx+Math.cos(a+.06)*Ln,by+Math.sin(a+.06)*Ln);ctx.fill()}
   ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1;
-  if(hiQ.length){ctx.save();ctx.imageSmoothingEnabled=false;ctx.setTransform(sc,0,0,sc,DX,DY);for(const q of hiQ)blit(ctx,...q);for(const o of chars){if(o.spr.width>S||o.state==='out'||!o._fb||o._fb[7]!==tAll||!(o.y>hiQ.ys))continue;const art=chars.find(q=>q.spr.width>S);if(art&&Math.abs(o.x-art.x)<34&&Math.abs(o.y-art.y)<40)blit(ctx,o.fin,...o._fb.slice(0,7))}ctx.restore();hiQ=[]}
+  if(hiQ.length){ctx.save();ctx.imageSmoothingEnabled=false;ctx.setTransform(sc,0,0,sc,DX,DY);for(const q of hiQ)blit(ctx,...q);for(const o of chars){if(o.hiHead||o.state==='out'||!o._fb||o._fb[7]!==tAll||!(o.y>hiQ.ys))continue;const art=chars.find(q=>q.hiHead);if(art&&Math.abs(o.x-art.x)<34&&Math.abs(o.y-art.y)<40)blit(ctx,o.fin,...o._fb.slice(0,7))}ctx.restore();hiQ=[]}
   const me=meC(),lowHp=inGame&&me&&me.state==='ok'&&me.hp/me.max<.3;
   const vg=ctx.createRadialGradient(W*DPR/2,H*DPR/2,Math.min(W,H)*DPR*.35,W*DPR/2,H*DPR/2,Math.max(W,H)*DPR*.75);vg.addColorStop(0,'rgba(5,3,12,0)');vg.addColorStop(1,lowHp?'rgba(90,6,24,'+(.55+.15*Math.sin(tAll*6))+')':'rgba(5,3,12,.6)');ctx.fillStyle=vg;ctx.fillRect(0,0,W*DPR,H*DPR);
   if(inGame&&chars.length>1&&bond<.4){ctx.fillStyle='rgba(18,28,70,'+((.4-bond)*.9)+')';ctx.fillRect(0,0,W*DPR,H*DPR)}
@@ -1079,7 +1087,7 @@ function render(){
     const mate=mateC();if(mate&&mate.state!=='out'){const sx=DX+(mate.x+ox)*sc,sy=DY+(mate.y-14+oy)*sc,m=30*DPR;if(sx<m||sx>W*DPR-m||sy<m*3||sy>H*DPR-m){const cx=clamp(sx,m,W*DPR-m),cy=clamp(sy,m*3,H*DPR-m*2),a=Math.atan2(sy-H*DPR/2,sx-W*DPR/2);ctx.save();ctx.translate(cx,cy);ctx.rotate(a);ctx.fillStyle=mate.state==='down'?C.red:CL[mate.cls].color;ctx.beginPath();ctx.moveTo(12*DPR,0);ctx.lineTo(-6*DPR,-8*DPR);ctx.lineTo(-2*DPR,0);ctx.lineTo(-6*DPR,8*DPR);ctx.closePath();ctx.fill();ctx.restore()}}
     ctx.textAlign='center';ctx.textBaseline='middle';ctx.lineJoin='round';
     if(aimDrag&&aimDrag.thru){const p=mateC();if(p){const x=DX+(p.x+ox)*sc,y=DY+(p.y-70+oy)*sc;ctx.font=Math.round(9*DPR)+'px "Press Start 2P",monospace';ctx.lineWidth=4*DPR;ctx.strokeStyle='#120a22';ctx.strokeText('EMPOWER',x,y);ctx.fillStyle=C.amber;ctx.fillText('EMPOWER',x,y)}}
-    for(const c of chars){if(c.state==='out')continue;const bw=40*DPR,bh=5*DPR,x=DX+(c.x+ox)*sc,y=DY+(c.y-(c.cls==='warden'||c.spr.width>S?54:48)+oy)*sc;const p=clamp(c.hp/c.max,0,1);
+    for(const c of chars){if(c.state==='out')continue;const bw=40*DPR,bh=5*DPR,x=DX+(c.x+ox)*sc,y=DY+(c.y-(c.cls==='warden'||c.hiHead?54:48)+oy)*sc;const p=clamp(c.hp/c.max,0,1);
       ctx.fillStyle='rgba(10,8,22,.85)';ctx.fillRect(x-bw/2-DPR,y-DPR,bw+2*DPR,bh+2*DPR);ctx.fillStyle=c.state==='down'?C.red:p<.3?'#ff6a5a':'#5fe08a';ctx.fillRect(x-bw/2,y,bw*p,bh);
       ctx.font=Math.round(7*DPR)+'px "Press Start 2P",monospace';ctx.lineWidth=3*DPR;ctx.strokeStyle='#120a22';const tx=c.state==='down'?'DOWN':String(Math.ceil(c.hp));ctx.strokeText(tx,x,y-5*DPR);ctx.fillStyle='#ffffff';ctx.fillText(tx,x,y-5*DPR)}
     for(const e of en){if(e.kind<4||e.dead||e.spawn>0)continue;const sx=DX+(e.x+ox)*sc,sy=DY+(e.y-20+oy)*sc,m=34*DPR;if(sx>m&&sx<W*DPR-m&&sy>m*3&&sy<H*DPR-m)continue;const cx=clamp(sx,m,W*DPR-m),cy=clamp(sy,m*3,H*DPR-m*2),a=Math.atan2(sy-H*DPR/2,sx-W*DPR/2),k=1+.15*Math.sin(tAll*8);
