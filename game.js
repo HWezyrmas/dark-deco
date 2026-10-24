@@ -123,7 +123,7 @@ function cd2Max(c){return CL[c.cls].cd2}
 
 /* ================= characters ================= */
 const S=64,FX=32,FY=56;
-function mkChar(idx,cls,x,y){const D=CL[cls],SZ=S;const c={idx,cls,x,y,tx:x,ty:y,px:x,py:y,vx:0,vy:0,f:1,walk:0,moving:false,t:rnd()*10,atk:0,atkDur:.3,adir:0,heavy:false,swing:0,struck:false,flung:false,
+function mkChar(idx,cls,x,y){const D=CL[cls],SZ=cls==='lamp'&&window.DD_LAMP?S*2:S;const c={idx,cls,x,y,tx:x,ty:y,px:x,py:y,vx:0,vy:0,f:1,walk:0,moving:false,t:rnd()*10,atk:0,atkDur:.3,adir:0,heavy:false,swing:0,struck:false,flung:false,
   dash:0,dx:0,dy:0,mx:1,my:0,sq:0,cd1:0,cd2:0,hit:0,inv:0,pow:0,cast:null,pose:0,blink:0,sw:0,swv:0,lantern:[44,22],hitSet:null,
   hp:D.hp,max:D.hp,state:'ok',down:0,rev:0,out:0,weapons:cls==='warden'?[{id:'cleave',lv:1,cd:0},{id:'whirl',lv:1,cd:0}]:[{id:D.start,lv:1,cd:0}],rage:0,rT:0,enr:0,ww:0,bs:0,z:0,leap:null,leapT:0,mods:new Set(),st:{dmg:1,spd:1,cdr:0,mag:1,hpm:1},fireT:0,
   spr:mk(SZ,SZ),sem:mk(SZ,SZ),fin:mk(SZ,SZ),tint:mk(SZ,SZ),ol:mk(SZ,SZ)};c.g=c.spr.getContext('2d');c.m=c.sem.getContext('2d');return c}
@@ -809,10 +809,10 @@ function updHair(c,dt){const hop=lampHop(c),ax=26,ay=26+hop.y0;
   const mvx=(c.x-(c.hpx??c.x))*c.f;c.hpx=c.x;dt=Math.min(dt,.05);const H=c.hair;H[0].x=ax;H[0].y=ay;H[0].px=ax;H[0].py=ay;
   for(let i=1;i<H.length;i++){const p=H[i],vx=(p.x-p.px)*.86,vy=(p.y-p.py)*.86;p.px=p.x;p.py=p.y;p.x+=vx-mvx*.11*(i/H.length)-60*dt*dt;p.y+=vy+900*dt*dt}
   for(let k=0;k<3;k++)for(let i=1;i<H.length;i++){const a=H[i-1],p=H[i],dx=p.x-a.x,dy=p.y-a.y,d=Math.hypot(dx,dy)||1,L=3;const f=(d-L)/d;p.x-=dx*f;p.y-=dy*f;if(p.x>a.x+2.5)p.x=a.x+2.5;if(p.y<a.y-2.5)p.y=a.y-2.5;if(p.y>55)p.y=55}}
-const LAMP=window.DD_LAMP||null,LIMG=new Image();if(LAMP)LIMG.src=LAMP.img;
+const LAMP=window.DD_LAMP||null,LIMG=new Image(),LEM=new Image();if(LAMP){LIMG.src=LAMP.img;LEM.src=LAMP.em}
 function drawLampArt(c){const g=c.g,m=c.m,Z=c.spr.width;g.clearRect(0,0,Z,Z);m.clearRect(0,0,Z,Z);
   const mv=c.moving,hop=lampHop(c),y0=hop.y0*2,tw=c.atk>0?1-c.atk/c.atkDur:-1,air=hop.air>.35,ff=mv?(hop.ph<.5?1:-1):0;
-  const D=(n,x,y,rot,ctx)=>{const p=LAMP[n],r=p.r;ctx=ctx||g;ctx.save();ctx.translate(Math.round(x),Math.round(y));if(rot)ctx.rotate(rot);ctx.drawImage(LIMG,r[0],r[1],r[2],r[3],-Math.round(p.pv[0]),-Math.round(p.pv[1]),r[2],r[3]);ctx.restore()};
+  const ops=[],D=(n,x,y,rot,ctx,img)=>{const p=LAMP[n],r=p.r;if(!ctx)ops.push([n,x,y,rot]);ctx=ctx||g;ctx.save();ctx.translate(Math.round(x),Math.round(y));if(rot)ctx.rotate(rot);ctx.drawImage(img||LIMG,r[0],r[1],r[2],r[3],-Math.round(p.pv[0]),-Math.round(p.pv[1]),r[2],r[3]);ctx.restore()};
   const A=n=>LAMP[n].at;
   if(!c.hair)updHair(c,0);const H=c.hair,ang=(a,b)=>clamp(Math.atan2(b.y-a.y,b.x-a.x)-Math.PI/2,-1.3,1.3);
   const hA=ang(H[0],H[3]),hB=ang(H[3],H[7]),La=A('hairB')[1]-A('hairA')[1],ax=A('hairA')[0],ay=A('hairA')[1]+y0;
@@ -822,14 +822,15 @@ function drawLampArt(c){const g=c.g,m=c.m,Z=c.spr.width;g.clearRect(0,0,Z,Z);m.c
   D('leg_b',A('leg_b')[0]-ff*2,A('leg_b')[1]+y0+(air?-2:0));D('leg_a',A('leg_a')[0]+ff*2,A('leg_a')[1]+y0+(air?-4:0));
   D('body',A('body')[0],A('body')[1]+y0);
   const hb=Math.sin(c.t*2.2)*.03;D('head',A('head')[0],A('head')[1]+y0,hb);
-  if(c.blink>0||c.state==='down'){const p=LAMP.head,hx=A('head')[0]-p.pv[0],hy=A('head')[1]+y0-p.pv[1];for(const e of [LAMP.eyeL,LAMP.eyeR]){g.fillStyle=LAMP.skin;g.fillRect(Math.round(hx+e[0]-3),Math.round(hy+e[1]-3),6,6);g.fillStyle='#3a1a10';g.fillRect(Math.round(hx+e[0]-3),Math.round(hy+e[1]+1),6,1)}}
+  if(c.blink>0||c.state==='down'||c.wink>0){const p=LAMP.head,hx=A('head')[0]-p.pv[0],hy=A('head')[1]+y0-p.pv[1];for(const e of (c.blink>0||c.state==='down')?[LAMP.eyeL,LAMP.eyeR]:[LAMP.eyeR]){g.fillStyle=LAMP.skin;g.fillRect(Math.round(hx+e[0]-3),Math.round(hy+e[1]-3),6,6);g.fillStyle='#3a1a10';g.fillRect(Math.round(hx+e[0]-3),Math.round(hy+e[1]+1),6,1)}}
   // staff + lantern
   let px=A('pole')[0]-4,py=A('pole')[1]+y0-2,pr=clamp(c.sw,-.8,.8)*.08;
   if(tw>=0){pr=tw*TAU*1.15}else if(c.cast||c.pose>0||c.ch>0){py-=12;pr=-.25}
   const hk=[A('lantern')[0]-A('pole')[0],A('lantern')[1]-A('pole')[1]],cr=Math.cos(pr),sr=Math.sin(pr),lx=px+hk[0]*cr-hk[1]*sr,ly=py+hk[0]*sr+hk[1]*cr,lr=tw>=0?pr:clamp(c.sw,-.8,.8)*.7;
   D('pole',px,py,pr);D('lantern',lx,ly,lr);m.globalAlpha=.75;D('lantern',lx,ly,lr,m);m.globalAlpha=1;
   const lc=[lx-Math.sin(lr)*18,ly+Math.cos(lr)*18];c.lantern=[lc[0]/2,lc[1]/2];
-  D('arm_a',A('arm_a')[0],A('arm_a')[1]+y0,tw>=0?-.4:(c.cast||c.pose>0||c.ch>0)?-.35:swing*.4)}
+  D('arm_a',A('arm_a')[0],A('arm_a')[1]+y0,tw>=0?-.4:(c.cast||c.pose>0||c.ch>0)?-.35:swing*.4);
+  if(LEM.complete&&LEM.naturalWidth){m.globalAlpha=.7;for(const o of ops)D(o[0],o[1],o[2],o[3],m,LEM);m.globalAlpha=1}}
 function drawLamp(c){const g=c.g,m=c.m;g.clearRect(0,0,S,S);m.clearRect(0,0,S,S);
   const mv=c.moving,hop=lampHop(c),y0=hop.y0,tw=c.atk>0?1-c.atk/c.atkDur:-1;
   const HR='#5a2e1a',HD='#2a120c',HL='#7a4224',HH='#a0603a',SK='#e6ae90',SKS='#a8705e',LV='#4a2c6e',LVD='#33204e',LVK='#1e1232',LVL='#6a4896',PK='#ff4f9a',PKD='#9a2060',WH='#c9bdd6',WHD='#7e7290',NEON='#ff6fb4',GO=C.gold,GD=C.goldD;
@@ -965,7 +966,7 @@ function drawEnemy(e){const x=Math.round(e.x+ox)+(e.hit>0.04?(Math.floor(tAll*60
   if(kind===1||kind===4){const bw=kind===4?36:24,p=Math.max(0,e.hp/e.max),top=yb-(kind===4?38:34);lg.fillStyle='#0a0812';lg.fillRect(x-bw/2-1,top,bw+2,3);lg.fillStyle=C.red;lg.fillRect(x-bw/2,top+1,Math.round(bw*p),1);eg.fillStyle=C.red;eg.fillRect(x-bw/2,top+1,Math.round(bw*p),1)}
   if(kind===2&&e.st===1){const lock=e.stt<=.25;eg.globalAlpha=lock?.95:.45;eg.strokeStyle=C.red;if(!lock)eg.setLineDash([4,4]);eg.beginPath();eg.moveTo(x,yb-9);eg.lineTo(x+e.ax*240,yb-9+e.ay*190);eg.stroke();eg.setLineDash([]);eg.globalAlpha=1}}
 let hiQ=[];
-function hblit(c,img,x,y,f,sx=1,sy=1,al=1,rot=0){if(c.spr.width<=S)return blit(lg,img,x,y,f,sx,sy,al,rot);c.snaps=c.snaps||[];const i=c.snapN++;let s=c.snaps[i];if(!s){s=mk(img.width,img.height);c.snaps[i]=s}const sg=s.getContext('2d');sg.clearRect(0,0,s.width,s.height);sg.drawImage(img,0,0);hiQ.push([s,x,y,f,sx,sy,al,rot])}
+function hblit(c,img,x,y,f,sx=1,sy=1,al=1,rot=0){if(c.spr.width<=S){if(img===c.fin)c._fb=[x,y,f,sx,sy,al,rot,tAll];return blit(lg,img,x,y,f,sx,sy,al,rot)}c.snaps=c.snaps||[];const i=c.snapN++;let s=c.snaps[i];if(!s){s=mk(img.width,img.height);c.snaps[i]=s}const sg=s.getContext('2d');sg.clearRect(0,0,s.width,s.height);sg.drawImage(img,0,0);hiQ.push([s,x,y,f,sx,sy,al,rot]);hiQ.ys=c.y}
 function drawChar(c){c.snapN=0;if(c.state==='out')return;if(c.cls==='warden')drawWarden(c);else if(c.spr.width>S&&LIMG.complete&&LIMG.naturalWidth)drawLampArt(c);else drawLamp(c);
   let sx=1,sy=1,rot=0;if(c.dash>0){sx=1.3;sy=.82}else if(c.sq){sx=1-c.sq;sy=1+c.sq}if(c.cast){const k=clamp(c.cast.t/c.cast.dur,0,1);sx=1+k*.12;sy=1-k*.12}
   const x=c.x+ox,y0=c.y+oy,zz=Math.round(c.z||0),y=y0-zz,F=(c.ww>0||c.bs>0||c.twl>0)?(Math.floor(tAll*(c.bs>0?18:14))%2?1:-1):c.f;if(zz>2){sx*=1.1;sy*=1.1}lg.fillStyle='rgba(0,0,0,.45)';lg.beginPath();lg.ellipse(Math.round(x),Math.round(y0),(c.cls==='warden'?10:8)*(1-zz/60),3,0,0,TAU);lg.fill();if(c.state==='ok'){eg.globalAlpha=c.idx===ME?.85:.5;eg.strokeStyle=CL[c.cls].color;eg.beginPath();eg.ellipse(Math.round(x),Math.round(y0)+1,c.cls==='warden'?13:11,5,0,0,TAU);eg.stroke();eg.globalAlpha=1}
@@ -1069,7 +1070,7 @@ function render(){
   for(const p of PROPS)if(p.k==='pylon')L(p.x,p.y-19,28,p.c===C.cyan?'rgba(79,240,255,A)':'rgba(255,79,216,A)',.15);
   ctx.globalAlpha=1;for(let i=0;i<2;i++){const a=-Math.PI/2+Math.sin(tAll*.3+i*2.1)*.55,bx=(i?.85:.15)*W*DPR,by=H*DPR*1.05,Ln=Math.max(W,H)*1.6*DPR;const g=ctx.createLinearGradient(bx,by,bx+Math.cos(a)*Ln,by+Math.sin(a)*Ln);g.addColorStop(0,'rgba(180,170,255,.09)');g.addColorStop(1,'rgba(180,170,255,0)');ctx.fillStyle=g;ctx.beginPath();ctx.moveTo(bx,by);ctx.lineTo(bx+Math.cos(a-.06)*Ln,by+Math.sin(a-.06)*Ln);ctx.lineTo(bx+Math.cos(a+.06)*Ln,by+Math.sin(a+.06)*Ln);ctx.fill()}
   ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1;
-  if(hiQ.length){ctx.save();ctx.imageSmoothingEnabled=false;ctx.setTransform(sc,0,0,sc,DX,DY);for(const q of hiQ)blit(ctx,...q);ctx.restore();hiQ=[]}
+  if(hiQ.length){ctx.save();ctx.imageSmoothingEnabled=false;ctx.setTransform(sc,0,0,sc,DX,DY);for(const q of hiQ)blit(ctx,...q);for(const o of chars){if(o.spr.width>S||o.state==='out'||!o._fb||o._fb[7]!==tAll||!(o.y>hiQ.ys))continue;const art=chars.find(q=>q.spr.width>S);if(art&&Math.abs(o.x-art.x)<34&&Math.abs(o.y-art.y)<40)blit(ctx,o.fin,...o._fb.slice(0,7))}ctx.restore();hiQ=[]}
   const me=meC(),lowHp=inGame&&me&&me.state==='ok'&&me.hp/me.max<.3;
   const vg=ctx.createRadialGradient(W*DPR/2,H*DPR/2,Math.min(W,H)*DPR*.35,W*DPR/2,H*DPR/2,Math.max(W,H)*DPR*.75);vg.addColorStop(0,'rgba(5,3,12,0)');vg.addColorStop(1,lowHp?'rgba(90,6,24,'+(.55+.15*Math.sin(tAll*6))+')':'rgba(5,3,12,.6)');ctx.fillStyle=vg;ctx.fillRect(0,0,W*DPR,H*DPR);
   if(inGame&&chars.length>1&&bond<.4){ctx.fillStyle='rgba(18,28,70,'+((.4-bond)*.9)+')';ctx.fillRect(0,0,W*DPR,H*DPR)}
