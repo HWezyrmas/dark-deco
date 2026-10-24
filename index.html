@@ -120,22 +120,67 @@ input#code{flex:1;min-width:0;font:400 22px var(--display);letter-spacing:.4em;t
 .keys{display:grid;grid-template-columns:auto auto;gap:5px 14px;font-size:12px;text-align:left;color:var(--fog)}
 .keys b{color:var(--moon);font-weight:600}
 body.touch .keys.kb{display:none} .keys.tch{display:none} body.touch .keys.tch{display:grid}
-/* level-up */
+/* level-up ceremony */
 #sLevel,#sEnd{background:rgba(10,8,22,.9)}
-#sLevel .card{max-width:760px}
-.offers{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;width:100%}
-.pick{background:linear-gradient(180deg,#1c1834,#141127);border:1px solid var(--line);color:var(--moon);padding:14px 12px 12px;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:6px;font-family:var(--ui);min-width:0;position:relative}
-.pick:hover{border-color:var(--moon)}
-.pick .tag{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--fog)}
-.pick b{font-family:var(--display);font-weight:400;font-size:20px;letter-spacing:.06em;line-height:1.1}
-.pick span.d{font-size:12px;line-height:1.45;color:#b9b2d6;font-weight:300}
-.pick.t-new b{color:var(--lamp)} .pick.t-up b{color:var(--moon)} .pick.t-evo b{color:var(--gold)} .pick.t-mod b{color:var(--warden)} .pick.t-pair b{color:var(--neon)} .pick.t-stat b{color:var(--heal)}
-.pick.t-evo{border-color:var(--gold);box-shadow:0 0 18px rgba(214,168,78,.25)}
-.pick.t-pair{border-color:var(--neon);box-shadow:0 0 18px rgba(255,79,216,.22)}
-.pick.chosen{border-color:var(--lamp);background:rgba(255,200,97,.08)}
-.offers.locked .pick:not(.chosen){opacity:.35}
-#mateChoice{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--neon);min-height:1.4em}
-@media (max-width:640px){.offers{grid-template-columns:1fr}.pick{padding:11px 12px 10px}.pick b{font-size:18px}}
+#sLevel{background:rgba(6,4,14,0);transition:background .35s}
+#sLevel.dim{background:rgba(6,4,14,.82)}
+.lvwrap{width:100%;max-width:560px;display:flex;flex-direction:column;align-items:center;gap:10px}
+.lvban{position:relative;padding:10px 46px 8px;font-family:var(--display);font-size:30px;letter-spacing:.12em;color:#1a1024;background:linear-gradient(180deg,#ffe9a8,#f2cf7a 55%,#c9973e);clip-path:polygon(0 0,100% 0,94% 50%,100% 100%,0 100%,6% 50%);transform:translateY(-140px);opacity:0;box-shadow:0 0 30px rgba(242,207,122,.5)}
+#sLevel.go .lvban{animation:ban .45s cubic-bezier(.2,1.6,.4,1) forwards}
+@keyframes ban{0%{transform:translateY(-140px);opacity:0}100%{transform:translateY(0);opacity:1}}
+.lvban.muse{background:linear-gradient(180deg,#ffe6f4,#ff9ad5 55%,#c45a9a)}
+.lvban.broker{background:linear-gradient(180deg,#ffb0b8,#e5384f 55%,#8a1428);color:#fff}
+.lvsub{font-size:13px;letter-spacing:.08em;color:var(--moon);opacity:0;transition:opacity .3s .25s;text-align:center;text-wrap:balance}
+.lvsub b{color:var(--danger);font-weight:600}
+#sLevel.go .lvsub{opacity:1}
+.offers{display:flex;justify-content:center;gap:10px;width:100%;margin-top:8px}
+.pick{--rc:#3fd28a;position:relative;flex:1 1 0;max-width:170px;min-width:0;display:flex;flex-direction:column;align-items:center;gap:6px;padding:26px 8px 12px;border:2px solid var(--rc);border-radius:10px 10px 22px 22px;background:linear-gradient(180deg,color-mix(in srgb,var(--rc) 30%,#141127),#141127 60%);color:var(--moon);cursor:pointer;font-family:var(--ui);text-align:center;box-shadow:0 0 22px color-mix(in srgb,var(--rc) 45%,transparent);opacity:0;transform:translateY(30px) scale(.9);transition:transform .25s cubic-bezier(.2,1.6,.4,1),opacity .2s,filter .2s}
+.pick .pillar{position:absolute;left:12%;right:12%;top:-60vh;bottom:-20vh;background:linear-gradient(180deg,transparent,color-mix(in srgb,var(--rc) 70%,transparent) 40%,color-mix(in srgb,var(--rc) 70%,transparent) 70%,transparent);filter:blur(6px);opacity:0;pointer-events:none;z-index:-1}
+.pick.show{opacity:1;transform:none}
+.pick.show .pillar{animation:pil .9s ease-out forwards}
+@keyframes pil{0%{opacity:0;transform:scaleY(.2)}30%{opacity:1;transform:scaleY(1)}100%{opacity:.18;transform:scaleY(1)}}
+.pick .rar{position:absolute;top:-11px;left:50%;transform:translateX(-50%);font:600 9px var(--ui);letter-spacing:.2em;text-transform:uppercase;color:#120d22;background:var(--rc);padding:4px 9px 3px;border-radius:3px;white-space:nowrap}
+.pick .nm{font-family:var(--display);font-size:17px;letter-spacing:.04em;line-height:1.1;color:#fff;min-height:2.2em;display:flex;align-items:center;text-wrap:balance;opacity:0;transition:opacity .2s}
+.pick .ic{width:72px;height:72px;border-radius:10px;background:#fff8e8;display:grid;place-items:center;box-shadow:inset 0 0 0 3px var(--rc),0 4px 0 rgba(0,0,0,.35)}
+.pick .ic img{width:64px;height:64px;image-rendering:pixelated}
+.pick.rolling .ic img{filter:blur(1px) brightness(1.3)}
+.pick.landed .ic{animation:land .3s cubic-bezier(.2,1.8,.4,1)}
+@keyframes land{0%{transform:scale(1.35)}100%{transform:scale(1)}}
+.pick .d{font-size:11.5px;line-height:1.4;color:#d8d2ee;font-weight:400;opacity:0;transition:opacity .25s;text-wrap:pretty}
+.pick .cost{font-size:11px;color:#ff9aaa;font-weight:600}
+.pick.open .nm,.pick.open .d{opacity:1}
+.pick:hover{filter:brightness(1.12)}
+.pick.r-common{--rc:#3fd28a}.pick.r-rare{--rc:#5aa8ff}.pick.r-epic{--rc:#c779ff}.pick.r-legend{--rc:#ffcf4a}.pick.r-gift{--rc:#ff9ad5}.pick.r-pact{--rc:#e5384f}.pick.r-none{--rc:#6a6488}
+.pick.chosen{transform:scale(1.06);filter:brightness(1.2)}
+.offers.locked .pick:not(.chosen){opacity:.3}
+#mateChoice{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--neon);min-height:1.4em;margin-top:6px}
+.lvfoot{display:flex;justify-content:flex-end;width:100%}
+@media (max-width:420px){.offers{gap:7px}.pick{padding:24px 5px 10px;border-radius:8px 8px 18px 18px}.pick .ic{width:58px;height:58px}.pick .ic img{width:50px;height:50px}.pick .nm{font-size:14px}.pick .d{font-size:10.5px}.lvban{font-size:24px;padding:9px 34px 7px}}
+/* learned skills */
+#sSkills{background:rgba(10,8,22,.92)}
+.sk{width:100%;max-width:520px;display:flex;flex-direction:column;gap:14px}
+.skh{display:flex;justify-content:space-between;align-items:center}
+.skh h2{font-size:26px}
+.skgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.ski{display:flex;gap:8px;align-items:center;padding:8px;border:1px solid var(--line);border-left:3px solid var(--wc,#6a6488);background:rgba(255,255,255,.03);min-width:0}
+.ski img{width:40px;height:40px;image-rendering:pixelated;background:#fff8e8;border-radius:6px;flex:0 0 auto}
+.ski .t{display:flex;flex-direction:column;gap:3px;min-width:0}
+.ski b{font-family:var(--display);font-weight:400;font-size:15px;color:#fff;line-height:1.1}
+.ski span{font-size:11px;color:var(--fog);line-height:1.3}
+.sklab{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--gold)}
+/* danger + tracker */
+#danger{position:fixed;left:0;right:0;top:36%;height:110px;pointer-events:none;opacity:0;transition:opacity .2s;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
+#danger.on{opacity:1}
+#danger .band{white-space:nowrap;font:700 13px var(--ui);letter-spacing:.2em;color:#ff5a6e;background:rgba(80,0,16,.75);padding:3px 0;animation:scroll 1.6s linear infinite}
+#danger .band.b2{animation-direction:reverse}
+@keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+#danger .big{font-family:var(--display);font-size:46px;letter-spacing:.2em;text-align:center;color:#ff3a52;text-shadow:0 0 18px #ff2a5c,3px 3px 0 #2a0010;padding:6px 0;background:rgba(40,0,10,.55)}
+@media (max-width:520px){.top{flex-wrap:wrap;row-gap:6px}.who{flex:1 1 auto}.mid{order:3;flex:1 0 100%;flex-direction:row;justify-content:center;align-items:center;gap:12px}.hptxt{display:none}.hp{width:86px}.hpname{width:auto;max-width:118px;font-size:16px}.tr{flex-direction:row;flex-wrap:wrap;max-width:150px}.hb{padding:6px 7px 4px;font-size:9px;letter-spacing:.12em}#kit{max-width:none}#bondW i{width:70px}#track{width:80px}}
+#track{position:relative;width:110px;height:4px;background:#1a1530;border:1px solid #3a3456;margin-top:2px}
+#track b{position:absolute;left:0;top:0;bottom:0;background:#8b84ad}
+#track i{position:absolute;top:-4px;width:8px;height:8px;margin-left:-4px;transform:rotate(45deg);background:#1a1530;border:1px solid #ff5a6e}
+#track i.boss{width:10px;height:10px;top:-5px;margin-left:-5px;background:#5a0f22;border-color:#ff2a5c}
+#track i.done{background:#ff5a6e}
 @media (max-width:360px){.classes{grid-template-columns:1fr}}
 .stats{display:grid;grid-template-columns:auto auto;gap:6px 18px;font-size:13px;text-align:left}
 .stats b{font-family:var(--pix);font-size:10px;color:var(--lamp);text-align:right}
@@ -154,8 +199,8 @@ body.touch .keys.kb{display:none} .keys.tch{display:none} body.touch .keys.tch{d
         <div id="kit"></div>
         <span id="net"></span>
       </div>
-      <div class="mid"><span id="timer">00:00</span><span id="lvl">LV 1</span><div id="bondW"><span>BOND</span><i><b id="bondF"></b></i></div></div>
-      <div class="tr"><button class="hb" id="mute" aria-pressed="false">Sound</button><button class="hb" id="swap" hidden>Swap</button><button class="hb" id="leave">Leave</button></div>
+      <div class="mid"><span id="timer">00:00</span><span id="lvl">LV 1</span><div id="bondW"><span>BOND</span><i><b id="bondF"></b></i></div><div id="track"><b id="trackF"></b></div></div>
+      <div class="tr"><button class="hb" id="skillsBtn">Skills</button><button class="hb" id="mute" aria-pressed="false">Sound</button><button class="hb" id="swap" hidden>Swap</button><button class="hb" id="leave">Leave</button></div>
     </div>
   </div>
   <div>
@@ -205,13 +250,25 @@ body.touch .keys.kb{display:none} .keys.tch{display:none} body.touch .keys.tch{d
 </div>
 
 <div class="scr" id="sLevel" hidden>
-  <div class="card">
-    <div class="eyebrow" id="lvlEye">Level up</div>
-    <h2 id="lvlTitle">Choose an upgrade</h2>
+  <div class="lvwrap">
+    <div class="lvban" id="lvlBan">Level Up</div>
+    <div class="lvsub" id="lvlSub">Choose a new skill</div>
     <div class="offers" id="offers"></div>
     <div id="mateChoice"></div>
+    <div class="lvfoot"><button class="hb" id="skillsBtn2">Learned skills</button></div>
   </div>
 </div>
+
+<div class="scr" id="sSkills" hidden>
+  <div class="sk">
+    <div class="skh"><h2>Learned skills</h2><button class="hb" id="skillsClose">Close</button></div>
+    <div class="sklab">Attacks</div><div class="skgrid" id="skW"></div>
+    <div class="sklab">Skill changes, stats and pair cards</div><div class="skgrid" id="skM"></div>
+    <p class="small" id="skNote"></p>
+  </div>
+</div>
+
+<div id="danger" aria-hidden="true"><div class="band" id="dBand1"></div><div class="big" id="dBig">DANGER</div><div class="band b2" id="dBand2"></div></div>
 
 <div class="scr" id="sEnd" hidden>
   <div class="card">
@@ -225,6 +282,7 @@ body.touch .keys.kb{display:none} .keys.tch{display:none} body.touch .keys.tch{d
 </div>
 
 <script src="peerjs.min.js"></script>
+<script src="icons.js"></script>
 <script src="game.js"></script>
 </body>
 </html>
