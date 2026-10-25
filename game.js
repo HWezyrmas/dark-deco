@@ -1011,6 +1011,8 @@ function spriteFor(c){const set=SPR[c.cls];if(set&&set.rot&&!set.idle){
     if(mov)c.dirI=dirIdx(c.mx,c.my*1.2);else if(c.atk>0)c.dirI=dirIdx(Math.cos(c.adir),Math.sin(c.adir)/1.4);
     else if(c.dirI===undefined)c.dirI=c.f>0?0:4;
     if(c.dirI===undefined)c.dirI=0;c.sprAnim=c.state==='down'?'downRot':'rot';c.sprFlip=1;
+    // casting (Dome): raise the axes over the cast, hold the roar briefly after
+    if(c.state==='ok'&&set.cast8&&(c.cast||c.pose>0)){const df=dirFrames(set.cast8,c.dirI);if(df){const fr=df.fr,n=fr.length,p=c.cast?clamp(c.cast.t/c.cast.dur,0,1)*.75:.75+.25*clamp(1-c.pose/.3,0,1);c.sprAnim='cast8';c.sprFlip=df.flip;return fr[Math.min(n-1,Math.floor(p*n))]}}
     // Heroic Leap: crouch, axes raised overhead in the air, double-slam frames on landing
     if(c.cls==='warden'&&c.state==='ok'){const air=(c.z||0)>1.5;if(air)c.wasAir=true;else if(c.wasAir){c.wasAir=false;c.landT=.3}
       const ls=set.leap8||set.attack38;if(ls&&(air||c.landT>0)){const df=dirFrames(ls,c.dirI);if(df){const fr=df.fr,n=fr.length;let i;
@@ -1031,7 +1033,7 @@ function drawChar(c){c.snapN=0;if(c.state==='out')return;const sp=spriteFor(c);
   if(sp&&sp.tall&&c.spr.height!==TALL){for(const k of ['spr','sem','fin','tint','ol']){c[k]=mk(TW,TALL);c[k].fy=TFY;c[k].fx=TFX;c[k].k=1}c.g=c.spr.getContext('2d');c.m=c.sem.getContext('2d')}
   if(sp){const H=c.spr.height,Wd=c.spr.width;c.g.clearRect(0,0,Wd,H);c.g.drawImage(sp.c,0,0);c.m.clearRect(0,0,Wd,H);c.m.drawImage(sp.e,0,0);if(c.cls==='lamp')c.lantern=sp.lan||[44,22];c.hiHead=false}
   else if(c.cls==='warden')drawWarden(c);else if(c.spr.width>S&&LIMG.complete&&LIMG.naturalWidth)drawLampArt(c);else drawLamp(c);
-  const sheetSpin=sp&&c.sprAnim==='spin',sheetTwirl=sp&&c.sprAnim==='twirl',rotSpr=sp&&(c.sprAnim==='leap8'||c.sprAnim==='rot'||c.sprAnim==='spin'||c.sprAnim==='downRot'||c.sprAnim==='walk8'||c.sprAnim==='attack8');
+  const sheetSpin=sp&&c.sprAnim==='spin',sheetTwirl=sp&&c.sprAnim==='twirl',rotSpr=sp&&(c.sprAnim==='leap8'||c.sprAnim==='cast8'||c.sprAnim==='rot'||c.sprAnim==='spin'||c.sprAnim==='downRot'||c.sprAnim==='walk8'||c.sprAnim==='attack8');
   let sx=1,sy=1,rot=0;if(c.dash>0){sx=1.3;sy=.82}else if(c.sq){sx=1-c.sq;sy=1+c.sq}if(c.cast){const k=clamp(c.cast.t/c.cast.dur,0,1);sx=1+k*.12;sy=1-k*.12;if(c.cls==='lamp')rot=-c.f*.22*k}
   let x=c.x+ox+(c.rx||0),y0=c.y+oy,zz=Math.round(c.z||0),y=y0-zz+(c.ry||0),F=rotSpr?(c.sprFlip||1):(sheetSpin||sheetTwirl)?c.f:(c.cls==='warden'&&(c.ww>0||c.bs>0))?(Math.cos(c.wph||0)>=0?1:-1):(c.ww>0||c.bs>0||c.twl>0)?(Math.floor(tAll*(c.bs>0?18:14))%2?1:-1):c.f;if(!sheetSpin&&c.cls==='warden'&&(c.ww>0||c.bs>0))sx*=Math.max(.3,Math.abs(Math.cos(c.wph||0)));if(zz>2){sx*=1.1;sy*=1.1}if(rotSpr&&c.state==='ok'){if(c.moving&&!c.leap&&c.sprAnim!=='walk8')y-=Math.round(Math.abs(Math.sin(c.walk*TAU))*(c.cls==='lamp'?4:2));if(c.atk>0&&c.sprAnim!=='attack8'){const p=1-c.atk/c.atkDur;rot=Math.sin(p*Math.PI)*(c.heavy===1?.18:.1)*(Math.cos(c.adir)>=0?1:-1)}}lg.fillStyle='rgba(0,0,0,.45)';lg.beginPath();lg.ellipse(Math.round(x),Math.round(y0),(c.cls==='warden'?10:8)*(1-zz/60),3,0,0,TAU);lg.fill();if(c.state==='ok'){eg.globalAlpha=c.idx===ME?.85:.5;eg.strokeStyle=CL[c.cls].color;eg.beginPath();eg.ellipse(Math.round(x),Math.round(y0)+1,c.cls==='warden'?13:11,5,0,0,TAU);eg.stroke();eg.globalAlpha=1}
   if(c.state==='down'){rot=sp&&c.sprAnim==='down'?0:(rotSpr?1.3:c.f*1.3);sx=1;sy=1}
