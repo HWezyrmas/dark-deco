@@ -998,7 +998,7 @@ function prepTall(im,sx=0,sw=im.width,sh=im.height){const t=mk(sw,sh),tg=t.getCo
   eg2.putImageData(ed,0,0);return{c:f,e,lan:ln>=2?[lx/ln-(TFX-FX),ly/ln-(TFY-FY)]:null,tall:1}}
 function stripFrames(im){const fh=im.height,n=Math.max(1,Math.round(im.width/fh)),o=[];for(let i=0;i<n;i++)o.push(prepTall(im,i*fh,fh,fh));return o}
 (function loadWalks(){for(const cls of ['warden','lamp']){const arr=[];let got=0;ROTS.forEach((d,i)=>{const im=new Image();im.onload=()=>{arr[i]=stripFrames(im);if(++got===8)SPR[cls].walk8=arr};im.onerror=()=>{};im.src='sprites/'+cls+'/walk/'+d+'.png'})}})();
-(function loadDirAnims(){for(const [cls,names] of [['warden',['attack','spin','hurt','down','leap','cast']],['lamp',['shoot','cast','hurt','down','twirl']]])for(const nm of names)ROTS.forEach((d,i)=>{const im=new Image();im.onload=()=>{const s=SPR[cls];(s[nm+'8']=s[nm+'8']||[])[i]=stripFrames(im)};im.onerror=()=>{};im.src='sprites/'+cls+'/'+nm+'/'+d+'.png'})})();
+(function loadDirAnims(){for(const [cls,names] of [['warden',['attack','attack2','attack3','spin','hurt','down','leap','cast']],['lamp',['shoot','cast','hurt','down','twirl']]])for(const nm of names)ROTS.forEach((d,i)=>{const im=new Image();im.onload=()=>{const s=SPR[cls];(s[nm+'8']=s[nm+'8']||[])[i]=stripFrames(im)};im.onerror=()=>{};im.src='sprites/'+cls+'/'+nm+'/'+d+'.png'})})();
 // pick a direction's frames; missing directions borrow the mirrored or nearest one
 function dirFrames(arr,di){if(!arr)return null;if(arr[di])return{fr:arr[di],flip:1};const mir=(12-di)%8;if(arr[mir])return{fr:arr[mir],flip:-1};
   for(let k=1;k<4;k++)for(const d of [(di+k)%8,(di+8-k)%8]){if(arr[d])return{fr:arr[d],flip:1};const m=(12-d)%8;if(arr[m])return{fr:arr[m],flip:-1}}return null}
@@ -1011,7 +1011,7 @@ function spriteFor(c){const set=SPR[c.cls];if(set&&set.rot&&!set.idle){
     if(mov)c.dirI=dirIdx(c.mx,c.my*1.2);else if(c.atk>0)c.dirI=dirIdx(Math.cos(c.adir),Math.sin(c.adir)/1.4);
     else if(c.dirI===undefined)c.dirI=c.f>0?0:4;
     if(c.dirI===undefined)c.dirI=0;c.sprAnim=c.state==='down'?'downRot':'rot';c.sprFlip=1;
-    if(c.cls==='warden'&&c.atk>0&&c.state==='ok'&&set.attack8){const di=dirIdx(Math.cos(c.adir),Math.sin(c.adir)/1.4),df=dirFrames(set.attack8,di);if(df){c.dirI=di;const fr=df.fr,n=fr.length,p=clamp(1-c.atk/c.atkDur,0,1),at=c.heavy===1?.4:.32;
+    const atkSet=c.heavy===2?(set.attack28||set.attack8):c.heavy===1?(set.attack38||set.attack8):set.attack8;if(c.cls==='warden'&&c.atk>0&&c.state==='ok'&&atkSet){const di=dirIdx(Math.cos(c.adir),Math.sin(c.adir)/1.4),df=dirFrames(atkSet,di);if(df){c.dirI=di;const fr=df.fr,n=fr.length,p=clamp(1-c.atk/c.atkDur,0,1),at=c.heavy===1?.4:.32;
       const i=p<at?Math.min(n-3,1+Math.floor(p/at*(n-3))):Math.min(n-1,n-2+((p-at)/(1-at)>.35?1:0));c.sprAnim='attack8';c.sprFlip=df.flip;return fr[i]}}if(set.walk8&&c.moving&&c.state==='ok'&&!c.leap){const fr=set.walk8[c.dirI];if(fr){c.sprAnim='walk8';return fr[Math.floor(((c.walk*.66)%1)*fr.length)]}}return set.rot[c.dirI]}
   if(!set||!set.idle)return null;let a='idle',p=null;
   if(c.state==='down'){a='down';p=1}
