@@ -348,10 +348,10 @@ function skill1(c,remote){if(c.state!=='ok')return;
     stepEffect(c,fx0,fy0)}}
 function startLeap(c){let dx=c.mx||c.f,dy=c.my||0;const l=len(dx,dy)||1;dx/=l;dy/=l;let x1=c.x,y1=c.y;
   for(let s=76;s>8;s-=3){const tx=c.x+dx*s,ty=c.y+dy*s*.8;if(walkable(tx,ty)){x1=tx;y1=ty;break}}
-  c.leap={t:0,dur:.4,x0:c.x,y0:c.y,x1,y1};c.f=dx>=0?1:-1;c.sq=-.25;SFX.dash();FXF.puff(c.x,c.y,10,'#3a3660',50,.4,false,10,2);
+  c.leap={t:0,dur:.52,x0:c.x,y0:c.y,x1,y1};c.f=dx>=0?1:-1;c.sq=-.25;SFX.dash();FXF.puff(c.x,c.y,10,'#3a3660',50,.4,false,10,2);
   if(!isHost){evQ.push(['leap',r1(x1),r1(y1)]);return}
   if(mateJoined)fxQ.push(['sfx',['dash']]);hostLeap(c,x1,y1)}
-function hostLeap(c,x1,y1){c.leapT=.42;later.push({t:.4,f:()=>leapLand(c,x1,y1)})}
+function hostLeap(c,x1,y1){c.leapT=.54;later.push({t:.52,f:()=>leapLand(c,x1,y1)})}
 function leapLand(c,x,y){if(c.state!=='ok')return;const L=lvm(c.weapons.find(w=>w.id==='cleave')||{lv:1}),R=44;
   emit('sfx','slam');emit('wave',x,y,.4,R*1.4,C.cyan,4,0);emit('wave',x,y,.5,R*1.9,'#ffffff',2,-.06);emit('crack',x,y,C.cyan);emit('puff',x,y,22,'#3a3660',90,.5,false,30,2);emit('puff',x,y,12,C.cyan,110,.4,true,10,1);emit('shake',0,1,7,c.idx);emit('hs',.03);
   let n=0;for(const e of en){if(!alive(e))continue;const dx=e.x-x,dy=e.y-y,d=len(dx,dy*1.4)||1;if(d<R+rad(e)*.4){n++;hitE(e,26*L.d,c,{w:'cleave',kx:dx/d*240,ky:dy/d*170,up:150,col:C.cyan,dir:Math.atan2(dy,dx),frz:.08})}}
@@ -647,7 +647,7 @@ function showOffers(){if(!LV){closeLevel();return}const mine=LV.offers[ME];if(!m
 function tryMove(c,dx,dy){if(walkable(c.x+dx,c.y))c.x+=dx;if(walkable(c.x,c.y+dy))c.y+=dy}
 function moveChar(c,ix,iy,dt){const D=CL[c.cls];
   if(c.state!=='ok'){c.vx=c.vy=0;c.moving=false;c.dash=0;c.leap=null;c.z=0;return}
-  if(c.leap){const Lp=c.leap;Lp.t+=dt;const k=Math.min(1,Lp.t/Lp.dur),e2=1-(1-k)*(1-k);c.x=Lp.x0+(Lp.x1-Lp.x0)*e2;c.y=Lp.y0+(Lp.y1-Lp.y0)*e2;c.z=Math.sin(Math.PI*k)*26;c.moving=true;c.vx=c.vy=0;
+  if(c.leap){const Lp=c.leap;Lp.t+=dt;const k=Math.min(1,Lp.t/Lp.dur),e2=1-(1-k)*(1-k);c.x=Lp.x0+(Lp.x1-Lp.x0)*e2;c.y=Lp.y0+(Lp.y1-Lp.y0)*e2;c.z=Math.sin(Math.PI*k)*32;c.moving=true;c.vx=c.vy=0;
     if(rnd()<.8)parts.push({x:c.x+(rnd()-.5)*8,y:c.y-c.z-10-rnd()*14,vx:-(Lp.x1-Lp.x0)*.6,vy:-(Lp.y1-Lp.y0)*.6,life:.22,max:.22,col:C.cyan,em:true,streak:1});
     if(k>=1){c.leap=null;c.z=0;c.sq=.4;c.tx=c.x;c.ty=c.y}return}
   if(c.cast||c.ch>0){c.vx*=.8;c.vy*=.8;c.moving=false;return}
@@ -1012,7 +1012,7 @@ function spriteFor(c){const set=SPR[c.cls];if(set&&set.rot&&!set.idle){
     else if(c.dirI===undefined)c.dirI=c.f>0?0:4;
     if(c.dirI===undefined)c.dirI=0;c.sprAnim=c.state==='down'?'downRot':'rot';c.sprFlip=1;
     // Heroic Leap: crouch, axes raised overhead in the air, double-slam frames on landing
-    if(c.cls==='warden'&&c.state==='ok'){const air=(c.z||0)>1.5;if(air)c.wasAir=true;else if(c.wasAir){c.wasAir=false;c.landT=.22}
+    if(c.cls==='warden'&&c.state==='ok'){const air=(c.z||0)>1.5;if(air)c.wasAir=true;else if(c.wasAir){c.wasAir=false;c.landT=.3}
       const ls=set.leap8||set.attack38;if(ls&&(air||c.landT>0)){const df=dirFrames(ls,c.dirI);if(df){const fr=df.fr,n=fr.length;let i;
         if(set.leap8){const p=c.leap?clamp(c.leap.t/c.leap.dur,0,1):air?.5:1;i=Math.min(n-1,Math.floor(p*n))}
         else i=air?(c.leap&&c.leap.t<.08?2:n-3):(c.landT>.11?n-2:n-1);
