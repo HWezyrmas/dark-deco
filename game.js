@@ -1002,11 +1002,11 @@ function stripFrames(im){const fh=im.height,n=Math.max(1,Math.round(im.width/fh)
 // pick a direction's frames; missing directions borrow the mirrored or nearest one
 function dirFrames(arr,di){if(!arr)return null;if(arr[di])return{fr:arr[di],flip:1};const mir=(12-di)%8;if(arr[mir])return{fr:arr[mir],flip:-1};
   for(let k=1;k<4;k++)for(const d of [(di+k)%8,(di+8-k)%8]){if(arr[d])return{fr:arr[d],flip:1};const m=(12-d)%8;if(arr[m])return{fr:arr[m],flip:-1}}return null}
-(function loadRots(){for(const cls of ['warden','lamp']){const arr=[];let got=0;ROTS.forEach((d,i)=>{const im=new Image();im.onload=()=>{arr[i]=prepTall(im);if(++got===8)SPR[cls].rot=arr};im.onerror=()=>{};im.src='sprites/'+cls+'/rot/'+d+'.png'})}})();
+(function loadRots(){for(const cls of ['warden','lamp'])for(const [dir,key] of [['rot','rot'],['spinrot','spinRot']]){const arr=[];let got=0;ROTS.forEach((d,i)=>{const im=new Image();im.onload=()=>{arr[i]=prepTall(im);if(++got===8)SPR[cls][key]=arr};im.onerror=()=>{};im.src='sprites/'+cls+'/'+dir+'/'+d+'.png'})}})();
 function dirIdx(dx,dy){return(Math.round(Math.atan2(dy,dx)/(Math.PI/4))+8)%8}
 (function loadSprites(){for(const cls in SPR_ANIMS)for(const a of SPR_ANIMS[cls]){const im=new Image();im.onload=()=>{SPR[cls][a]=prepSheet(im)};im.onerror=()=>{};im.src='sprites/'+cls+'/'+a+'.png'}})();
 function spriteFor(c){const set=SPR[c.cls];if(set&&set.rot&&!set.idle){
-    if(c.cls==='warden'&&(c.ww>0||c.bs>0)){c.sprAnim='spin';return set.rot[Math.floor(tAll*(c.bs>0?24:18))%8]}
+    if(c.cls==='warden'&&(c.ww>0||c.bs>0)){c.sprAnim='spin';return(set.spinRot||set.rot)[Math.floor(tAll*(c.bs>0?24:18))%8]}
     const mov=c.moving&&(Math.abs(c.mx)>.2||Math.abs(c.my)>.2);
     if(mov)c.dirI=dirIdx(c.mx,c.my*1.2);else if(c.atk>0)c.dirI=dirIdx(Math.cos(c.adir),Math.sin(c.adir)/1.4);
     else if(c.dirI===undefined)c.dirI=c.f>0?0:4;
