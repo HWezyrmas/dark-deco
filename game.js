@@ -23,7 +23,7 @@ let evDone=[],dangerDone=[];
 let W=0,H=0,DPR=1,PX=3,lw=0,lh=0;
 const LOW=mk(1,1),EM=mk(1,1),B1=mk(1,1),b1=B1.getContext('2d'),B2=mk(1,1),b2=B2.getContext('2d');let lg=LOW.getContext('2d'),eg=EM.getContext('2d');
 function resize(){W=innerWidth;H=innerHeight;DPR=Math.min(2,window.devicePixelRatio||1);cv.width=Math.round(W*DPR);cv.height=Math.round(H*DPR);
-  PX=Math.max(2,Math.round(Math.min(W,H)/230));lw=Math.ceil(W/PX);lh=Math.ceil(H/PX);LOW.width=EM.width=lw;LOW.height=EM.height=lh;
+  {const s=Math.max(2,Math.round(Math.min(W,H)*DPR/300));PX=s/DPR}lw=Math.ceil(W/PX);lh=Math.ceil(H/PX);LOW.width=EM.width=lw;LOW.height=EM.height=lh;
   B1.width=Math.ceil(lw/2);B1.height=Math.ceil(lh/2);B2.width=Math.ceil(lw/5);B2.height=Math.ceil(lh/5);lg.imageSmoothingEnabled=eg.imageSmoothingEnabled=false}
 addEventListener('resize',resize);resize();
 
