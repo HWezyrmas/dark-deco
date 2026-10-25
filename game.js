@@ -887,7 +887,7 @@ function drawLamp(c){const g=c.g,m=c.m;g.clearRect(0,0,S,S);m.clearRect(0,0,S,S)
   R(g,hx-1,hy-1,3,2,SK);R(g,hx-1,hy,1,1,SKS)}
 function tintOf(c,col){const t=c.tint.getContext('2d'),Z=c.tint.width;t.globalCompositeOperation='source-over';const ZH=c.tint.height;t.clearRect(0,0,Z,ZH);t.drawImage(c.spr,0,0);t.globalCompositeOperation='source-in';t.fillStyle=col;t.fillRect(0,0,Z,ZH);t.globalCompositeOperation='source-over';return c.tint}
 function buildFin(c,outline){const f=c.fin.getContext('2d'),k=c.fin.width/S;f.clearRect(0,0,c.fin.width,c.fin.height);const t=tintOf(c,outline);for(const [a,b] of [[-1,0],[1,0],[0,-1],[0,1]])f.drawImage(t,a*k,b*k);f.drawImage(c.spr,0,0);return c.fin}
-function blit(g,img,x,y,f,sx=1,sy=1,alpha=1,rot=0){g.save();g.globalAlpha=alpha;g.translate(Math.round(x),Math.round(y));if(rot)g.rotate(rot);const k=img.width/S;g.scale(f*sx/k,sy/k);g.drawImage(img,-FX*k,-(img.fy||FY)*k);g.restore()}
+function blit(g,img,x,y,f,sx=1,sy=1,alpha=1,rot=0){g.save();g.globalAlpha=alpha;g.translate(Math.round(x),Math.round(y));if(rot)g.rotate(rot);const k=img.k||img.width/S;g.scale(f*sx/k,sy/k);g.drawImage(img,-(img.fx||FX)*k,-(img.fy||FY)*k);g.restore()}
 
 /* ================= render ================= */
 let ox=0,oy=0;
@@ -977,7 +977,7 @@ function queueHead(c,x,y,F,sx,sy,al,rot){if(!c.hc)c.hc=mk(S*2,S*2);const h=c.hc.
   const lids=(c.blink>0||c.state==='down')?[LAMP.eyeL,LAMP.eyeR]:c.wink>0?[LAMP.eyeR]:[];for(const e of lids){const ex=e[0]-p.pv[0],ey=e[1]-p.pv[1];h.fillStyle=LAMP.skin;h.fillRect(Math.round(ex-3),Math.round(ey-3),6,6);h.fillStyle='#3a1a10';h.fillRect(Math.round(ex-3),Math.round(ey+1),6,1)}
   h.restore();if(c.hit>0){h.globalCompositeOperation='source-atop';h.fillStyle='rgba(255,255,255,.85)';h.fillRect(0,0,S*2,S*2);h.globalCompositeOperation='source-over'}
   hiQ.push([c.hc,x,y,F,sx,sy,al,rot]);hiQ.ys=c.y}
-function hblit(c,img,x,y,f,sx=1,sy=1,al=1,rot=0){if(c.spr.width<=S){if(img===c.fin)c._fb=[x,y,f,sx,sy,al,rot,tAll];return blit(lg,img,x,y,f,sx,sy,al,rot)}c.snaps=c.snaps||[];const i=c.snapN++;let s=c.snaps[i];if(!s){s=mk(img.width,img.height);c.snaps[i]=s}const sg=s.getContext('2d');sg.clearRect(0,0,s.width,s.height);sg.drawImage(img,0,0);hiQ.push([s,x,y,f,sx,sy,al,rot]);hiQ.ys=c.y}
+function hblit(c,img,x,y,f,sx=1,sy=1,al=1,rot=0){if(c.spr.width<=S||c.spr.k===1){if(img===c.fin)c._fb=[x,y,f,sx,sy,al,rot,tAll];return blit(lg,img,x,y,f,sx,sy,al,rot)}c.snaps=c.snaps||[];const i=c.snapN++;let s=c.snaps[i];if(!s){s=mk(img.width,img.height);c.snaps[i]=s}const sg=s.getContext('2d');sg.clearRect(0,0,s.width,s.height);sg.drawImage(img,0,0);hiQ.push([s,x,y,f,sx,sy,al,rot]);hiQ.ys=c.y}
 /* ---- sprite sheets: drop PNG strips into sprites/<warden|lamp>/<anim>.png and they replace the drawn characters ---- */
 const SPR={warden:{},lamp:{}},SPR_ANIMS={warden:['idle','walk','attack1','attack2','attack3','spin','leap','cast','hurt','down'],lamp:['idle','walk','shoot','cast','twirl','hurt','down']};
 function prepSheet(im){const fh=im.height,n=Math.max(1,Math.round(im.width/fh)),out=[];
@@ -988,23 +988,25 @@ function prepSheet(im){const fh=im.height,n=Math.max(1,Math.round(im.width/fh)),
       if(v>.85&&r>200&&gg>120&&b<140&&r>=gg){lx+=p%S;ly+=(p/S)|0;ln++}}
     eg2.putImageData(ed,0,0);out.push({c:f,e,lan:ln>=2?[lx/ln,ly/ln]:null})}
   return out}
-const ROTS=['east','south-east','south','south-west','west','north-west','north','north-east'],TALL=72,TFY=64;
-function prepTall(im){const f=mk(S,TALL),g=f.getContext('2d');g.imageSmoothingEnabled=false;const t=mk(im.width,im.height),tg=t.getContext('2d');tg.drawImage(im,0,0);const d=tg.getImageData(0,0,im.width,im.height).data;let bot=im.height-1;
-  for(let y=im.height-1;y>=0;y--){let any=false;for(let x=0;x<im.width;x++)if(d[(y*im.width+x)*4+3]>100){any=true;break}if(any){bot=y;break}}
-  const sc=S/im.width;g.drawImage(im,0,0,im.width,im.height,0,TFY-1-bot*sc,S,im.height*sc);
-  const e=mk(S,TALL),eg2=e.getContext('2d'),fd=g.getImageData(0,0,S,TALL),ed=eg2.createImageData(S,TALL);let lx=0,ly=0,ln=0;
-  for(let p=0;p<S*TALL;p++){const r=fd.data[p*4],gg=fd.data[p*4+1],b=fd.data[p*4+2],a=fd.data[p*4+3];if(a<128)continue;const mx=Math.max(r,gg,b),mn=Math.min(r,gg,b),v=mx/255,s=mx?(mx-mn)/mx:0;
-    if(v>.7&&s>.45){ed.data[p*4]=r;ed.data[p*4+1]=gg;ed.data[p*4+2]=b;ed.data[p*4+3]=170}if(v>.85&&r>200&&gg>120&&b<140&&r>=gg){lx+=p%S;ly+=(p/S)|0;ln++}}
-  eg2.putImageData(ed,0,0);return{c:f,e,lan:ln>=2?[lx/ln,ly/ln-(TFY-FY)]:null,tall:1}}
+const ROTS=['east','south-east','south','south-west','west','north-west','north','north-east'],TW=84,TALL=80,TFX=42,TFY=72;
+function prepTall(im,sx=0,sw=im.width,sh=im.height){const t=mk(sw,sh),tg=t.getContext('2d');tg.drawImage(im,sx,0,sw,sh,0,0,sw,sh);const d=tg.getImageData(0,0,sw,sh).data;let bot=sh-1;
+  for(let y=sh-1;y>=0;y--){let any=false;for(let x=0;x<sw;x++)if(d[(y*sw+x)*4+3]>100){any=true;break}if(any){bot=y;break}}
+  const f=mk(TW,TALL),g=f.getContext('2d');g.drawImage(t,Math.round(TFX-sw/2),TFY-1-bot);
+  const e=mk(TW,TALL),eg2=e.getContext('2d'),fd=g.getImageData(0,0,TW,TALL),ed=eg2.createImageData(TW,TALL);let lx=0,ly=0,ln=0;
+  for(let p=0;p<TW*TALL;p++){const r=fd.data[p*4],gg=fd.data[p*4+1],b=fd.data[p*4+2],a=fd.data[p*4+3];if(a<128)continue;const mx=Math.max(r,gg,b),mn=Math.min(r,gg,b),v=mx/255,s=mx?(mx-mn)/mx:0;
+    if(v>.7&&s>.45){ed.data[p*4]=r;ed.data[p*4+1]=gg;ed.data[p*4+2]=b;ed.data[p*4+3]=170}if(v>.85&&r>200&&gg>120&&b<140&&r>=gg){lx+=p%TW;ly+=(p/TW)|0;ln++}}
+  eg2.putImageData(ed,0,0);return{c:f,e,lan:ln>=2?[lx/ln-(TFX-FX),ly/ln-(TFY-FY)]:null,tall:1}}
+function stripFrames(im){const fh=im.height,n=Math.max(1,Math.round(im.width/fh)),o=[];for(let i=0;i<n;i++)o.push(prepTall(im,i*fh,fh,fh));return o}
+(function loadWalks(){for(const cls of ['warden','lamp']){const arr=[];let got=0;ROTS.forEach((d,i)=>{const im=new Image();im.onload=()=>{arr[i]=stripFrames(im);if(++got===8)SPR[cls].walk8=arr};im.onerror=()=>{};im.src='sprites/'+cls+'/walk/'+d+'.png'})}})();
 (function loadRots(){for(const cls of ['warden','lamp']){const arr=[];let got=0;ROTS.forEach((d,i)=>{const im=new Image();im.onload=()=>{arr[i]=prepTall(im);if(++got===8)SPR[cls].rot=arr};im.onerror=()=>{};im.src='sprites/'+cls+'/rot/'+d+'.png'})}})();
 function dirIdx(dx,dy){return(Math.round(Math.atan2(dy,dx)/(Math.PI/4))+8)%8}
 (function loadSprites(){for(const cls in SPR_ANIMS)for(const a of SPR_ANIMS[cls]){const im=new Image();im.onload=()=>{SPR[cls][a]=prepSheet(im)};im.onerror=()=>{};im.src='sprites/'+cls+'/'+a+'.png'}})();
 function spriteFor(c){const set=SPR[c.cls];if(set&&set.rot&&!set.idle){
     if(c.cls==='warden'&&(c.ww>0||c.bs>0)){c.sprAnim='spin';return set.rot[Math.floor(tAll*(c.bs>0?24:18))%8]}
-    if(c.atk>0||(c.cls==='lamp'&&c.bT&&c.shootT>0))c.dirI=c.atk>0?dirIdx(Math.cos(c.adir),Math.sin(c.adir)/1.4):c.dirI;
-    else if(c.moving&&(Math.abs(c.mx)>.2||Math.abs(c.my)>.2))c.dirI=dirIdx(c.mx,c.my*1.2);
+    const mov=c.moving&&(Math.abs(c.mx)>.2||Math.abs(c.my)>.2);
+    if(mov)c.dirI=dirIdx(c.mx,c.my*1.2);else if(c.atk>0)c.dirI=dirIdx(Math.cos(c.adir),Math.sin(c.adir)/1.4);
     else if(c.dirI===undefined)c.dirI=c.f>0?0:4;
-    if(c.dirI===undefined)c.dirI=0;c.sprAnim=c.state==='down'?'downRot':'rot';return set.rot[c.dirI]}
+    if(c.dirI===undefined)c.dirI=0;c.sprAnim=c.state==='down'?'downRot':'rot';if(set.walk8&&c.moving&&c.state==='ok'&&!c.leap){const fr=set.walk8[c.dirI];if(fr){c.sprAnim='walk8';return fr[Math.floor(((c.walk*.66)%1)*fr.length)]}}return set.rot[c.dirI]}
   if(!set||!set.idle)return null;let a='idle',p=null;
   if(c.state==='down'){a='down';p=1}
   else if(c.cls==='warden'){if(c.ww>0||c.bs>0)a='spin';else if(c.leap||(c.z||0)>2){a='leap';p=c.leap?clamp(c.leap.t/c.leap.dur,0,1):.5}else if(c.cast||c.pose>0){a='cast';p=c.cast?clamp(c.cast.t/c.cast.dur,0,1):1}
@@ -1014,12 +1016,12 @@ function spriteFor(c){const set=SPR[c.cls];if(set&&set.rot&&!set.idle){
   if(p!==null)i=Math.min(n-1,Math.floor(p*n));else if(a==='walk')i=Math.floor(((c.cls==='lamp'?c.walk/2:c.walk)%1)*n);else i=Math.floor(c.t*(a==='spin'?14:8))%n;
   c.sprAnim=a;return fr[i]}
 function drawChar(c){c.snapN=0;if(c.state==='out')return;const sp=spriteFor(c);
-  if(sp&&sp.tall&&c.spr.height!==TALL){for(const k of ['spr','sem','fin','tint','ol']){c[k]=mk(S,TALL);c[k].fy=TFY}c.g=c.spr.getContext('2d');c.m=c.sem.getContext('2d')}
-  if(sp){const H=c.spr.height;c.g.clearRect(0,0,S,H);c.g.drawImage(sp.c,0,0);c.m.clearRect(0,0,S,H);c.m.drawImage(sp.e,0,0);if(c.cls==='lamp')c.lantern=sp.lan||[44,22];c.hiHead=false}
+  if(sp&&sp.tall&&c.spr.height!==TALL){for(const k of ['spr','sem','fin','tint','ol']){c[k]=mk(TW,TALL);c[k].fy=TFY;c[k].fx=TFX;c[k].k=1}c.g=c.spr.getContext('2d');c.m=c.sem.getContext('2d')}
+  if(sp){const H=c.spr.height,Wd=c.spr.width;c.g.clearRect(0,0,Wd,H);c.g.drawImage(sp.c,0,0);c.m.clearRect(0,0,Wd,H);c.m.drawImage(sp.e,0,0);if(c.cls==='lamp')c.lantern=sp.lan||[44,22];c.hiHead=false}
   else if(c.cls==='warden')drawWarden(c);else if(c.spr.width>S&&LIMG.complete&&LIMG.naturalWidth)drawLampArt(c);else drawLamp(c);
-  const sheetSpin=sp&&c.sprAnim==='spin',sheetTwirl=sp&&c.sprAnim==='twirl',rotSpr=sp&&(c.sprAnim==='rot'||c.sprAnim==='spin'||c.sprAnim==='downRot');
+  const sheetSpin=sp&&c.sprAnim==='spin',sheetTwirl=sp&&c.sprAnim==='twirl',rotSpr=sp&&(c.sprAnim==='rot'||c.sprAnim==='spin'||c.sprAnim==='downRot'||c.sprAnim==='walk8');
   let sx=1,sy=1,rot=0;if(c.dash>0){sx=1.3;sy=.82}else if(c.sq){sx=1-c.sq;sy=1+c.sq}if(c.cast){const k=clamp(c.cast.t/c.cast.dur,0,1);sx=1+k*.12;sy=1-k*.12;if(c.cls==='lamp')rot=-c.f*.22*k}
-  let x=c.x+ox+(c.rx||0),y0=c.y+oy,zz=Math.round(c.z||0),y=y0-zz+(c.ry||0),F=rotSpr?1:(sheetSpin||sheetTwirl)?c.f:(c.cls==='warden'&&(c.ww>0||c.bs>0))?(Math.cos(c.wph||0)>=0?1:-1):(c.ww>0||c.bs>0||c.twl>0)?(Math.floor(tAll*(c.bs>0?18:14))%2?1:-1):c.f;if(!sheetSpin&&c.cls==='warden'&&(c.ww>0||c.bs>0))sx*=Math.max(.3,Math.abs(Math.cos(c.wph||0)));if(zz>2){sx*=1.1;sy*=1.1}if(rotSpr&&c.state==='ok'){if(c.moving&&!c.leap)y-=Math.round(Math.abs(Math.sin(c.walk*TAU))*(c.cls==='lamp'?4:2));if(c.atk>0){const p=1-c.atk/c.atkDur;rot=Math.sin(p*Math.PI)*(c.heavy===1?.18:.1)*(Math.cos(c.adir)>=0?1:-1)}}lg.fillStyle='rgba(0,0,0,.45)';lg.beginPath();lg.ellipse(Math.round(x),Math.round(y0),(c.cls==='warden'?10:8)*(1-zz/60),3,0,0,TAU);lg.fill();if(c.state==='ok'){eg.globalAlpha=c.idx===ME?.85:.5;eg.strokeStyle=CL[c.cls].color;eg.beginPath();eg.ellipse(Math.round(x),Math.round(y0)+1,c.cls==='warden'?13:11,5,0,0,TAU);eg.stroke();eg.globalAlpha=1}
+  let x=c.x+ox+(c.rx||0),y0=c.y+oy,zz=Math.round(c.z||0),y=y0-zz+(c.ry||0),F=rotSpr?1:(sheetSpin||sheetTwirl)?c.f:(c.cls==='warden'&&(c.ww>0||c.bs>0))?(Math.cos(c.wph||0)>=0?1:-1):(c.ww>0||c.bs>0||c.twl>0)?(Math.floor(tAll*(c.bs>0?18:14))%2?1:-1):c.f;if(!sheetSpin&&c.cls==='warden'&&(c.ww>0||c.bs>0))sx*=Math.max(.3,Math.abs(Math.cos(c.wph||0)));if(zz>2){sx*=1.1;sy*=1.1}if(rotSpr&&c.state==='ok'){if(c.moving&&!c.leap&&c.sprAnim!=='walk8')y-=Math.round(Math.abs(Math.sin(c.walk*TAU))*(c.cls==='lamp'?4:2));if(c.atk>0){const p=1-c.atk/c.atkDur;rot=Math.sin(p*Math.PI)*(c.heavy===1?.18:.1)*(Math.cos(c.adir)>=0?1:-1)}}lg.fillStyle='rgba(0,0,0,.45)';lg.beginPath();lg.ellipse(Math.round(x),Math.round(y0),(c.cls==='warden'?10:8)*(1-zz/60),3,0,0,TAU);lg.fill();if(c.state==='ok'){eg.globalAlpha=c.idx===ME?.85:.5;eg.strokeStyle=CL[c.cls].color;eg.beginPath();eg.ellipse(Math.round(x),Math.round(y0)+1,c.cls==='warden'?13:11,5,0,0,TAU);eg.stroke();eg.globalAlpha=1}
   if(c.state==='down'){rot=sp&&c.sprAnim==='down'?0:(rotSpr?1.3:c.f*1.3);sx=1;sy=1}
   const inv=c.inv>0&&c.state==='ok'&&Math.floor(tAll*20)%2;
   const fin=buildFin(c,c.pow>0?C.amber:c.enr>0||c.bs>0?C.red:'#05040a');if(c.hiHead&&c.cls==='lamp')queueHead(c,x,y-(c.state==='down'?4:0),F,sx,sy,c.state==='down'?.7:inv?.55:1,rot);hblit(c,fin,x,y-(c.state==='down'?4:0),F,sx,sy,c.state==='down'?.7:inv?.55:1,rot);if(c.state!=='down')blit(eg,c.sem,x,y,F,sx,sy);
