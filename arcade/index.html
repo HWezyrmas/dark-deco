@@ -1286,7 +1286,7 @@ $('lockBtn').addEventListener('click',()=>{unlocked=false;gateRender()});
 $('forgot').addEventListener('click',()=>{if($('forgot').dataset.sure){store.set(BAD,null);delete $('forgot').dataset.sure;$('forgot').textContent='FORGOT THE CODE?';first=null;gateRender();return}$('forgot').dataset.sure=1;$('forgot').textContent='TAP AGAIN TO RESET THE CODE'});
 window.loungeEnter=()=>{document.body.classList.add('lounge-on');gateRender()};
 window.loungeLeave=()=>{unlocked=false;document.body.classList.remove('lounge-on')};
-addEventListener('visibilitychange',()=>{if(document.hidden){unlocked=false;if(!$('lounge').hidden)gateRender();else if(document.querySelector('.velvet:not([hidden])'))go('lounge'),gateRender()}});
+addEventListener('visibilitychange',()=>{if(document.hidden){if(window.peachBusy&&peachBusy())return;unlocked=false;if(!$('lounge').hidden)gateRender();else if(document.querySelector('.velvet:not([hidden])'))go('lounge'),gateRender()}});
 
 /* --- Lilith's Dice --- */
 const ACT=['Kiss','Whisper into','Nibble','Massage','Trace a finger along','Blow softly on','Leave a lipstick mark on','Slow kisses along','Breathe on','Tickle'];
@@ -1823,7 +1823,7 @@ function peerRoom(role,code,status){return new Promise((res,rej)=>{let me={},oth
  const fire=()=>{if(sched)return;sched=1;requestAnimationFrame(()=>{sched=0;hs.forEach(h=>{try{h()}catch(e){}})})};
  const wire=c=>{conn=c;c.on('open',()=>{c.send(me);status&&status('joined')});c.on('data',d=>{if(d&&typeof d==='object'){other=d;fire()}});c.on('close',()=>{other=null;conn=null;fire();status&&status('left')});c.on('error',()=>{})};
  const R={presence:async p=>{Object.keys(p).forEach(k=>{if(p[k]===null)delete me[k];else me[k]=p[k]});if(conn&&conn.open){try{conn.send(me)}catch(e){}}},
-  peers:()=>[{peer:'me',isMe:true,presence:me},...(other?[{peer:'them',isMe:false,presence:other}]:[])],onPeers:h=>{hs.push(h);setTimeout(fire,0);return()=>{}},leave:async()=>{dead=true;try{conn&&conn.close()}catch(e){}try{peer&&peer.destroy()}catch(e){}},code};
+  peers:()=>[{peer:'me',isMe:true,presence:me},...(other?[{peer:'them',isMe:false,presence:other}]:[])],onPeers:h=>{hs.push(h);setTimeout(fire,0);return()=>{}},wake:()=>{try{if(!dead&&peer&&peer.disconnected)peer.reconnect()}catch(e){}},leave:async()=>{dead=true;try{conn&&conn.close()}catch(e){}try{peer&&peer.destroy()}catch(e){}},code};
  if(role==='peach'){peer=new Peer('hpeach-'+code,{debug:0});peer.on('open',()=>res(R));peer.on('connection',c=>{if(conn&&conn.open){c.close();return}wire(c)});peer.on('error',e=>rej(e));peer.on('disconnected',()=>{if(!dead)try{peer.reconnect()}catch(e){}})}
  else{peer=new Peer({debug:0});const to=setTimeout(()=>rej({type:'timeout'}),15000);peer.on('open',()=>{const c=peer.connect('hpeach-'+code,{reliable:true,serialization:'json'});wire(c);c.on('open',()=>{clearTimeout(to);res(R)})});peer.on('error',e=>{clearTimeout(to);rej(e)})}})}
 async function goOnline(){D.codeHtml='';show2('p2Wait');$('p2WaitT').textContent='Connecting…';$('p2WaitGo').hidden=true;$('p2CodeBox').hidden=true;
@@ -1833,7 +1833,7 @@ async function goOnline(){D.codeHtml='';show2('p2Wait');$('p2WaitT').textContent
  D.net='room';show2('p2Role')}
 async function pickRole(role){D.mode='online';D.role=role;$('p2Toast').classList.toggle('mid',role==='archer');show2('p2Wait');$('p2WaitGo').hidden=true;$('p2WaitT').textContent='Joining…';
  if(D.net==='peer'){
-  if(role==='peach'){let tries=0;for(;;){const code=genCode();try{$('p2WaitT').textContent='Opening a room…';D.rm=await peerRoom('peach',code,st=>{if(st==='left'&&D.G&&D.G.state==='play')toastMsg('Hamza disconnected.')});D.codeHtml=`Your code is <b class="bigcode">${code}</b><br>Send it to Hamza. He picks the bow and types it in.`;$('p2WaitT').innerHTML=D.codeHtml;break}catch(e){if(e&&e.type==='unavailable-id'&&tries++<4)continue;$('p2WaitT').textContent='Could not open a room ('+(e&&e.type||'error')+'). Try again.';return}}}
+  if(role==='peach'){let tries=0;for(;;){let code=store.get('peach-room',null);if(!code||tries>=3){code=genCode();store.set('peach-room',code)}try{$('p2WaitT').textContent='Opening a room…';D.rm=await peerRoom('peach',code,st=>{if(st==='left'&&D.G&&D.G.state==='play')toastMsg('Hamza disconnected.')});D.codeHtml=`Your code is <b class="bigcode">${code}</b><br>Send it to Hamza. He picks the bow and types it in. It's your code for good, so it stays the same if you leave to send it.`;$('p2WaitT').innerHTML=D.codeHtml;break}catch(e){if(e&&e.type==='unavailable-id'&&tries++<6){$('p2WaitT').textContent='Reopening your room…';await new Promise(r=>setTimeout(r,2500));continue}$('p2WaitT').textContent='Could not open a room ('+(e&&e.type||'error')+'). Try again.';return}}}
   else{$('p2WaitT').textContent='Type the 4-digit code Hala sees on her screen.';$('p2CodeBox').hidden=false;const code=await new Promise(r=>{D.codeCb=r});$('p2CodeBox').hidden=true;$('p2WaitT').textContent='Connecting to Hala…';
    try{D.rm=await peerRoom('archer',code)}catch(e){$('p2WaitT').textContent=e&&e.type==='peer-unavailable'?'No game with that code. Ask Hala to check it, then try again.':e&&e.type==='timeout'?'Could not reach Hala. Some mobile networks block this, try both on Wi-Fi.':'Could not connect ('+(e&&e.type||'error')+').';setTimeout(()=>{if(!D.rm)pickRole('archer')},2500);return}}}
  else{try{const room=await claude.use('room');D.rm=await room.join('peach-duel')}catch(e){$('p2WaitT').textContent="Couldn't join the game room. Try again in a moment, or use Same Phone.";return}}
@@ -1852,6 +1852,7 @@ $('p2Local').addEventListener('click',()=>{wake();D.mode='local';D.role=null;sta
 $('p2Online').addEventListener('click',()=>{wake();goOnline()});
 $('p2AsPeach').addEventListener('click',()=>{stake2=[pick(SHE_OWES),pick(HE_OWES)];pickRole('peach')});$('p2AsArcher').addEventListener('click',()=>{stake2=[pick(SHE_OWES),pick(HE_OWES)];pickRole('archer')});
 $('p2Join').addEventListener('click',()=>{const v=$('p2Code').value.replace(/\D/g,'');if(v.length===4&&D.codeCb){const cb=D.codeCb;D.codeCb=null;cb(v)}});$('p2Code').addEventListener('keydown',e=>{if(e.key==='Enter')$('p2Join').click()});
+window.peachBusy=()=>D.mode==='online'&&!$('lpeach2').hidden;document.addEventListener('visibilitychange',()=>{if(!document.hidden&&D.rm&&D.rm.wake)D.rm.wake()});
 const toastMsg=t=>{const e=$('p2Toast');e.textContent=t;e.classList.remove('on');void e.offsetWidth;e.classList.add('on')};
 $('p2Go').addEventListener('click',()=>{wake();SFX.lilith();runGame()});
 $('p2CardB').addEventListener('click',()=>{const G=D.G;if(!G)return;if(G.hits>=3){G.state='end';G.win='archer'}else G.state='play'});
