@@ -1807,7 +1807,9 @@ function ui2(){const G=D.G;const s=G?G.state:'lobby',me=authority();$('p2Card').
   const txt=pw?HE_OWES[stake2[1]]:SHE_OWES[stake2[0]];$('p2EndC').innerHTML=`<span class="ctag">${pw?'HAMZA OWES HALA':'HALA OWES HAMZA'}</span><p>${txt}</p><small>SAVED TO WHAT'S OWED</small>`;addOwed(pw?'him':'her',txt,G.gid);$('p2Again').hidden=!me;$('p2EndW').hidden=me;pw?SFX.win():[392,330,262].forEach((f,i)=>tone(f,.2,'triangle',.06,i*.15))}
  D.st=s}
 function frame(now){const dt=Math.min(.033,(now-D.last)/1000);D.last=now;if($('lpeach2').hidden){leave2();return}
- const G=D.G;if(G){if(authority()){step(G,dt,inp2);if(D.mode==='online'&&D.rm&&(D.pt^=1))D.rm.presence({role:'peach',g:pack(G),sk:D.myStake}).catch(()=>{})}
+ const G=D.G;if(G&&!authority()&&G.state==='play'){G.ar.forEach(a=>{a.x+=a.vx*dt;a.y+=a.vy*dt});G.kis.forEach(k=>k.y-=170*dt);G.bf.forEach(k=>k.y-=140*dt)}
+ if(D.rm&&D.rm.lastIn&&D.mode==='online'){const gap=performance.now()-D.rm.lastIn();if(gap>2500&&!D.lostShown){D.lostShown=1;toastMsg('Connection hiccup… waiting for '+(D.role==='peach'?'Hamza':'Hala'))}if(gap<500)D.lostShown=0}
+ if(G){if(authority()){step(G,dt,inp2);if(D.mode==='online'&&D.rm&&(D.pt^=1))D.rm.presence({role:'peach',g:pack(G),sk:D.myStake}).catch(()=>{})}
   if(G.tn&&G.tn.q!==D.tq){D.tq=G.tn.q;toastIn($('p2Toast'),G)}beamSfx(G);render(c2,G,dt,{quiver:true,split:D.mode==='local',flip:D.mode==='online'&&D.role==='archer'});ui2()}
  D.raf=requestAnimationFrame(frame)}
 function show2(id){['p2Mode','p2Role','p2Wait','p2Stakes'].forEach(k=>$(k).hidden=k!==id)}
@@ -1821,8 +1823,9 @@ gestures($('p2Scr'),$('p2Cv'),b=>{if(!D.G)return null;return D.mode==='local'?(b
 const ALPHA='23456789';const genCode=()=>{let c='';for(let i=0;i<4;i++)c+=ALPHA[Math.random()*ALPHA.length|0];return c};
 function peerRoom(role,code,status){return new Promise((res,rej)=>{let me={},other=null,conn=null,peer=null,hs=[],sched=0,dead=false;
  const fire=()=>{if(sched)return;sched=1;requestAnimationFrame(()=>{sched=0;hs.forEach(h=>{try{h()}catch(e){}})})};
- const wire=c=>{conn=c;c.on('open',()=>{c.send(me);status&&status('joined')});c.on('data',d=>{if(d&&typeof d==='object'){other=d;fire()}});c.on('close',()=>{other=null;conn=null;fire();status&&status('left')});c.on('error',()=>{})};
- const R={presence:async p=>{Object.keys(p).forEach(k=>{if(p[k]===null)delete me[k];else me[k]=p[k]});if(conn&&conn.open){try{conn.send(me)}catch(e){}}},
+ const wire=c=>{conn=c;c.on('open',()=>{c.send(me);status&&status('joined')});c.on('data',d=>{lastIn=performance.now();if(d&&typeof d==='object'){other=d;fire()}});c.on('close',()=>{other=null;conn=null;fire();status&&status('left')});c.on('error',()=>{})};
+ let tmr=0,lastIn=performance.now();const flush=()=>{tmr=0;if(!conn||!conn.open)return;try{const dc=conn.dataChannel;if(dc&&dc.bufferedAmount>24000){tmr=setTimeout(flush,40);return}conn.send(me)}catch(e){}};
+ const R={lastIn:()=>lastIn,presence:async p=>{Object.keys(p).forEach(k=>{if(p[k]===null)delete me[k];else me[k]=p[k]});if(!tmr)tmr=setTimeout(flush,45)},
   peers:()=>[{peer:'me',isMe:true,presence:me},...(other?[{peer:'them',isMe:false,presence:other}]:[])],onPeers:h=>{hs.push(h);setTimeout(fire,0);return()=>{}},wake:()=>{try{if(!dead&&peer&&peer.disconnected)peer.reconnect()}catch(e){}},leave:async()=>{dead=true;try{conn&&conn.close()}catch(e){}try{peer&&peer.destroy()}catch(e){}},code};
  if(role==='peach'){peer=new Peer('hpeach-'+code,{debug:0});peer.on('open',()=>res(R));peer.on('connection',c=>{if(conn&&conn.open){c.close();return}wire(c)});peer.on('error',e=>rej(e));peer.on('disconnected',()=>{if(!dead)try{peer.reconnect()}catch(e){}})}
  else{peer=new Peer({debug:0});const to=setTimeout(()=>rej({type:'timeout'}),15000);peer.on('open',()=>{const c=peer.connect('hpeach-'+code,{reliable:true,serialization:'json'});wire(c);c.on('open',()=>{clearTimeout(to);res(R)})});peer.on('error',e=>{clearTimeout(to);rej(e)})}})}
