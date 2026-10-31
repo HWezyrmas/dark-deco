@@ -15,6 +15,15 @@ function api(g){
 function outline(c){const o=mk(),g=o.getContext('2d');const t=mk(),tg=t.getContext('2d');tg.drawImage(c,0,0);tg.globalCompositeOperation='source-in';tg.fillStyle=P.ink;tg.fillRect(0,0,S,S);
   for(const [a,b] of [[-1,0],[1,0],[0,-1],[0,1],[-1,-1],[1,1],[-1,1],[1,-1]])g.drawImage(t,a,b);g.drawImage(c,0,0);return o}
 const D={
+
+  guillotine(d){d.line(16,3,16,15,P.brown,2);d.px(14,2,4,2,P.gold);d.tri([5,15,27,15,24,27,8,27],P.steel);d.tri([7,16,25,16,23,21,9,21],P.white);d.px(8,25,16,2,P.cyan);d.line(4,29,28,29,P.cyan,1);d.px(15,17,2,2,P.gold)},
+  vortex(d){d.arc(16,17,13,200,520,P.cyan,2);d.arc(16,17,8,0,300,P.blue,2);d.arc(16,17,4,90,400,P.white,1);d.line(25,6,29,10,P.steel,2);d.px(26,4,3,3,P.white);d.line(5,24,9,28,P.steel,2);d.px(3,27,3,3,P.white)},
+  grip(d){d.px(8,10,17,13,P.cyan);for(let i=0;i<4;i++)d.circ(10+i*4,10,2,P.steelD);for(let i=0;i<4;i++)d.px(9+i*4,8,3,2,P.white);d.px(5,14,5,6,P.cyan);d.px(6,15,3,3,P.white);d.px(14,23,5,7,P.cyanD);d.line(4,29,28,29,P.cyan,1)},
+  carnage(d){d.circ(16,16,6,P.red);d.circ(16,16,3,P.white);for(let i=0;i<8;i++){const a=i/8*Math.PI*2;d.line(16+Math.cos(a)*8,16+Math.sin(a)*8,16+Math.cos(a)*14,16+Math.sin(a)*14,i%2?P.red:P.orange,2)}},
+  constellation(d){const p=[[6,22],[12,9],[20,14],[26,6],[24,24]];for(let i=0;i<p.length-1;i++)d.line(p[i][0],p[i][1],p[i+1][0],p[i+1][1],P.pinkD,1);d.line(20,14,24,24,P.pinkD,1);for(const [x,y] of p){d.px(x-2,y,5,1,P.pink);d.px(x,y-2,1,5,P.pink);d.px(x,y,1,1,P.white)}},
+  aurora(d){const c=[P.green,P.cyan,P.violet,P.pink];for(let x=3;x<29;x++){const t=6+Math.round(Math.sin(x*.5)*3);d.px(x,t,1,12+Math.round(Math.sin(x*.3)*3),c[Math.floor(x/7)%4])}d.line(3,28,28,28,P.cyanD,1)},
+  rose(d){const c=[P.red,P.amber,P.green,P.cyan,P.violet,P.pink];for(let i=0;i<12;i++){const a0=i/12*Math.PI*2,a1=(i+1)/12*Math.PI*2;d.tri([16,16,16+Math.cos(a0)*12,16+Math.sin(a0)*12,16+Math.cos(a1)*12,16+Math.sin(a1)*12],c[i%6])}d.ring(16,16,12,P.gold,2);d.circ(16,16,3,P.gold);d.px(16,16,1,1,P.white)},
+  wisp(d){d.line(4,22,12,16,P.amberD,3);d.line(8,24,16,18,P.amber,2);d.px(14,12,9,6,P.amber);d.px(21,10,5,5,P.cream);d.px(21,7,2,3,P.amber);d.px(24,7,2,3,P.amber);d.px(24,12,1,1,P.ink);d.px(5,20,3,3,P.white);d.px(3,26,2,2,P.pink);d.px(9,28,2,2,P.amber)},
   cleave(d){d.line(8,25,23,8,P.steel,3);d.line(9,25,23,9,P.white,1);d.line(6,21,12,27,P.gold,2);d.px(5,26,3,3,P.goldD);d.arc(16,18,13,200,320,P.cyan,2)},
   whirl(d){d.arc(16,16,12,0,250,P.blue,3);d.tri([27,8,30,17,21,15],P.blue);d.arc(16,16,6,180,430,P.cyan,2);d.circ(16,16,2,P.white)},
   slam(d){d.circ(16,12,7,P.steel);d.px(10,6,12,3,P.steelD);d.px(12,17,8,4,P.steel);for(const [a,b] of [[16,22],[10,25],[22,25]])d.line(16,22,a+(a-16)*.5,b+4,P.cyan,1);d.line(16,22,16,30,P.cyan,1);d.line(16,24,6,29,P.cyan,1);d.line(16,24,26,29,P.cyan,1)},
