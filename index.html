@@ -204,6 +204,119 @@ body.touch .keys.kb{display:none} .keys.tch{display:none} body.touch .keys.tch{d
 @media (max-width:360px){.classes{grid-template-columns:1fr}}
 .stats{display:grid;grid-template-columns:auto auto;gap:6px 18px;font-size:13px;text-align:left}
 .stats b{font-family:var(--pix);font-size:10px;color:var(--lamp);text-align:right}
+
+/* ===== painted deco skin ===== */
+.card{position:relative;max-width:420px;padding:46px 34px 40px;border-style:solid;border-width:44px 31px 36px;border-image:url(ui/panel_big_9.png) 88 62 72 fill/44px 31px 36px stretch;padding:4px 6px}
+.card::before,.card::after,.gd::before,.gd::after,.sk::before,.sk::after{content:'';position:absolute;left:50%;transform:translateX(-50%);background:center/100% 100% no-repeat;pointer-events:none}
+.card::before,.gd::before,.sk::before{top:-44px;width:40px;height:44px;background-image:url(ui/panel_big_ot.png)}
+.card::after,.gd::after,.sk::after{bottom:-36px;width:22px;height:36px;background-image:url(ui/panel_big_ob.png)}
+.gd,.sk{position:relative;border-style:solid;border-width:44px 31px 36px;border-image:url(ui/panel_big_9.png) 88 62 72 fill/44px 31px 36px stretch;padding:2px 4px}
+.btn{position:relative;border:0;border-style:solid;border-width:12px;border-image:url(ui/btn_gold_9.png) 24 fill/12px stretch;background:none;color:#2a1405;padding:5px 14px 3px;min-height:46px;text-shadow:0 1px 0 rgba(255,236,170,.6);font-weight:700}
+.btn:active:not(:disabled){border-image-source:url(ui/btn_gold_down_9.png);transform:translateY(1px)}
+.btn::before{content:'';position:absolute;left:50%;top:-12px;width:35px;height:12px;transform:translateX(-50%);background:url(ui/btn_gold_ot.png) center/100% 100% no-repeat;pointer-events:none}
+.btn.ghost{border-image-source:url(ui/btn_ghost_9.png);background:none;color:var(--moon);text-shadow:none;font-weight:600}
+.btn.ghost::before{background-image:url(ui/btn_ghost_ot.png);width:33px}
+.btn.ghost:active:not(:disabled){border-image-source:url(ui/btn_ghost_9.png)}
+.btn:disabled{filter:grayscale(.8) brightness(.7);opacity:.6}
+input#code{border:0;border-style:solid;border-width:12px 24px;border-image:url(ui/plate_9.png) 24 48 fill/12px 24px stretch;background:none;padding:2px 0 0}
+.joinrow{align-items:stretch}
+.cls{position:relative;border:0;border-style:solid;border-width:30px 20px 26px;border-image:url(ui/cls_off_9.png) 56 36 48 fill/28px 18px 24px stretch;background:none;padding:0 4px;transition:filter .15s}
+.cls::before{content:'';position:absolute;left:50%;top:-28px;width:30px;height:28px;transform:translateX(-50%);background:url(ui/cls_off_ot.png) center/100% 100% no-repeat}
+.cls[aria-pressed="true"]{border-image:url(ui/cls_on_9.png) 60 40 52 fill/30px 20px 26px stretch;background:none;border-width:30px 20px 26px}
+.cls[aria-pressed="true"]::before{background-image:url(ui/cls_on_ot.png);width:26px;top:-30px;height:30px}
+.cls.mate{box-shadow:none;filter:drop-shadow(0 0 6px var(--neon))}
+.hb{border:0;border-style:solid;border-width:8px 10px;border-image:url(ui/btn_ghost_9.png) 24 fill/8px 10px stretch;background:none;padding:3px 6px 1px}
+.gt{border:0;border-style:solid;border-width:9px 12px;border-image:url(ui/btn_ghost_9.png) 24 fill/9px 12px stretch;background:none;padding:3px 2px 1px}
+.gt.on{border-image-source:url(ui/btn_gold_9.png);color:#2a1405;background:none}
+.gp{border-left:0;padding-left:0}
+.gl{border-top:0;border-style:solid;border-width:6px 8px;border-image:url(ui/info_row.png) 12 fill/6px 8px stretch;padding:2px 4px;margin-top:4px}
+.ski{border:0;border-style:solid;border-width:6px 8px;border-image:url(ui/info_row.png) 12 fill/6px 8px stretch;background:none;padding:0 2px}
+/* hud bars */
+.hp{width:132px;height:22px;border:0;background:url(ui/bar_hp.png) center/100% 100% no-repeat}
+.hp>i{position:absolute;left:9.7%;right:11.3%;top:50%;bottom:20%;display:block}
+.hp b{border-style:solid;border-width:0 3px;border-image:url(ui/fill_hp.png) 0 12 fill/0 3px stretch;background:none!important;max-width:100%}
+.hp.mate{width:104px;height:18px}
+.hp.rage{height:22px;background-image:url(ui/bar_rage.png)}
+.hp.rage b{border-image-source:url(ui/fill_rage.png)}
+.hprow.down .hp b{filter:grayscale(1) brightness(.7) sepia(1) hue-rotate(-50deg) saturate(4)}
+#rowRage.full .hp b{background:none!important;filter:brightness(1.4);box-shadow:0 0 8px #ff2a5c}
+#xpbar{height:18px;border:0;background:none;border-style:solid;border-width:0 12px;border-image:url(ui/bar_xp_9.png) 0 40 fill/0 12px stretch;margin-bottom:4px}
+#xpbar::before{content:'';position:absolute;left:50%;top:0;height:100%;width:22px;transform:translateX(-50%);background:url(ui/bar_xp_ot.png) center/100% 100% no-repeat;z-index:1}
+#xpfill{left:-3px;top:44%;bottom:19%;width:0;max-width:calc(100% + 6px);background:none;box-shadow:none;border-style:solid;border-width:0 3px;border-image:url(ui/fill_xp.png) 0 10 fill/0 3px stretch;filter:drop-shadow(0 0 4px #6a5cff)}
+#bondW i{width:110px;height:14px;border:0;background:url(ui/bar_bond.png) center/100% 100% no-repeat}
+#bondW i>u{position:absolute;left:9%;right:10.5%;top:56%;bottom:20%;display:block}
+#bondW b{background:none!important;box-shadow:none;border-style:solid;border-width:0 2px;border-image:url(ui/fill_bond.png) 0 12 fill/0 2px stretch;max-width:100%}
+#bondW.low b{filter:grayscale(.8) brightness(.8)}#bondW.full b{filter:brightness(1.3) drop-shadow(0 0 4px var(--gold))}
+#bondW span{display:flex;align-items:center;gap:3px}#bondW span::before{content:'';width:11px;height:11px;background:url(ui/sym_bond.png) center/cover;border-radius:2px}
+#timer{display:grid;place-items:center;width:60px;height:60px;background:url(ui/plate_timer.png) center/100% 100% no-repeat;font-size:9px;letter-spacing:0;padding-top:1px}
+#lvl{display:grid;place-items:center;width:44px;height:39px;background:url(ui/plate_level.png) center/100% 100% no-repeat;font-size:10px;color:#fff;letter-spacing:0;text-shadow:0 0 6px var(--neon);padding-top:2px}
+.mid .tl{display:flex;align-items:center;gap:2px}
+#boss{width:min(420px,76vw)}
+#boss .bar{height:auto;aspect-ratio:837/124;border:0;background:url(ui/bar_boss.png) center/100% 100% no-repeat;margin-top:0}
+#boss .bar>i{position:absolute;left:8%;right:8%;top:47%;bottom:22%;display:block}
+#boss .bar b{background:none;box-shadow:none;border-style:solid;border-width:0 4px;border-image:url(ui/fill_boss.png) 0 14 fill/0 4px stretch;max-width:100%}
+#boss .n{text-shadow:0 0 8px #000,0 0 3px #000}
+#combo{display:flex;flex-direction:column;align-items:center;justify-content:center;width:128px;height:58px;background:url(ui/plate_combo.png) center/100% 100% no-repeat;text-align:center}
+#cnum{font-size:18px;transform-origin:center}#clbl{font-size:6px;margin-top:2px}
+.kw{border:0;background:url(ui/slot.png) center/100% 100% no-repeat;padding:5px 5px 7px}
+.kw img{width:22px;height:22px}
+.kw.evo{box-shadow:none;filter:drop-shadow(0 0 5px var(--gold))}
+.kw.fire{background:url(ui/slot.png) center/100% 100% no-repeat;filter:brightness(1.4)}
+.kw .cdb{left:5px;right:5px;bottom:3px}
+.kp{border:0;background:url(ui/tooltip.png) center/100% 100% no-repeat;padding:3px}
+.tr .hb.sym{width:38px;height:38px;padding:0;border:0;font-size:0;color:transparent;background:var(--s) center/100% 100% no-repeat;border-radius:6px}
+.tr .hb.sym:active{transform:scale(.94)}
+#skillsBtn{--s:url(ui/sym_skills.png)}#mute{--s:url(ui/sym_sound.png)}#mute[aria-pressed="true"]{--s:url(ui/sym_mute.png)}#swap{--s:url(ui/sym_swap.png)}#leave{--s:url(ui/sym_leave.png)}
+/* touch skill buttons */
+.tb{border:0;border-radius:0;background:url(ui/skill_small.png) center/100% 100% no-repeat;font:8px var(--pix);letter-spacing:.06em;color:#fff;text-shadow:0 0 3px #000,0 0 3px #000;align-items:end;padding-bottom:0;--cc:#4ff0ff}
+.tb::before,.tb::after{content:'';position:absolute;inset:21%;border-radius:50%;z-index:-1}
+.tb::before{background:var(--sym) center/135% no-repeat}
+.tb::after{z-index:0;background:conic-gradient(transparent calc(var(--p,1)*360deg),rgba(6,4,14,.72) 0)}
+.tb{isolation:isolate;line-height:1}
+#b1{width:72px;height:72px;right:calc(max(16px,env(safe-area-inset-right,0px)) + 106px)}#b2{width:94px;height:94px;background-image:url(ui/skill_big.png)}
+.tb.rdy{filter:drop-shadow(0 0 6px var(--cc))}
+.tb.held{transform:scale(.94);border:0}
+.tb.storm{border:0;box-shadow:none;filter:drop-shadow(0 0 10px #ff2a5c);color:#fff}
+/* level up */
+.lvban{width:min(340px,86vw);aspect-ratio:364/102;display:grid;place-items:center;padding:5.6% 12% 0;clip-path:none;box-shadow:none;background:url(ui/ban_level.png) center/100% 100% no-repeat;color:#ffe2a0;font-size:22px;text-shadow:0 0 10px rgba(255,200,97,.6),0 2px 0 #000;white-space:nowrap}
+.lvban.muse{background:url(ui/ban_muse.png) center/100% 100% no-repeat;padding-top:8.4%;color:#ffd6ef;aspect-ratio:364/102}
+.lvban.broker{background:url(ui/ban_broker.png) center/100% 100% no-repeat;padding-top:9.1%;color:#ffd0d6;aspect-ratio:344/112}
+.lvban.chest{background:url(ui/ban_treasure.png) center/100% 100% no-repeat;padding-top:7.7%;aspect-ratio:357/106}
+.pick{border:0;border-radius:0;background:none;box-shadow:none;padding:0;gap:4px;--ar:171/214;--fi:url(ui/card_common.png);--wy:45%;--iw:30%;--l0:61%;--l1:12%}
+.pick .fr{position:relative;display:block;width:100%;aspect-ratio:var(--ar);background:var(--fi) center/100% 100% no-repeat;filter:drop-shadow(0 0 10px color-mix(in srgb,var(--rc) 50%,transparent))}
+.pick .ic{position:absolute;left:50%;top:var(--wy);width:var(--iw);height:auto;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:2px;box-shadow:none;background:#0d0b1c}
+.pick .ic img{width:100%;height:100%;border-radius:0}
+.pick.landed .ic{animation:land2 .3s cubic-bezier(.2,1.8,.4,1)}
+@keyframes land2{0%{transform:translate(-50%,-50%) scale(1.35)}100%{transform:translate(-50%,-50%) scale(1)}}
+.pick .nm{position:absolute;left:13%;right:13%;top:var(--l0);bottom:var(--l1);min-height:0;justify-content:center;font-size:15px;text-shadow:0 1px 0 #000}
+.pick .rar{top:-6px;z-index:2;border-radius:2px;box-shadow:0 2px 0 rgba(0,0,0,.4)}
+.pick .d{padding:0 2px}
+.f-rare{--ar:177/218;--fi:url(ui/card_rare.png);--wy:46.6%;--iw:28%;--l0:64%;--l1:14%}
+.f-epic{--ar:183/218;--fi:url(ui/card_epic.png);--wy:45.6%;--iw:27%;--l0:61.5%;--l1:15%}
+.f-legend{--ar:220/220;--fi:url(ui/card_legend.png);--wy:47.3%;--iw:21%;--l0:64%;--l1:14%}
+.f-pas{--ar:178/214;--fi:url(ui/card_pas.png);--wy:42%;--iw:26%;--l0:58%;--l1:19%}
+.f-gift{--ar:176/210;--fi:url(ui/card_gift.png);--wy:41%;--iw:28%;--l0:58%;--l1:13%}
+.f-pact{--ar:188/221;--fi:url(ui/card_pact.png);--wy:42.3%;--iw:26%;--l0:57.5%;--l1:27%}
+.f-duo{--ar:180/213;--fi:url(ui/card_duo.png);--wy:43.7%;--iw:27%;--l0:60%;--l1:15%}
+.f-legend .nm{left:20%;right:20%}
+@media (max-width:420px){.pick{padding:0}.pick .ic{width:var(--iw);height:auto}.pick .ic img{width:100%;height:100%}.pick .nm{font-size:12px}.lvban{font-size:19px}}
+/* danger + end */
+#danger .big{background:url(ui/ban_danger.png) center/100% 100% no-repeat;padding:14px 0;font-size:40px;text-shadow:0 0 18px #ff2a5c,0 0 4px #000,3px 3px 0 #2a0010;color:#fff}
+#endBan{width:min(360px,88vw);display:grid;place-items:center;background:url(ui/ban_lose.png) center/100% 100% no-repeat;aspect-ratio:345/130;padding-top:6%}
+#endBan.win{background-image:url(ui/ban_win.png);aspect-ratio:380/140;padding-top:7%}
+#endBan h1{font-size:clamp(20px,6vw,28px);color:#f4e6c8;text-shadow:0 2px 0 #000,0 0 12px rgba(255,200,97,.5);white-space:nowrap}
+@media (max-width:520px){.hp{width:104px;height:18px}.hp.rage{height:18px}.hp.mate{width:86px;height:15px}#timer{width:50px;height:50px;font-size:8px}#lvl{width:38px;height:34px;font-size:9px}.tr .hb.sym{width:32px;height:32px}.card,.gd,.sk{border-width:36px 24px 30px;border-image-width:36px 24px 30px}.card::before,.gd::before,.sk::before{top:-36px;height:36px;width:33px}.card::after,.gd::after,.sk::after{bottom:-30px;height:30px;width:18px}}
+
+.pick .rar{top:var(--ty,22%);transform:translate(-50%,-50%);background:none;box-shadow:none;color:var(--rc);font-size:8px;padding:0;letter-spacing:.16em;text-shadow:0 0 6px var(--rc),0 1px 0 #000}
+.f-rare,.f-epic,.f-legend{--ty:23%}.f-pas{--ty:18.6%}.f-gift{--ty:18%}.f-pact{--ty:19%}.f-duo{--ty:20%}
+.pick{max-width:min(170px,calc((100vh - 250px)*.78))}
+.lvban{width:min(340px,86vw,62vh)}
+@media (max-height:500px){.lvban{font-size:17px}.lvwrap{gap:4px}.offers{margin-top:2px}.pick .d{font-size:10.5px}.pick .nm{font-size:12px}}
+.cls b{font-size:18px;letter-spacing:.04em}
+#combo{top:30%}
+@media (max-width:520px){.hpname{width:112px;max-width:none}#combo{transform:scale(.85);transform-origin:right center}}
+
+.gl,.ski{border-width:9px 7px;border-image:url(ui/info_row.png) 18 14 fill/9px 7px stretch;padding:0 8px}
 </style>
 </head>
 <body>
@@ -214,14 +327,14 @@ body.touch .keys.kb{display:none} .keys.tch{display:none} body.touch .keys.tch{d
     <div id="xpbar"><div id="xpfill"></div></div>
     <div class="top">
       <div class="who">
-        <div class="hprow" id="rowMe"><span class="hpname" id="name">Warden</span><span class="hp"><b id="hpMe"></b></span><span class="hptxt" id="hpMeT"></span></div>
-        <div class="hprow" id="rowRage" hidden><span class="hpname rgn">RAGE</span><span class="hp rage"><b id="rageB"></b></span></div>
-        <div class="hprow" id="rowMate"><span class="hpname" id="mateName" style="font-size:14px">Partner</span><span class="hp mate"><b id="hpMate"></b></span></div>
+        <div class="hprow" id="rowMe"><span class="hpname" id="name">Warden</span><span class="hp"><i><b id="hpMe"></b></i></span><span class="hptxt" id="hpMeT"></span></div>
+        <div class="hprow" id="rowRage" hidden><span class="hpname rgn">RAGE</span><span class="hp rage"><i><b id="rageB"></b></i></span></div>
+        <div class="hprow" id="rowMate"><span class="hpname" id="mateName" style="font-size:14px">Partner</span><span class="hp mate"><i><b id="hpMate"></b></i></span></div>
         <div id="kit"></div>
         <span id="net"></span>
       </div>
-      <div class="mid"><span id="timer">00:00</span><span id="lvl">LV 1</span><div id="bondW"><span>BOND</span><i><b id="bondF"></b></i></div><div id="track"><b id="trackF"></b></div></div>
-      <div class="tr"><button class="hb" id="skillsBtn">Skills</button><button class="hb" id="mute" aria-pressed="false">Sound</button><button class="hb" id="swap" hidden>Swap</button><button class="hb" id="leave">Leave</button></div>
+      <div class="mid"><span class="tl"><span id="timer">00:00</span><span id="lvl" aria-label="Level">1</span></span><div id="bondW"><span>BOND</span><i><u><b id="bondF"></b></u></i></div><div id="track"><b id="trackF"></b></div></div>
+      <div class="tr"><button class="hb sym" id="skillsBtn" aria-label="Skills">Skills</button><button class="hb sym" id="mute" aria-pressed="false" aria-label="Sound">Sound</button><button class="hb sym" id="swap" hidden aria-label="Swap">Swap</button><button class="hb sym" id="leave" aria-label="Leave">Leave</button></div>
     </div>
   </div>
   <div>
@@ -229,7 +342,7 @@ body.touch .keys.kb{display:none} .keys.tch{display:none} body.touch .keys.tch{d
     <div id="hint">WASD move · attacks are automatic · Q / Space skill 1 · E skill 2</div>
   </div>
 </div>
-<div id="boss" hidden><div class="n" id="bossName">The Foreman</div><div class="bar"><b id="bossHp"></b></div></div>
+<div id="boss" hidden><div class="n" id="bossName">The Foreman</div><div class="bar"><i><b id="bossHp"></b></i></div></div>
 <div id="combo"><span id="cnum">0</span><span id="clbl">HITS</span></div>
 <div id="msg"></div>
 <div id="learn" aria-live="polite"><div class="lt" id="learnT"></div><div class="ln" id="learnN"></div><div class="ld" id="learnD"></div></div>
@@ -264,8 +377,8 @@ body.touch .keys.kb{display:none} .keys.tch{display:none} body.touch .keys.tch{d
       <button class="cls" data-c="lamp" aria-pressed="false"><span class="role">Healer · 90 health</span><b>Lamplighter</b><span>Shoots homing light bolts that heal the Warden when they fly through him. Step blinks and leaves a healing pool; Solar Lance heals and powers him up.</span></button>
     </div>
     <div class="picks"><span id="pickMe">You: ·</span><span class="m" id="pickMate"></span></div>
-    <div class="keys kb"><b>WASD</b><span>Move</span><b>Q or Space</b><span>Leap (Storm at full Rage) / Step</span><b>E</b><span>Dome / Flare</span></div>
-    <div class="keys tch"><b>Left thumb</b><span>Move</span><b>Small button</b><span>Leap (Storm at full Rage) / Step</span><b>Big button</b><span>Dome / Flare</span></div>
+    <div class="keys kb"><b>WASD</b><span>Move</span><b>Q or Space</b><span>Leap (Storm at full Rage) / Step</span><b>E</b><span>Dome / Lance</span></div>
+    <div class="keys tch"><b>Left thumb</b><span>Move</span><b>Small button</b><span>Leap (Storm at full Rage) / Step</span><b>Big button</b><span>Dome / Lance</span></div>
     <p class="small">Stay close and your Bond fills: you heal each other and hit harder. Apart, it fades; reunite to rekindle it. Fire the Lance into the Dome and it splits into six beams.</p>
     <div class="btns"><button class="btn" id="bStart" disabled>Start</button><button class="btn ghost" id="bLeave">Leave</button></div>
   </div>
@@ -324,8 +437,7 @@ body.touch .keys.kb{display:none} .keys.tch{display:none} body.touch .keys.tch{d
 <div class="scr" id="sEnd" hidden>
   <div class="card">
     <div class="eyebrow" id="endEye">The fog wins tonight</div>
-    <h1 id="endTitle">Lost to the fog</h1>
-    <div class="rule"></div>
+    <div id="endBan"><h1 id="endTitle">Lost to the fog</h1></div>
     <div class="stats" id="endStats"></div>
     <p class="small" id="endNote"></p>
     <div class="btns"><button class="btn" id="bAgain">Again</button><button class="btn ghost" id="bEndLeave">Leave</button></div>
@@ -333,7 +445,7 @@ body.touch .keys.kb{display:none} .keys.tch{display:none} body.touch .keys.tch{d
 </div>
 
 <script src="peerjs.min.js"></script>
-<script src="icons.js?v=1793441504"></script>
-<script src="game.js?v=1793441504"></script>
+<script src="icons.js?v=1793444251"></script>
+<script src="game.js?v=1793444251"></script>
 </body>
 </html>
