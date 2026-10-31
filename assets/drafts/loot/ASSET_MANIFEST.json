@@ -1,0 +1,10 @@
+{
+  "batch": "Dark Deco Production Art Batch 04",
+  "date": "2026-10-31",
+  "files": {
+    "loot_rewards_atlas.svg": "256x256; 4x4 cells; coins, gems, potions, tokens, keys, weapons, armor, chests, relics, rings, scrolls",
+    "world_interactables_atlas.svg": "256x192; 4x3 cells; shrines, portals, switches, levers, lamp posts, crates, barrels, statues, fountains, gates, altars",
+    "status_effects_atlas.svg": "384x192; 6x3 cells; 18 status effect symbols"
+  },
+  "status": "Draft source art; visual/gameplay QA and runtime integration outstanding. Additive only."
+}

@@ -168,3 +168,13 @@ Whenever any change is authorized and made:
 - Direction order documented as east, south-east, south, south-west, west, north-west, north, north-east.
 - This is a draft directional source atlas, not a drop-in replacement for the existing per-direction PNG strips. Character identity, timing, foot anchors and game-scale QA remain outstanding.
 - No existing code or sprite files modified; `main` remains untouched.
+
+
+## Production asset batch 04 — 2026-10-31
+- Added three new transparent SVG source atlases and a manifest:
+  - `assets/drafts/loot/loot_rewards_atlas.svg` — 256×256, 4×4: coins, gems, potions, bond tokens, keys, weapons, armor, chests, relics, rings and scrolls.
+  - `assets/drafts/interactables/world_interactables_atlas.svg` — 256×192, 4×3: shrines, red/blue portals, switches, levers, lamp posts, crates, barrels, statues, fountains, gates and altars.
+  - `assets/drafts/status/status_effects_atlas.svg` — 384×192, 6×3: 18 status-effect symbols.
+  - `assets/drafts/loot/ASSET_MANIFEST.json` — dimensions and contents.
+- These are draft source assets. They are not runtime-integrated; visual QA, consistency review and in-game readability checks remain outstanding.
+- No existing files, game code or `main` branch were modified.
