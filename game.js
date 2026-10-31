@@ -339,7 +339,7 @@ function openSkills(){const c=meC();if(!c)return;const I=window.DD_ICONS||{};
   const st=[];if(c.st.dmg>1.001)st.push('+'+Math.round((c.st.dmg-1)*100)+'% damage');if(c.st.spd>1.001)st.push('+'+Math.round((c.st.spd-1)*100)+'% speed');if(c.st.cdr>.001)st.push(Math.round(c.st.cdr*100)+'% faster attacks');if(c.st.mag>1.001)st.push('+'+Math.round((c.st.mag-1)*100)+'% gem reach');st.push(Math.round(c.max)+' max health');
   rows.push(`<div class="ski" style="--wc:${C.heal}"><img src="${I.hp||''}" alt=""><div class="t"><b>Stats</b><span>${st.join(' · ')}</span></div></div>`);
   $('skM').innerHTML=rows.join('');$('skNote').textContent=solo?'':'The game keeps running while this is open.';$('sSkills').hidden=false}
-$('bGuide').addEventListener('click',()=>{audioInit();$('sGuide').hidden=false;buildGuide()});$('guideClose').addEventListener('click',()=>{$('sGuide').hidden=true});
+$('bGuide').addEventListener('click',()=>{audioInit();$('sGuide').hidden=false;buildMag();requestAnimationFrame(()=>{const m=$('mag');if(m)m.scrollLeft=0})});$('guideClose').addEventListener('click',()=>{$('sGuide').hidden=true});
 document.querySelectorAll('.gt').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.gt').forEach(x=>x.classList.toggle('on',x===b));document.querySelectorAll('.gp').forEach(s=>s.hidden=s.dataset.g!==b.dataset.g);if(b.dataset.g!=='both')gPlay(b.dataset.g,0);SFX.tick&&SFX.tick()}));
 $('skillsBtn').addEventListener('click',()=>{openSkills();$('skillsBtn').blur()});$('skillsBtn2').addEventListener('click',openSkills);$('skillsClose').addEventListener('click',()=>{$('sSkills').hidden=true});
 function setHud(){const c=meC();if(!c)return;
@@ -1530,6 +1530,34 @@ function buildGuide(){const I=window.DD_ICONS||{};
       document.querySelector('#sGuide .pasdet').innerHTML=`<div class="ad" style="--ac:${PCOL[k]}"><div class="adt"><img src="${I['p_'+k]||''}" alt=""><div><b>${PAS[k].name}</b><p>${PAS[k].desc}</p></div></div><span class="need">Unlocks evolutions for: ${ev.map(w=>`<em style="color:${WDEF[w].cls==='warden'?'var(--warden)':'var(--lamp)'}">${WDEF[w].name}</em>`).join(', ')}</span></div>`;SFX.tick&&SFX.tick()});pg.appendChild(b)});
   document.querySelectorAll('#sGuide .stage').forEach(s=>{if(s._b)return;s._b=1;s.addEventListener('click',()=>gAttack(s.querySelector('.spr').dataset.cls))});
   document.querySelectorAll('#sGuide .kc').forEach(k=>{if(k._b)return;k._b=1;k.addEventListener('click',()=>{const on=!k.classList.contains('on');k.parentElement.querySelectorAll('.kc').forEach(x=>x.classList.remove('on'));k.classList.toggle('on',on);const sp=k.closest('.gp').querySelector('.spr');if(on&&sp)gAttack(sp.dataset.cls)})})}
+
+
+/* ================= The Night Gazette ================= */
+let magBuilt=false;
+function magGo(i){const m=$('mag');if(!m)return;const n=m.children.length;i=Math.max(0,Math.min(n-1,i));m.scrollTo({left:i*m.clientWidth,behavior:'smooth'})}
+function magIdx(){const m=$('mag');return m?Math.round(m.scrollLeft/Math.max(1,m.clientWidth)):0}
+function magCount(cls){const ids=Object.keys(WDEF).filter(k=>WDEF[k].cls===cls),n=ids.filter(k=>gSeen[k]).length;const el=document.querySelector('.cnt[data-cls="'+cls+'"]');if(el)el.textContent=n>=ids.length?'All '+ids.length+' read ✦':n+' of '+ids.length+' read'}
+function buildMag(){const I=window.DD_ICONS||{};gPlay('warden',0);gPlay('lamp',0);
+  document.querySelectorAll('#sGuide .spr').forEach(s=>{const c=s.dataset.cls,[src,n,d]=GANIM[c][0];s.style.backgroundImage='url('+src+')';s.style.setProperty('--n',n);s.style.setProperty('--sd',d+'s')});
+  if(magBuilt)return;magBuilt=true;
+  for(const cls of ['warden','lamp']){const box=document.querySelector('.cat[data-cls="'+cls+'"]');if(!box)continue;
+    Object.keys(WDEF).filter(k=>WDEF[k].cls===cls).forEach((id,i)=>{const D=WDEF[id],col=WCOL[id]||(cls==='warden'?C.cyan:C.amber),Pn=PAS[D.need],b=document.createElement('button');b.className='ce'+(gSeen[id]?' seen':'');b.style.setProperty('--ac',col);
+      const first=D.desc.split(/(?<=\.)\s/)[0];
+      b.innerHTML=`<span class="no">${String(i+1).padStart(2,'0')}</span><img src="${I[id]||''}" alt=""><span><b>${D.name}</b><span class="ln">${first}</span><span class="tags"><span class="ev">Evolves: ${D.evo}</span></span></span>
+        <span class="more"><span class="ladder2"><span><b>What it does</b>${D.desc}</span><span><b>Level 3</b>${D.up3}</span><span class="evo"><b>Level 5 · ${D.evo}</b>${D.evoD}</span><span class="need"><b>Needs</b><img src="${I['p_'+D.need]||''}" alt="">${Pn?Pn.name:D.need}</span></span></span>`;
+      b.addEventListener('click',()=>{const on=!b.classList.contains('on');box.querySelectorAll('.ce').forEach(x=>x.classList.remove('on'));b.classList.toggle('on',on);if(on){gSeen[id]=1;try{localStorage.setItem('dd_seen',JSON.stringify(gSeen))}catch(_){}b.classList.add('seen');magCount(cls);SFX.tick&&SFX.tick()}});box.appendChild(b)});magCount(cls)}
+  const du=document.querySelector('#sGuide .duos');if(du)for(const [k,[a,b2]] of Object.entries(DUOS)){const M=PAIRS[k]||{},el=document.createElement('button');el.className='pr';
+    el.innerHTML=`<span class="eq"><img src="${I[a]||''}" alt=""><i>+</i><img src="${I[b2]||''}" alt=""><i>=</i><img class="res" src="${I[k]||''}" alt=""></span><span><b>${M.name||k}</b><small>${WDEF[a].name} + ${WDEF[b2].name}</small><span class="d">${(M.desc||'').replace(/^Duo: (.)/,(_,c)=>c.toUpperCase())}</span></span>`;
+    el.addEventListener('click',()=>{gBurst(el,C.gold);SFX.tick&&SFX.tick()});el.style.position='relative';du.appendChild(el)}
+  const ads=document.querySelector('#sGuide .ads');if(ads)for(const k of Object.keys(PAS)){const ev=Object.keys(WDEF).filter(w=>WDEF[w].need===k).map(w=>WDEF[w].evo),el=document.createElement('div');el.className='ad2';
+    el.innerHTML=`<span class="ah"><img src="${I['p_'+k]||''}" alt=""><b>${PAS[k].name}</b></span><p>${PAS[k].desc}</p><span class="ul">Unlocks: ${ev.join(', ')||'nothing yet'}</span>`;ads.appendChild(el)}
+  const m=$('mag'),dots=$('magDots');const n=m.children.length;dots.innerHTML=Array.from({length:n},(_,i)=>`<i data-i="${i}"></i>`).join('');
+  const upd=()=>{const i=magIdx();dots.querySelectorAll('i').forEach((d,j)=>d.classList.toggle('on',j===i))};m.addEventListener('scroll',()=>{clearTimeout(m._t);m._t=setTimeout(upd,60)});upd();
+  dots.addEventListener('click',e=>{const i=e.target.dataset&&e.target.dataset.i;if(i!==undefined)magGo(+i)});
+  $('magPrev').addEventListener('click',()=>{magGo(magIdx()-1);SFX.tick&&SFX.tick()});$('magNext').addEventListener('click',()=>{magGo(magIdx()+1);SFX.tick&&SFX.tick()});
+  document.querySelectorAll('#sGuide .hl').forEach(b=>b.addEventListener('click',()=>magGo(+b.dataset.go)));
+  document.querySelectorAll('#sGuide .stage').forEach(s=>{if(s._b)return;s._b=1;s.addEventListener('click',()=>{const c=s.querySelector('.spr').dataset.cls,A=GANIM[c],k=1+((Math.random()*(A.length-1))|0),sp=s.querySelector('.spr');const [src,nn,d]=A[k];sp.style.backgroundImage='url('+src+')';sp.style.setProperty('--n',nn);sp.style.setProperty('--sd',d+'s');sp.style.animation='none';void sp.offsetWidth;sp.style.animation='';s.classList.add('hit','used');gBurst(s);SFX.land&&SFX.land(k);clearTimeout(s._t);s._t=setTimeout(()=>{s.classList.remove('hit');const [a0,n0,d0]=A[0];sp.style.backgroundImage='url('+a0+')';sp.style.setProperty('--n',n0);sp.style.setProperty('--sd',d0+'s')},d*2000)})});
+  addEventListener('keydown',e=>{if($('sGuide').hidden)return;if(e.key==='ArrowRight')magGo(magIdx()+1);if(e.key==='ArrowLeft')magGo(magIdx()-1)})}
 
 let last=performance.now();
 function frame(now){const dt=Math.min(.05,(now-last)/1000)*(FAST?4:1);last=now;
