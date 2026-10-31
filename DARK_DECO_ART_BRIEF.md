@@ -260,3 +260,118 @@ Animated sprites (4-direction walk and a death pop) for:
 Every prompt should follow this pattern so the assets stay consistent:
 
 > *[What it is and the layout]*, on a solid black background with even spacing. The style is dark art deco noir with neon accents and painterly pixel art, matching a premium mobile RPG icon set. Seen from a top-down 3/4 game camera. Rich lighting and glow. No text, borders or frames. *[Numbered list of items, each with its identity colour from section 5.]*
+
+---
+
+## 10. Instructions for AI collaborators (ChatGPT and others)
+
+This section exists because the first batch of AI-made assets couldn't be used as delivered. Read it before making or committing anything. The game is maintained by Claude, who wires assets into the code. Your job is to make assets that meet the contract below exactly, so they can be dropped in without rework.
+
+### 10.1 Review of the first batch (`assets/ability-icons/`, branch `production/dark-deco-art-and-gameplay`)
+
+| Problem | Detail | Fix |
+|---|---|---|
+| Corrupted file | `hellchain.png` is cut off partway through and won't open | Re-export it and run the validation in 10.6 before committing |
+| Wrong style | 6–12 flat colours, about 500 bytes each. The existing set is painterly pixel art with thousands of colours and soft lighting (see `icons/cleave.png`, `icons/starfall.png`) | Redo all 20 as painted icons in the existing style (10.2) |
+| Built-in frame | Every icon has its own rounded border | No frame: the game draws the frame. Fill the square with the icon's own dark navy backdrop |
+| Wrong colours | Guillotine is blue-white (should be lilac steel `#b8a8ff`), Titan's Grip is mint (should be jade `#7dffb0`), Ghost Legion is cyan (should be ghost blue `#9fb8ff`) | Use the identity colour from section 5 for every ability |
+| Wrong folder | `assets/ability-icons/` is never read by the game | Icons go in `icons/<id>.png` (10.2) |
+| Mislabelled | The logs call them "painted image candidates" | Describe assets accurately. Call flat pixel drafts "flat drafts" |
+| Montage concepts | Overview montages were made but never sliced | Never commit a montage or contact sheet as a game asset (10.5) |
+
+**Status:** the 20 icons in `assets/ability-icons/` are **rejected**. Leave them in place as reference, or delete them in a commit that says so. Don't build on them.
+
+### 10.2 Ability, passive and card icons
+- **Path:** `icons/<id>.png`, where `<id>` is the exact ability ID from section 5 (lowercase): `guillotine`, `vortex`, `grip`, `carnage`, `hellchain`, `wyrm`, `obelisk`, `thunder`, `bloodmoon`, `legion`, `constellation`, `aurora`, `rose`, `wisp`, `phoenix`, `heaven`, `cranes`, `starwell`, `clock`, `fireworks`.
+- **Size:** 64×64 PNG for the game. Paint at 256×256 or larger and downscale with a high-quality filter (Lanczos), not nearest-neighbour. Optionally keep the source at `icons/src/<id>@256.png`.
+- **Background:** fully opaque. The subject sits on its own dark navy backdrop (around `#0d0b1c`–`#1a1530`) with soft lighting. No transparent corners, no border, no frame, no text.
+- **Style:** must sit next to `icons/cleave.png`, `whirl.png`, `starfall.png` and `garden.png` without looking out of place. Painterly pixel art: rich gradients, rim light, glow in the identity colour, and one clear silhouette that reads at 32 px.
+- **Colour:** the dominant glow is the identity colour from section 5.
+- **Making them:** generate a sheet of 10 (2 rows of 5) on solid black with wide, even gaps, then **slice each icon into its own file**. Crop each to a centred square on the icon's own backdrop, then downscale to 64×64.
+- **Wiring:** Claude adds the IDs to the icon override list in `icons.js`. Don't edit code unless Hamza has authorised it.
+
+### 10.3 Spell objects (single frames, animated by code)
+- **Path:** `vfx/<name>.png`. Names: `guillotine_axe`, `fist_open`, `fist_closed`, `obelisk`, `wyrm_head`, `blood_moon`, `phoenix_up`, `phoenix_down`, `fox`, `rose_window`, `clock_face`, `crane`.
+- **Size:** 256×256 PNG; the object fills about 70% of the square and is centred.
+- **Background:** **pure black `#000000`**, no transparency needed. The game draws these with additive blending, so black disappears. Don't add a floor, shadow, frame or vignette.
+- **Orientation:**
+  - Side-view creatures (`wyrm_head`, `phoenix_*`, `fox`, `crane`) face **right**; the game mirrors them.
+  - `guillotine_axe` points straight down.
+  - `obelisk` stands upright, with its base at the bottom centre of the image.
+- **Matching pairs:** `phoenix_up` and `phoenix_down` must be the same bird in the same position and scale; only the wings change. The same applies to `fist_open` and `fist_closed`.
+
+### 10.4 Impact animation strips
+- **Path:** `vfx/impact_<name>.png`. Names: `fire`, `lightning`, `holy`, `firework`, `shockwave`, `glass`.
+- **Format:** a horizontal strip of 6 frames, each 128×128, so the file is 768×128. Frame 1 is the first moment of impact; frame 6 is almost faded out.
+- **Background:** pure black `#000000`.
+- **Anchor:** the impact point stays at the same pixel in every frame (the centre, or the bottom centre for `holy` and `lightning`). Don't let the effect drift between frames.
+- **Recommended tool:** PixelLab's animation tool. A general image generator usually produces frames that don't match. If you use one anyway, check the frames line up before committing.
+
+### 10.5 Hero and enemy sprites
+These are the existing conventions; match them exactly.
+
+**Heroes:**
+- **Path:** `sprites/<warden|lamp>/<anim>/<direction>.png`.
+- **Directions:** `east`, `south-east`, `south`, `south-west`, `west`, `north-west`, `north`, `north-east`.
+- **Animation strips** (walk, attack, attack2, attack3, shoot, cast, hurt, down, leap, twirl): one row of square frames, **84×84 per frame**. For example, the Warden's 8-frame walk is 672×84.
+- **Single poses** (`rot`, `spinrot`): one 64×64 image per direction.
+- **Background:** transparent (RGBA). Feet at the bottom centre of every frame, at the same height in every frame and every direction.
+- **Character design:** the same character, outfit, colours and proportions as the existing `rot` images. Never redesign the heroes.
+- **Still wanted:**
+  - Warden: `attack`, `attack2` and `attack3` in the 6 missing directions; `cast`, `hurt`, `down` and `leap` in all 8.
+  - Lamplighter: `walk` and `shoot` in the 5 missing directions; `cast`, `hurt`, `down` and `twirl` in all 8.
+
+**Enemies (new folder):**
+- **Path:** `sprites/enemy/<kind>/<anim>/<direction>.png`.
+- **Kinds:** `shadow`, `brute`, `gunman`, `bomber`, `gatekeeper`, `foreman`.
+- **Animations:** `walk` (4–6 frames) and `death` (4–6 frames).
+- **Directions:** 4 only: `east`, `south`, `west`, `north`.
+- **Frame size:** 48×48 for `shadow`, `gunman` and `bomber`; 64×64 for `brute`; 96×96 for `gatekeeper`; 128×128 for `foreman`.
+- **Background:** transparent.
+- **Look:** a dark 1 px outline and the colours from section 4. Regular shadows also change colour every 2.5 minutes in the game (plum, teal, rust, rose, indigo), so make `shadow` in plum and Claude will tint it.
+
+### 10.6 Validation before every commit
+Run this and fix every failure before committing:
+
+```python
+# validate_assets.py: run from the repo root: python3 validate_assets.py <files...>
+import sys
+from PIL import Image
+RULES={'icons/':(64,64,False),'vfx/impact_':(768,128,False),'vfx/':(256,256,False)}
+bad=0
+for f in sys.argv[1:]:
+    try:
+        im=Image.open(f);im.load()
+    except Exception as e:
+        print('BROKEN',f,e);bad+=1;continue
+    for pre,(w,h,alpha) in RULES.items():
+        if f.startswith(pre):
+            if im.size!=(w,h):print('SIZE',f,im.size,'expected',(w,h));bad+=1
+            break
+    if f.startswith('icons/'):
+        n=len(im.convert('RGB').getcolors(1<<20) or [])
+        if n<200:print('FLAT',f,n,'colours: not painted');bad+=1
+    if f.startswith('sprites/') and f.split('/')[-2] not in('rot','spinrot'):
+        if im.width%im.height:print('STRIP',f,im.size,'width is not a whole number of square frames');bad+=1
+        if im.mode!='RGBA':print('ALPHA',f,'sprites need transparency');bad+=1
+print('OK' if not bad else f'{bad} problem(s)')
+```
+
+Then also:
+- **Look at every asset** at game size (icons at 64 px, sprites at their frame size) next to the existing ones. If it looks like a different game, it fails.
+- **Check the identity colour** against section 5.
+
+### 10.7 Committing and documenting
+- **Branch:** commit to `production/dark-deco-art-and-gameplay`. Never push to `main` and never edit `game.js`, `icons.js` or `index.html` unless Hamza explicitly authorises it. Claude merges and wires assets in after review.
+- **Commit size:** one asset family per commit, e.g. "icons: painted Warden batch (10)".
+- **Log:** in the commit body and in `ASSET_AUDIT.md`, list each file with its path, size, frame count and the tool used. Name the problems honestly; don't call flat drafts "painted".
+- **Don't commit** zips, montages, contact sheets, concept boards or anything that failed validation.
+- **When in doubt, deliver files to Hamza instead.** If a requirement can't be met, send the files to Hamza to pass to Claude, rather than committing something that will need redoing.
+
+### 10.8 Priority order
+1. The 20 painted icons (10.2): **top priority, replaces the rejected batch.**
+2. The 12 spell objects (10.3).
+3. The 6 impact strips (10.4).
+4. Enemy sprites (10.5).
+5. The missing hero directions and animations (10.5).
+6. The environment: tiles, bridges, skyline and props. Its exact specs will be added to this brief before that work starts; don't start without them.
