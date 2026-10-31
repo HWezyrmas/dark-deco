@@ -292,3 +292,11 @@ The runtime loader requests eight directions in this order: east, south-east, so
 - Confirmed dedicated enemy/boss sprites, spell-object sprites, impact strips and modular rooftop environment assets are absent; current visuals are primarily procedural.
 - Created 20 new 64×64 PNG ability-icon drafts locally under `/mnt/data/dark_deco_new_icons/` and packaged them as `/mnt/data/dark_deco_20_ability_icons.zip`. These are new-file drafts only; they have **not** been uploaded to GitHub, visually approved, or connected to runtime code. Existing repo files remain unchanged.
 - No game code, existing assets, or published `main` branch were modified.
+
+
+## GitHub asset upload — 2026-10-31
+- Uploaded and committed 20 new standalone ability icon PNGs to `assets/ability-icons/` on `production/dark-deco-art-and-gameplay`.
+- Files: `aurora.png`, `bloodmoon.png`, `carnage.png`, `clock.png`, `constellation.png`, `cranes.png`, `fireworks.png`, `grip.png`, `guillotine.png`, `heaven.png`, `hellchain.png`, `legion.png`, `obelisk.png`, `phoenix.png`, `rose.png`, `starwell.png`, `thunder.png`, `vortex.png`, `wisp.png`, `wyrm.png`.
+- Each file is a 64×64 RGBA PNG. These are new draft art assets; visual QA and runtime wiring are not complete. Existing `icons.js`, `game.js`, and all pre-existing art were left unchanged.
+- The game already has procedural icon fallbacks for these IDs. This upload adds the painted image candidates only; it does not enable them in the UI.
+- The original zip archive was a local convenience package and is not the canonical repository deliverable; the individual PNGs above are.
