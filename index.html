@@ -56,7 +56,7 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:
 .hb{font:600 10px var(--ui);letter-spacing:.16em;text-transform:uppercase;color:var(--moon);background:rgba(13,11,28,.6);border:1px solid #4a4370;padding:8px 9px 6px;cursor:pointer;white-space:nowrap}
 #kit{display:flex;gap:4px;flex-wrap:wrap;margin-top:3px;max-width:62vw;align-items:flex-start}
 .kw{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;padding:3px 3px 5px;border:1px solid #3a3456;border-bottom:2px solid var(--wc);background:rgba(13,11,28,.72);color:var(--wc);transition:transform .08s}
-.kw img,.kp img{width:22px;height:22px;image-rendering:pixelated;display:block}
+.kw img,.kp img{width:24px;height:24px;image-rendering:auto;display:block;border-radius:3px}
 .kp{position:relative;display:flex;align-items:center;padding:2px;border:1px solid #2a2545;background:rgba(13,11,28,.6);align-self:flex-end}.kp img{width:14px;height:14px}.kp b{position:absolute;right:-2px;bottom:-3px;font:7px var(--pix);color:var(--wc);text-shadow:0 0 3px #000}
 .pick .d .need{display:block;margin-top:5px;color:var(--gold);font-size:.92em;opacity:.95}
 .kw .pp{display:flex;gap:1px}.kw .pp i{width:3px;height:3px;background:#2a2545;display:block}.kw .pp i.on{background:var(--wc);box-shadow:0 0 4px var(--wc)}
@@ -150,8 +150,8 @@ body.touch .keys.kb{display:none} .keys.tch{display:none} body.touch .keys.tch{d
 @keyframes pil{0%{opacity:0;transform:scaleY(.2)}30%{opacity:1;transform:scaleY(1)}100%{opacity:.18;transform:scaleY(1)}}
 .pick .rar{position:absolute;top:-11px;left:50%;transform:translateX(-50%);font:600 9px var(--ui);letter-spacing:.2em;text-transform:uppercase;color:#120d22;background:var(--rc);padding:4px 9px 3px;border-radius:3px;white-space:nowrap}
 .pick .nm{font-family:var(--display);font-size:17px;letter-spacing:.04em;line-height:1.1;color:#fff;min-height:2.2em;display:flex;align-items:center;text-wrap:balance;opacity:0;transition:opacity .2s}
-.pick .ic{width:72px;height:72px;border-radius:10px;background:#fff8e8;display:grid;place-items:center;box-shadow:inset 0 0 0 3px var(--rc),0 4px 0 rgba(0,0,0,.35)}
-.pick .ic img{width:64px;height:64px;image-rendering:pixelated}
+.pick .ic{width:72px;height:72px;border-radius:10px;background:#0d0b1c;overflow:hidden;display:grid;place-items:center;box-shadow:inset 0 0 0 3px var(--rc),0 4px 0 rgba(0,0,0,.35)}
+.pick .ic img{width:66px;height:66px;image-rendering:auto;border-radius:7px}
 .pick.rolling .ic img{filter:blur(1px) brightness(1.3)}
 .pick.landed .ic{animation:land .3s cubic-bezier(.2,1.8,.4,1)}
 @keyframes land{0%{transform:scale(1.35)}100%{transform:scale(1)}}
@@ -172,7 +172,7 @@ body.touch .keys.kb{display:none} .keys.tch{display:none} body.touch .keys.tch{d
 .skh h2{font-size:26px}
 .skgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
 .ski{display:flex;gap:8px;align-items:center;padding:8px;border:1px solid var(--line);border-left:3px solid var(--wc,#6a6488);background:rgba(255,255,255,.03);min-width:0}
-.ski img{width:40px;height:40px;image-rendering:pixelated;background:#fff8e8;border-radius:6px;flex:0 0 auto}
+.ski img{width:40px;height:40px;image-rendering:auto;background:#0d0b1c;border-radius:6px;flex:0 0 auto}
 .ski .t{display:flex;flex-direction:column;gap:3px;min-width:0}
 .ski b{font-family:var(--display);font-weight:400;font-size:15px;color:#fff;line-height:1.1}
 .ski span{font-size:11px;color:var(--fog);line-height:1.3}
@@ -292,7 +292,7 @@ body.touch .keys.kb{display:none} .keys.tch{display:none} body.touch .keys.tch{d
 </div>
 
 <script src="peerjs.min.js"></script>
-<script src="icons.js?v=1793441114"></script>
-<script src="game.js?v=1793441114"></script>
+<script src="icons.js?v=1793441408"></script>
+<script src="game.js?v=1793441408"></script>
 </body>
 </html>

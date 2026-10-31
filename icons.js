@@ -78,3 +78,6 @@ const out={};
 for(const [k,fn] of Object.entries(D)){const c=mk(),g=c.getContext('2d');fn(api(g));out[k]=outline(c).toDataURL()}
 window.DD_ICONS=out;
 })();
+
+/* painted icon sheet overrides the drawn icons */
+(()=>{const v='1';const ks='cleave whirl slam shield riposte ravager blood charge earth hook banner shout beam prism lighthouse flies moths chain starfall lanterns garden halo candle kite p_might p_haste p_reach p_dur p_volley p_lode p_armor p_regen ember rod pax sanct litsteel ward bond mirror longwatch firebash quickbash dawn brightflare twinstep quickstep hp dmg spd cdr g_maxhp g_heal g_power b_pact b_decline chest'.split(' ');const o=window.DD_ICONS=window.DD_ICONS||{};for(const k of ks){o[k]='icons/'+k+'.png?v='+v;const im=new Image();im.src=o[k]}o.mag=o.p_lode;})();
