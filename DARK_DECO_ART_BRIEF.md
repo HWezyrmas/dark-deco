@@ -406,3 +406,73 @@ Then also:
 
 ### 11.4 Cleaning up
 You may delete `assets/drafts/`, `assets/spell-objects/` and `assets/ability-icons/` from the production branch in one commit titled "remove rejected draft assets", once Hamza approves the deletion. Don't touch anything else.
+
+---
+
+## 12. Remaining image requests for ChatGPT (status and exact prompts)
+
+**To ChatGPT:** this is your work queue. It's the method that produced icon sheets A and B, which are in the live game: **image generator only, one sheet per message, show Hamza, wait for approval.** Don't slice, resize, convert or commit anything. Hamza passes the approved full-resolution image to Claude, who cuts it and wires it in.
+
+### 12.1 Status
+
+| Sheet | Contents | Status |
+|---|---|---|
+| A | 10 Warden ability icons | **Done:** approved and live in the game |
+| B | 10 Lamplighter ability icons | **Done:** approved and live in the game |
+| C | 6 Warden spell objects | **Next** |
+| D | 6 Lamplighter spell objects | To do |
+| E | 6 impact animations | To do |
+| F | 6 enemy characters | To do |
+| G | 12 rooftop props | To do |
+| H | Rooftop floor texture | To do |
+| I | Night skyline (2 layers) | To do |
+
+Hero animations are **not** on this list. They must match the existing PixelLab hero sprites exactly, so Hamza makes them in PixelLab.
+
+### 12.2 Backgrounds (important)
+- **Glowing things (C, D, E):** solid pure black. The game adds them as light, so black disappears.
+- **Solid things (F, G):** solid pure magenta `#FF00FF`. Claude removes the magenta. Don't use black for these, because dark enemies would vanish into it. No shadows on the ground and no magenta inside the objects.
+- **H and I:** filled edge to edge, as described in their prompts.
+
+### 12.3 Prompts, to be used word for word
+
+**Sheet C: Warden spell objects**
+```
+A sprite sheet of 6 separate glowing magic VFX objects in 2 rows of 3, each centred in its own square cell with lots of empty space, on a pure solid black background. The style is painterly pixel art with neon glow and dark art deco fantasy, seen from a top-down 3/4 game camera. No text, no frames, no ground or shadows. 1) a giant spectral executioner's axe, blade pointing down, steel with a lilac ghost glow and gold art deco engraving on the head; 2) a giant ghostly jade-green stone fist, open, fingers spread, rising upward; 3) the same jade fist clenched shut; 4) a tall black-and-gold art deco obelisk with a glowing gold tip; 5) a spectral teal dragon head in side view facing right, mouth open, breathing; 6) a huge blood-red full moon with dark crimson craters and a soft red halo.
+```
+
+**Sheet D: Lamplighter spell objects**
+```
+A sprite sheet of 6 separate glowing magic VFX objects in 2 rows of 3, each centred in its own square cell with lots of empty space, on a pure solid black background. The style is painterly pixel art with warm neon glow and cute art deco fantasy, seen from a top-down 3/4 game camera. No text, no frames, no ground. 1) a phoenix made of orange and gold fire in side view facing right, wings raised; 2) the same phoenix with wings lowered; 3) a small fox made of amber lantern light in side view facing right, running, flame tail; 4) a circular stained-glass rose window in jewel colours with gold leading; 5) an ornate gold art deco clock face with Roman numerals and a glowing cyan minute hand; 6) a white and pink origami paper crane in side view facing right, wings spread.
+```
+
+**Sheet E: impact animations**
+```
+A VFX sprite sheet with 6 horizontal rows, each row a 6-frame animation strip of the same effect playing from start to finish, left to right, on a pure solid black background. The style is painterly pixel art with bright neon glow, readable on a phone, seen from a top-down 3/4 game camera. Keep each effect centred in the same position in every frame. No text. Row 1: an orange fire explosion bursting and fading into smoke. Row 2: a violet lightning bolt striking the ground with an impact flash. Row 3: a column of golden holy light slamming down and fading. Row 4: a firework bursting into coloured sparks. Row 5: a shockwave ring expanding outward from a ground impact, flat on the floor. Row 6: shattering rainbow stained glass flying apart.
+```
+
+**Sheet F: enemies** (one pose each; Claude animates them with bobbing, squash and flashes)
+```
+A sprite sheet of 6 separate enemy characters for a top-down 3/4 view mobile action game, in 2 rows of 3, each centred in its own square cell with lots of empty space, on a solid flat pure magenta #FF00FF background. Each character faces the viewer, three-quarters toward the right, standing, full body visible. The style is painterly pixel art with a crisp dark outline, dark art deco noir with neon accents, cute-menacing and readable at small size, matching a premium mobile roguelite. No ground, no shadow, no text, no frames, and no magenta inside the characters. 1) a small round shadow imp, plum-purple ghostly body with wispy bottom and two glowing yellow eyes; 2) a hulking horned brute, crimson with a dark iron belt and glowing yellow eyes; 3) a noir gangster gunman, teal suit, fedora hat, holding a tommy gun, glowing red eyes; 4) a round orange bomber creature carrying a lit fuse on its head, sparks at the tip; 5) an armoured violet elite knight with an art deco gold crown and glowing eyes, larger and imposing; 6) a huge art deco industrial boss called the Foreman, red and black iron body like a walking furnace, gold crown, three glowing eyes, much larger than the others.
+```
+
+**Sheet G: rooftop props**
+```
+A sprite sheet of 12 separate rooftop props for a top-down 3/4 view mobile game, in 3 rows of 4, each centred in its own square cell with lots of empty space, on a solid flat pure magenta #FF00FF background. The style is painterly pixel art, art deco noir rooftops at night with neon accents, matching a premium mobile roguelite. No ground, no shadow, no text, no frames, and no magenta inside the objects. Row 1: 1) a neon pylon lamp post glowing cyan; 2) the same pylon glowing pink; 3) a metal rooftop air vent with grille; 4) a wooden water tower on iron legs. Row 2: 5) a stone gargoyle crouching; 6) a small art deco spire with gold trim; 7) a rooftop neon sign frame with blank glowing border; 8) a stack of wooden crates. Row 3: 9) a brass chimney with smoke; 10) a satellite-style radio antenna with a blinking red light; 11) an art deco stone planter with a small dead tree; 12) a rooftop access door hut with a lit window.
+```
+
+**Sheet H: rooftop floor texture**
+```
+A single seamless tileable square texture of an art deco rooftop floor seen from directly above, filling the whole image edge to edge. Slate-violet stone tiles in two alternating subtle shades around #47445f and #4c4966, thin dark grout lines, small brass inlay studs at some tile corners, light wear and a few hairline cracks. Painterly pixel art, mid-tone and low contrast so characters and effects stand out on top of it. No objects, no shadows, no lighting gradient, no text, no border. The left edge must continue seamlessly into the right edge and the top into the bottom.
+```
+
+**Sheet I: night skyline, 2 layers**
+```
+Two separate wide panoramic images stacked vertically, each a horizontally seamless art deco city skyline at night for a parallax game background. The style is painterly pixel art, dark noir with cyan and pink neon. Top image: the far layer, distant hazy skyscraper silhouettes in deep violet with a few tiny lit windows and a purple fog glow, against a dark night sky with faint stars. Bottom image: the near layer, closer and taller art deco towers with stepped crowns, antenna spires, neon signs and lit windows in cyan, pink and gold, darker silhouettes, on the same dark night sky. No text, no characters, no frames. Each image's left edge must continue seamlessly into its right edge.
+```
+
+### 12.4 Order and turnaround
+1. Do C → D → E first. These lift the most visible spells.
+2. Then F (enemies), then G, H and I (environment).
+3. One sheet per message. If Hamza asks for changes, change only that sheet.
+4. When a sheet is approved, just reply "Approved: sheet X". Don't commit to GitHub. Claude handles the repository.
