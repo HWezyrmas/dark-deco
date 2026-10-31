@@ -1,0 +1,12 @@
+{
+  "pack": "Dark Deco Production Art Batch 02",
+  "date": "2026-10-31",
+  "format": "SVG source atlases; transparent background; crisp pixel-aligned shapes",
+  "files": {
+    "enemy_walk_cycles.svg": "256x384; 64x64 cells; 4 frames x 6 enemy types (shadow, brute, gunner, bomber, gatekeeper, foreman)",
+    "combat_vfx_6frames.svg": "384x512; 64x64 cells; 6 frames x 8 effects (slash, impact, lightning, holy, fire, frost, shadow, heal)",
+    "rooftop_tiles_props_4x4.svg": "256x256; 64x64 cells; 4x4 rooftop floor/facade/rail/prop atlas",
+    "spell_objects_4x3.svg": "256x192; 64x64 cells; 4x3 spell object atlas"
+  },
+  "status": "Draft source assets. New files only; not runtime-wired. No existing code or assets modified."
+}

@@ -148,3 +148,15 @@ Whenever any change is authorized and made:
 - This is a new draft asset atlas. It is not runtime-wired and needs visual placement QA.
 - No existing source code or existing art assets were modified. No changes were made to `main`.
 - Other locally generated draft candidates from this batch (enemy walk cycles, combat VFX, rooftop tiles/props) are not marked as uploaded or complete until they are actually committed to the repository.
+
+
+## Production asset batch 02 — 2026-10-31
+- Added new SVG source atlases under `assets/drafts/` (no existing file replaced):
+  - `assets/drafts/enemies/enemy_walk_cycles.svg` — 256×384, 64×64 cells, four frames across six enemy rows: Shadow, Brute, Gunner, Bomber, Gatekeeper, Foreman.
+  - `assets/drafts/vfx/combat_vfx_6frames.svg` — 384×512, 64×64 cells, six frames across eight effect rows: Slash, Impact, Lightning, Holy, Fire, Frost, Shadow, Heal.
+  - `assets/drafts/environment/rooftop_tiles_props_4x4.svg` — 256×256, 4×4 modular rooftop floor/facade/rail/prop atlas.
+  - `assets/drafts/spells/spell_objects_4x3.svg` — 256×192, 4×3 spell-object atlas.
+  - `assets/drafts/ASSET_MANIFEST.json` — dimensions, layouts and QA status.
+- These are newly authored vector-source drafts with transparent backgrounds and crisp pixel-aligned geometry. They are not runtime-wired; animation timing, in-game scale, sprite anchors, collision/seam fit and visual QA remain outstanding.
+- No existing code, art or configuration was modified. `main` was not changed.
+- Standing authorization update: Hamza has explicitly authorized automatic upload of new additive assets and documentation to this production branch. This does **not** authorize editing or replacing existing files, changing game code, merging to `main`, or deploying.
