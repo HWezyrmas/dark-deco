@@ -322,8 +322,8 @@ function openSkills(){const c=meC();if(!c)return;const I=window.DD_ICONS||{};
   const st=[];if(c.st.dmg>1.001)st.push('+'+Math.round((c.st.dmg-1)*100)+'% damage');if(c.st.spd>1.001)st.push('+'+Math.round((c.st.spd-1)*100)+'% speed');if(c.st.cdr>.001)st.push(Math.round(c.st.cdr*100)+'% faster attacks');if(c.st.mag>1.001)st.push('+'+Math.round((c.st.mag-1)*100)+'% gem reach');st.push(Math.round(c.max)+' max health');
   rows.push(`<div class="ski" style="--wc:${C.heal}"><img src="${I.hp||''}" alt=""><div class="t"><b>Stats</b><span>${st.join(' · ')}</span></div></div>`);
   $('skM').innerHTML=rows.join('');$('skNote').textContent=solo?'':'The game keeps running while this is open.';$('sSkills').hidden=false}
-$('bGuide').addEventListener('click',()=>{audioInit();$('sGuide').hidden=false});$('guideClose').addEventListener('click',()=>{$('sGuide').hidden=true});
-document.querySelectorAll('.gt').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.gt').forEach(x=>x.classList.toggle('on',x===b));document.querySelectorAll('.gp').forEach(s=>s.hidden=s.dataset.g!==b.dataset.g);SFX.tick&&SFX.tick()}));
+$('bGuide').addEventListener('click',()=>{audioInit();$('sGuide').hidden=false;buildGuide()});$('guideClose').addEventListener('click',()=>{$('sGuide').hidden=true});
+document.querySelectorAll('.gt').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.gt').forEach(x=>x.classList.toggle('on',x===b));document.querySelectorAll('.gp').forEach(s=>s.hidden=s.dataset.g!==b.dataset.g);if(b.dataset.g!=='both')gPlay(b.dataset.g,0);SFX.tick&&SFX.tick()}));
 $('skillsBtn').addEventListener('click',()=>{openSkills();$('skillsBtn').blur()});$('skillsBtn2').addEventListener('click',openSkills);$('skillsClose').addEventListener('click',()=>{$('sSkills').hidden=true});
 function setHud(){const c=meC();if(!c)return;
   $('track').querySelectorAll('i').forEach(n=>n.remove());for(const [t,cl] of [[ELITE_T[0],''],[ELITE_T[1],''],[BOSS_T,'boss']]){const i=document.createElement('i');i.className=cl;i.style.left=(t/RUN*100)+'%';i.dataset.t=t;$('track').appendChild(i)}const D=CL[c.cls],t=document.body.classList.contains('touch');$('name').textContent=D.name;$('name').style.color=D.color;
@@ -1353,6 +1353,35 @@ function render(){
       {const kx=joy.ox+Math.cos(a)*l,ky=joy.oy+Math.sin(a)*l;if(JOYK.complete&&JOYK.naturalWidth)ctx.drawImage(JOYK,kx-25,ky-25,50,50);else{ctx.fillStyle=jc;ctx.globalAlpha=.85;ctx.beginPath();ctx.arc(kx,ky,22,0,TAU);ctx.fill();ctx.globalAlpha=1;ctx.strokeStyle='#ffffff';ctx.lineWidth=2;ctx.stroke()}}}}
 }
 const JOYB=new Image(),JOYK=new Image();JOYB.src='ui/joy_base.png';JOYK.src='ui/joy_knob.png';
+
+/* ================= hero guide ================= */
+const GANIM={warden:[['sprites/warden/walk/south-east.png',8,.8],['sprites/warden/attack/south-east.png',7,.55],['sprites/warden/attack3/south-east.png',7,.6]],
+  lamp:[['sprites/lamp/walk/south.png',9,.9],['sprites/lamp/shoot/south.png',7,.55]]};
+let gSeen={};try{gSeen=JSON.parse(localStorage.getItem('dd_seen')||'{}')}catch(_){}
+function gPlay(cls,i){const s=document.querySelector('.spr[data-cls="'+cls+'"]');if(!s)return;const [src,n,d]=GANIM[cls][i];s.style.backgroundImage='url('+src+')';s.style.setProperty('--n',n);s.style.setProperty('--sd',d+'s');s.style.animation='none';void s.offsetWidth;s.style.animation=''}
+function gBurst(el,col){for(let i=0;i<12;i++){const b=document.createElement('span');b.className='burst';const a=i/12*TAU,r=50+Math.random()*30;b.style.left='50%';b.style.top='45%';b.style.setProperty('--dx',Math.cos(a)*r+'px');b.style.setProperty('--dy',Math.sin(a)*r+'px');if(col)b.style.background=col;el.appendChild(b);setTimeout(()=>b.remove(),650)}}
+function gAttack(cls){const st=document.querySelector('.spr[data-cls="'+cls+'"]');if(!st)return;const stage=st.parentElement,A=GANIM[cls],k=1+((Math.random()*(A.length-1))|0);gPlay(cls,k);stage.classList.add('hit','used');gBurst(stage);SFX.land&&SFX.land(k);clearTimeout(stage._t);stage._t=setTimeout(()=>{stage.classList.remove('hit');gPlay(cls,0)},A[k][2]*1000*2)}
+function gCount(cls){const ids=Object.keys(WDEF).filter(k=>WDEF[k].cls===cls),n=ids.filter(k=>gSeen[k]).length;const el=document.querySelector('.cnt[data-cls="'+cls+'"]');if(el)el.textContent=n>=ids.length?'all '+ids.length+' explored ✦':n+' / '+ids.length+' explored'}
+function gShowAb(cls,id,tile){const D=WDEF[id],I=window.DD_ICONS||{},col=WCOL[id]||(cls==='warden'?C.cyan:C.amber),P=PAS[D.need];
+  document.querySelectorAll('.abgrid[data-cls="'+cls+'"] .at').forEach(t=>t.classList.toggle('on',t===tile));
+  gSeen[id]=1;try{localStorage.setItem('dd_seen',JSON.stringify(gSeen))}catch(_){}tile.classList.add('seen');gCount(cls);
+  const det=document.querySelector('.abdet[data-cls="'+cls+'"]');det.style.setProperty('--ac',col);
+  det.innerHTML=`<div class="ad"><div class="adt"><img src="${I[id]||''}" alt=""><div><b>${D.name}</b><p>${D.desc}</p></div></div>
+   <div class="ladder"><span class="lv">LV 1-2</span><p>Gets stronger with each level.</p><span class="lv l3">LV 3</span><p>${D.up3}</p><span class="lv l5">LV 5 ✦</span><p>Evolves into <b>${D.evo}</b>: ${D.evoD}</p></div>
+   <span class="need">Evolution needs <img src="${I['p_'+D.need]||''}" alt=""> <em style="color:${PCOL[D.need]}">${P?P.name:D.need}</em></span></div>`;
+  gAttack(cls);SFX.tick&&SFX.tick()}
+function buildGuide(){const I=window.DD_ICONS||{};
+  for(const cls of ['warden','lamp']){const g=document.querySelector('.abgrid[data-cls="'+cls+'"]');if(!g||g.childElementCount)continue;
+    Object.keys(WDEF).filter(k=>WDEF[k].cls===cls).forEach((id,i)=>{const b=document.createElement('button');b.className='at'+(gSeen[id]?' seen':'');b.style.setProperty('--i',i);b.style.setProperty('--ac',WCOL[id]||(cls==='warden'?C.cyan:C.amber));b.title=WDEF[id].name;b.innerHTML=`<img src="${I[id]||''}" alt="${WDEF[id].name}">`;b.addEventListener('click',()=>gShowAb(cls,id,b));g.appendChild(b)});gCount(cls);gPlay(cls,0)}
+  const du=document.querySelector('#sGuide .duos');if(du&&!du.childElementCount)for(const [k,[a,b2]] of Object.entries(DUOS)){const M=PAIRS[k]||{},el=document.createElement('button');el.className='duo';
+    el.innerHTML=`<span class="pair"><img src="${I[a]||''}" alt=""><i>+</i><img src="${I[b2]||''}" alt=""><i>=</i><img class="res" src="${I[k]||''}" alt=""></span><span class="tx"><b>${M.name||k}</b><small><span class="w">${WDEF[a].name}</span> + <span class="l">${WDEF[b2].name}</span></small><span>${(M.desc||'').replace(/^Duo: (.)/,(_,c)=>c.toUpperCase())}</span></span>`;
+    el.addEventListener('click',()=>{gBurst(el,C.gold);SFX.tick&&SFX.tick()});el.style.position='relative';du.appendChild(el)}
+  const pg=document.querySelector('#sGuide .pasgrid');if(pg&&!pg.childElementCount)Object.keys(PAS).forEach((k,i)=>{const b=document.createElement('button');b.className='at';b.style.setProperty('--i',i);b.style.setProperty('--ac',PCOL[k]);b.innerHTML=`<img src="${I['p_'+k]||''}" alt="${PAS[k].name}">`;
+    b.addEventListener('click',()=>{pg.querySelectorAll('.at').forEach(t=>t.classList.toggle('on',t===b));const ev=Object.keys(WDEF).filter(w=>WDEF[w].need===k);
+      document.querySelector('#sGuide .pasdet').innerHTML=`<div class="ad" style="--ac:${PCOL[k]}"><div class="adt"><img src="${I['p_'+k]||''}" alt=""><div><b>${PAS[k].name}</b><p>${PAS[k].desc}</p></div></div><span class="need">Unlocks evolutions for: ${ev.map(w=>`<em style="color:${WDEF[w].cls==='warden'?'var(--warden)':'var(--lamp)'}">${WDEF[w].name}</em>`).join(', ')}</span></div>`;SFX.tick&&SFX.tick()});pg.appendChild(b)});
+  document.querySelectorAll('#sGuide .stage').forEach(s=>{if(s._b)return;s._b=1;s.addEventListener('click',()=>gAttack(s.querySelector('.spr').dataset.cls))});
+  document.querySelectorAll('#sGuide .kc').forEach(k=>{if(k._b)return;k._b=1;k.addEventListener('click',()=>{const on=!k.classList.contains('on');k.parentElement.querySelectorAll('.kc').forEach(x=>x.classList.remove('on'));k.classList.toggle('on',on);const sp=k.closest('.gp').querySelector('.spr');if(on&&sp)gAttack(sp.dataset.cls)})})}
+
 let last=performance.now();
 function frame(now){const dt=Math.min(.05,(now-last)/1000)*(FAST?4:1);last=now;
   if(mode==='play'||mode==='pick'||mode==='end'){if(mode==='end'){tAll+=dt;if(isHost&&mateJoined){snapT-=dt;if(snapT<=0){snapT=.2;snapshot()}}render()}else update(Math.min(dt,FAST?.08:.05))}

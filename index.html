@@ -317,6 +317,101 @@ input#code{border:0;border-style:solid;border-width:12px 24px;border-image:url(u
 @media (max-width:520px){.hpname{width:112px;max-width:none}#combo{transform:scale(.85);transform-origin:right center}}
 
 .gl,.ski{border-width:9px 7px;border-image:url(ui/info_row.png) 18 14 fill/9px 7px stretch;padding:0 8px}
+
+/* ===== playful guide ===== */
+.gp{gap:12px;animation:gpin .35s cubic-bezier(.2,1.4,.4,1)}
+@keyframes gpin{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.hero{display:flex;gap:14px;align-items:center}
+.stage{position:relative;flex:0 0 auto;width:150px;height:150px;border:0;background:none;padding:0;cursor:pointer;display:grid;place-items:center}
+.stage .rays{position:absolute;inset:0;border-radius:50%;background:repeating-conic-gradient(from 0deg,color-mix(in srgb,var(--gc) 26%,transparent) 0 10deg,transparent 10deg 24deg);mask:radial-gradient(circle,#000 30%,transparent 70%);-webkit-mask:radial-gradient(circle,#000 30%,transparent 70%);animation:spinr 18s linear infinite}
+@keyframes spinr{to{transform:rotate(360deg)}}
+.stage .pad{position:absolute;left:22%;right:22%;bottom:12%;height:14%;border-radius:50%;background:radial-gradient(closest-side,color-mix(in srgb,var(--gc) 70%,transparent),transparent);filter:blur(1px)}
+.stage .spr{position:relative;z-index:1;width:147px;height:147px;image-rendering:pixelated;background-repeat:no-repeat;background-size:auto 147px;animation:sprp var(--sd,.8s) steps(var(--n,8)) infinite;transform:translateY(-6px)}
+@keyframes sprp{from{background-position-x:0}to{background-position-x:calc(var(--n,8) * -147px)}}
+.stage.hit .spr{filter:brightness(1.6) drop-shadow(0 0 10px var(--gc))}
+.stage .tapme{position:absolute;bottom:0;left:50%;transform:translateX(-50%);font:7px var(--pix);color:var(--gc);letter-spacing:.1em;animation:bob 1.2s ease-in-out infinite;white-space:nowrap}
+.stage.used .tapme{display:none}
+@keyframes bob{50%{transform:translate(-50%,-3px)}}
+.burst{position:absolute;z-index:2;width:6px;height:6px;border-radius:1px;background:var(--gc);box-shadow:0 0 6px var(--gc);pointer-events:none;animation:bst .6s ease-out forwards}
+@keyframes bst{to{transform:translate(var(--dx),var(--dy)) scale(.2);opacity:0}}
+.hinfo{min-width:0;display:flex;flex-direction:column;gap:4px}
+.hinfo .role{font:8px var(--pix);letter-spacing:.12em;color:var(--fog);text-transform:uppercase}
+.hinfo b{font-family:var(--display);font-weight:400;font-size:28px;color:var(--gc);letter-spacing:.05em;line-height:1;text-shadow:0 0 14px color-mix(in srgb,var(--gc) 50%,transparent)}
+.hinfo p{margin:0;font-size:12.5px;line-height:1.45}
+.meters{display:grid;grid-template-columns:auto 1fr;gap:4px 8px;align-items:center;margin-top:4px}
+.mt{display:contents}.mt span{font:7px var(--pix);color:var(--fog);letter-spacing:.08em;text-transform:uppercase}
+.mt i{display:flex;gap:3px}.mt u{display:block;width:16px;height:8px;background:#1d1834;transform:skewX(-20deg);border:1px solid #3a3456}
+.gp:not([hidden]) .mt u{animation:pip .3s backwards}
+.mt i u:nth-child(-n+5){--k:0}
+.mt i[style*="--v:1"] u:nth-child(-n+1),.mt i[style*="--v:2"] u:nth-child(-n+2),.mt i[style*="--v:3"] u:nth-child(-n+3),.mt i[style*="--v:4"] u:nth-child(-n+4),.mt i[style*="--v:5"] u:nth-child(-n+5){background:var(--gc);border-color:var(--gc);box-shadow:0 0 6px color-mix(in srgb,var(--gc) 60%,transparent)}
+.mt u:nth-child(2){animation-delay:.06s}.mt u:nth-child(3){animation-delay:.12s}.mt u:nth-child(4){animation-delay:.18s}.mt u:nth-child(5){animation-delay:.24s}
+@keyframes pip{from{transform:skewX(-20deg) scaleY(0)}}
+.gh{font:8px var(--pix);letter-spacing:.14em;text-transform:uppercase;color:var(--gold);display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-top:4px}
+.gh small{font:600 10px var(--ui);letter-spacing:.08em;color:var(--fog);text-transform:none}
+.kits{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding:12px 2px 10px;margin:0 -2px;scrollbar-width:none}
+.kits::-webkit-scrollbar{display:none}
+.kc{flex:0 0 150px;scroll-snap-align:start;display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;color:var(--moon);font-family:var(--ui);cursor:pointer;border:0;border-style:solid;border-width:22px 14px 18px;border-image:url(ui/cls_off_9.png) 56 36 48 fill/22px 14px 18px stretch;background:none;padding:0 2px;transition:transform .2s cubic-bezier(.2,1.6,.4,1),filter .2s}
+.kc:hover,.kc:focus-visible,.kc.on{transform:translateY(-6px) rotate(-1.5deg);filter:drop-shadow(0 6px 10px color-mix(in srgb,var(--gc) 45%,transparent))}
+.kc:nth-child(even):hover,.kc:nth-child(even).on{transform:translateY(-6px) rotate(1.5deg)}
+.kc img{width:52px;height:52px;border-radius:6px;transition:transform .3s}
+.kc:hover img,.kc.on img{transform:scale(1.12) rotate(-4deg)}
+.kc .kk{font:7px var(--pix);letter-spacing:.06em;color:var(--gc);text-transform:uppercase;line-height:1.4}
+.kc b{font-family:var(--display);font-weight:400;font-size:17px;color:#fff;line-height:1.1}
+.kc .kb{font-size:11.5px;line-height:1.4;color:#cfc9e6}
+.kc b.r,.kb b.r{color:#ff5a7a;font-family:var(--ui);font-weight:700;font-size:inherit}
+.abgrid{display:grid;grid-template-columns:repeat(6,1fr);gap:7px}
+.at{position:relative;aspect-ratio:1;border:0;padding:5px;cursor:pointer;background:url(ui/slot.png) center/100% 100% no-repeat;transition:transform .18s cubic-bezier(.2,1.8,.4,1),filter .2s}
+.at img{width:100%;height:100%;border-radius:4px;display:block;filter:saturate(.85) brightness(.85);transition:filter .2s}
+.at:hover{transform:scale(1.08)}.at:hover img,.at.on img{filter:none}
+.at.on{transform:scale(1.14);filter:drop-shadow(0 0 8px var(--ac))}
+.at.seen::after{content:'';position:absolute;right:1px;top:1px;width:8px;height:8px;background:var(--ac);transform:rotate(45deg);box-shadow:0 0 5px var(--ac)}
+.gp:not([hidden]) .at{animation:tilein .4s cubic-bezier(.2,1.6,.4,1) backwards;animation-delay:calc(var(--i)*35ms)}
+@keyframes tilein{from{opacity:0;transform:scale(.4) rotate(-12deg)}}
+.abdet,.pasdet{min-height:96px;border-style:solid;border-width:9px 7px;border-image:url(ui/info_row.png) 18 14 fill/9px 7px stretch;padding:4px 8px}
+.hint0{margin:16px 0;text-align:center;color:var(--fog);font-size:12px}
+.ad{display:flex;flex-direction:column;gap:8px;animation:adin .3s cubic-bezier(.2,1.4,.4,1)}
+@keyframes adin{from{opacity:0;transform:translateX(16px)}}
+.ad .adt{display:flex;gap:10px;align-items:center}.ad .adt img{width:46px;height:46px;border-radius:6px;box-shadow:0 0 12px var(--ac)}
+.ad .adt b{font-family:var(--display);font-weight:400;font-size:21px;color:var(--ac);display:block;line-height:1.1}
+.ad .adt p{margin:2px 0 0;font-size:12.5px;line-height:1.4}
+.ladder{display:grid;grid-template-columns:auto 1fr;gap:6px 10px;align-items:start;position:relative}
+.ladder .lv{font:7px var(--pix);padding:4px 6px 3px;border-radius:2px;background:#1d1834;color:var(--moon);white-space:nowrap;text-align:center}
+.ladder .lv.l3{background:color-mix(in srgb,#c779ff 30%,#1d1834);color:#e6c8ff}
+.ladder .lv.l5{background:linear-gradient(180deg,#ffe9a8,#c9973e);color:#2a1405}
+.ladder p{margin:0;font-size:12px;line-height:1.4;color:#d8d2ee}
+.ladder p b{color:#ffd27a;font-weight:600}
+.need{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;color:var(--fog)}.need img{width:18px;height:18px;border-radius:3px}
+.need em{font-style:normal;font-weight:600}
+.duos{display:flex;flex-direction:column;gap:8px}
+.duo{display:flex;align-items:center;gap:8px;border-style:solid;border-width:9px 7px;border-image:url(ui/info_row.png) 18 14 fill/9px 7px stretch;padding:2px 6px;cursor:pointer;background:none;color:var(--moon);font-family:var(--ui);text-align:left}
+.duo .pair{display:flex;align-items:center;gap:3px;flex:0 0 auto}
+.duo .pair img{width:30px;height:30px;border-radius:4px}
+.duo .pair i{font:9px var(--pix);color:var(--gold)}
+.duo .pair img.res{width:38px;height:38px;box-shadow:0 0 10px var(--gold);animation:glw 1.6s ease-in-out infinite alternate}
+@keyframes glw{to{box-shadow:0 0 18px var(--gold),0 0 4px #fff}}
+.duo .tx b{font-family:var(--display);font-weight:400;font-size:16px;color:#ffe2a0;display:block}
+.duo .tx span{font-size:11.5px;line-height:1.35;color:#cfc9e6;display:block}
+.duo .tx small{font:7px var(--pix);color:var(--fog);letter-spacing:.06em}
+.duo .tx small .w{color:var(--warden)}.duo .tx small .l{color:var(--lamp)}
+.pasgrid{display:grid;grid-template-columns:repeat(8,1fr);gap:6px}
+.pasgrid .at{padding:4px}
+.bondhero{display:flex;justify-content:center;align-items:center;gap:0;margin-top:2px}
+.bondhero>img{width:110px;height:110px;image-rendering:pixelated}
+.bondhero>img:first-child{animation:lean 2.4s ease-in-out infinite}.bondhero>img:last-child{animation:lean 2.4s ease-in-out infinite reverse}
+@keyframes lean{50%{transform:translateY(-4px)}}
+.bheart{display:grid;place-items:center;width:40px;height:40px;animation:beat 1.1s ease-in-out infinite}.bheart img{width:36px;height:36px;border-radius:6px}
+@keyframes beat{0%,100%{transform:scale(1)}15%{transform:scale(1.22)}30%{transform:scale(1)}45%{transform:scale(1.12)}}
+.bondtx{margin:0;text-align:center;font-family:var(--display);font-size:17px;letter-spacing:.04em;color:#ffe2a0;text-wrap:balance}
+.gtip{display:flex;gap:10px;align-items:center;border-style:solid;border-width:9px 7px;border-image:url(ui/info_row.png) 18 14 fill/9px 7px stretch;padding:0 6px}
+.gtip img{width:30px;height:30px;border-radius:4px;flex:0 0 auto}.gtip p{margin:0;font-size:12px;line-height:1.45;color:#cfc9e6}
+@media (max-width:520px){.hero{flex-direction:column;text-align:center;gap:4px}.hinfo{align-items:center}.meters{width:min(250px,100%)}.abgrid{grid-template-columns:repeat(4,1fr)}.pasgrid{grid-template-columns:repeat(4,1fr)}.kc{flex-basis:138px}.bondhero>img{width:88px;height:88px}}
+@media (prefers-reduced-motion:reduce){.stage .rays,.stage .spr,.bheart,.bondhero>img,.duo .pair img.res{animation:none}}
+
+#sGuide{grid-template-columns:minmax(0,1fr)}#sGuide .gd{justify-self:center;min-width:0;width:100%}.gp,.kits,.abgrid,.abdet{min-width:0}
+
+.abdet,.pasdet,.duo,.gtip{border-width:10px 12px;border-image:url(ui/btn_ghost_9.png) 24 fill/10px 12px stretch;padding:4px 4px}
+
+.duo .tx small span{display:inline;font:inherit;line-height:inherit}.duo .tx small{display:block;margin:2px 0 3px}
 </style>
 </head>
 <body>
@@ -399,26 +494,44 @@ input#code{border:0;border-style:solid;border-width:12px 24px;border-image:url(u
     <div class="skh"><h2>Meet the heroes</h2><button class="hb" id="guideClose">Close</button></div>
     <div class="gtabs"><button class="gt on" data-g="warden">Warden</button><button class="gt" data-g="lamp">Lamplighter</button><button class="gt" data-g="both">Together</button></div>
     <section class="gp" data-g="warden" style="--gc:var(--warden)">
-      <div class="ghead"><img src="sprites/warden/rot/south.png" alt=""><div><span class="role">Protector · 140 health</span><b>Warden</b><p>A berserker with two axes. Get in close and let the axes work while she stays behind you.</p></div></div>
-      <div class="gl"><span class="k">Automatic</span><p><b>Fury Strikes:</b> a 3-hit axe combo on anything near you. Every hit builds <b class="r">Rage</b>, the red bar under your health.</p></div>
-      <div class="gl"><span class="k">Rage</span><p><b>Whirlwind</b> spends Rage on its own when enemies surround you. At full Rage the small button turns into <b class="r">STORM</b>: tap it for Bladestorm, a long spin you can't be hurt in.</p></div>
-      <div class="gl"><span class="k">Small button · Q</span><p><b>Heroic Leap:</b> jump the way you're moving and slam down on a crowd. You can't be hurt in the air.</p></div>
-      <div class="gl"><span class="k">Big button · E</span><p><b>Dome:</b> a shield you can both stand in. Enemies are pushed out, bullets stop at its edge, and you take less damage inside.</p></div>
-      <div class="gl tip"><span class="k">Good picks</span><p>Iron Skin, Ravager, War Banner and Armor. You're the wall, so take the hits for her.</p></div>
+      <div class="hero">
+        <button class="stage" aria-label="Make Warden attack"><span class="rays"></span><span class="spr" data-cls="warden"></span><span class="pad"></span><span class="tapme">tap me</span></button>
+        <div class="hinfo"><span class="role">Protector · 140 health</span><b>Warden</b><p>A berserker with two axes. Get in close and let the axes do the work while she stays behind you.</p><div class="meters"><div class="mt"><span>Damage</span><i style="--v:5"><u></u><u></u><u></u><u></u><u></u></i></div><div class="mt"><span>Toughness</span><i style="--v:5"><u></u><u></u><u></u><u></u><u></u></i></div><div class="mt"><span>Support</span><i style="--v:1"><u></u><u></u><u></u><u></u><u></u></i></div><div class="mt"><span>Speed</span><i style="--v:3"><u></u><u></u><u></u><u></u><u></u></i></div></div></div>
+      </div>
+      <div class="gh">Your kit <small>swipe</small></div>
+      <div class="kits"><button class="kc"><img src="icons/cleave.png" alt=""><span class="kk">Automatic</span><b>Fury Strikes</b><span class="kb">A 3-hit axe combo on anything near you. Every hit builds <b class="r">Rage</b>.</span></button><button class="kc"><img src="ui/sym_rage.png" alt=""><span class="kk">Rage</span><b>Whirlwind</b><span class="kb">Spends Rage on its own when enemies surround you, then you attack faster for a few seconds.</span></button><button class="kc"><img src="ui/sym_storm.png" alt=""><span class="kk">Full Rage</span><b>Bladestorm</b><span class="kb">The small button turns into <b class="r">STORM</b>: a long spin you can't be hurt in.</span></button><button class="kc"><img src="ui/sym_leap.png" alt=""><span class="kk">Small button · Q</span><b>Heroic Leap</b><span class="kb">Jump the way you're moving and slam down on a crowd. Untouchable in the air.</span></button><button class="kc"><img src="ui/sym_dome.png" alt=""><span class="kk">Big button · E</span><b>Dome</b><span class="kb">A shield you can both stand in. Pushes enemies out, stops bullets, cuts the damage you take.</span></button></div>
+      <div class="gh">Abilities to learn <small class="cnt" data-cls="warden"></small></div>
+      <div class="abgrid" data-cls="warden"></div>
+      <div class="abdet" data-cls="warden"><p class="hint0">Tap an ability to see what it does and how it evolves.</p></div>
+      <div class="gtip"><img src="ui/sym_crown.png" alt=""><p>You do the killing and take the hits. Iron Skin, Ravager, War Banner and Armor keep you standing so she can keep you alive.</p></div>
     </section>
     <section class="gp" data-g="lamp" style="--gc:var(--lamp)" hidden>
-      <div class="ghead"><img src="sprites/lamp/rot/south.png" alt=""><div><span class="role">Healer · 90 health</span><b>Lamplighter</b><p>Fragile but deadly from a distance. Keep moving, stay behind the Warden and keep him alive.</p></div></div>
-      <div class="gl"><span class="k">Automatic</span><p><b>Light Bolts:</b> shoots the nearest enemy, faster the longer you keep firing. Bolts that fly through the Warden heal him.</p></div>
-      <div class="gl"><span class="k">Small button · Q</span><p><b>Step:</b> a quick blink in the direction you're moving. It leaves a pool of light that heals whoever stands in it.</p></div>
-      <div class="gl"><span class="k">Big button · E</span><p><b>Solar Lance:</b> a huge beam. Drag the button to aim, or just tap and it aims itself. Through your partner it heals 30% and powers them up; through the Dome it splits into a rainbow.</p></div>
-      <div class="gl tip"><span class="k">Good picks</span><p>Glow Garden, Sun Kite, Halo Pulse and Regeneration help you both. Star Fall and Prism hit hardest.</p></div>
+      <div class="hero">
+        <button class="stage" aria-label="Make Lamplighter attack"><span class="rays"></span><span class="spr" data-cls="lamp"></span><span class="pad"></span><span class="tapme">tap me</span></button>
+        <div class="hinfo"><span class="role">Healer · 90 health</span><b>Lamplighter</b><p>Fragile and slow to kill things on her own, but she keeps the Warden alive. Stay behind him and keep your light on him.</p><div class="meters"><div class="mt"><span>Damage</span><i style="--v:2"><u></u><u></u><u></u><u></u><u></u></i></div><div class="mt"><span>Toughness</span><i style="--v:2"><u></u><u></u><u></u><u></u><u></u></i></div><div class="mt"><span>Support</span><i style="--v:5"><u></u><u></u><u></u><u></u><u></u></i></div><div class="mt"><span>Speed</span><i style="--v:3"><u></u><u></u><u></u><u></u><u></u></i></div></div></div>
+      </div>
+      <div class="gh">Your kit <small>swipe</small></div>
+      <div class="kits"><button class="kc"><img src="icons/beam.png" alt=""><span class="kk">Automatic</span><b>Light Bolts</b><span class="kb">Shoots the nearest enemy, faster the longer you fire. Bolts that fly through the Warden heal him.</span></button><button class="kc"><img src="ui/sym_step.png" alt=""><span class="kk">Small button · Q</span><b>Step</b><span class="kb">A quick blink the way you're moving. Leaves a pool of light that heals whoever stands in it.</span></button><button class="kc"><img src="ui/sym_lance.png" alt=""><span class="kk">Big button · E</span><b>Solar Lance</b><span class="kb">A huge beam. Through the Warden it heals 35% and powers him up; through the Dome it splits into a rainbow.</span></button></div>
+      <div class="gh">Abilities to learn <small class="cnt" data-cls="lamp"></small></div>
+      <div class="abgrid" data-cls="lamp"></div>
+      <div class="abdet" data-cls="lamp"><p class="hint0">Tap an ability to see what it does and how it evolves.</p></div>
+      <div class="gtip"><img src="ui/sym_crown.png" alt=""><p>You win by keeping him up, not by out-damaging him. Glow Garden, Sun Kite, Halo Pulse and Regeneration make you both harder to kill.</p></div>
     </section>
     <section class="gp" data-g="both" style="--gc:var(--gold)" hidden>
-      <div class="gl"><span class="k">Bond</span><p>Stay close and the gold <b>Bond</b> bar fills: you both hit harder, attack faster and slowly heal. Drift apart and it fades. Coming back together after being apart sets off a <b>Rekindle</b> blast.</p></div>
-      <div class="gl"><span class="k">Level ups</span><p>Experience is shared, and you each pick your own card. You hold up to 6 abilities and 4 passives. Level 3 of an ability adds a new effect; level 5 evolves it if you own the passive the card names.</p></div>
-      <div class="gl"><span class="k">Duo abilities</span><p>When you each own the right pair of abilities, a duo card can appear, like Ember Storm (Whirlwind + Fireflies). Duos only work while you stand close.</p></div>
-      <div class="gl"><span class="k">Treasure</span><p>Gatekeepers drop a gold chest. Grab it for an evolution, a duo or bonus upgrades.</p></div>
-      <div class="gl"><span class="k">Going down</span><p>If one of you falls, the other stands beside them to revive. Wait too long and they're out for 20 seconds.</p></div>
+      <div class="bondhero"><img src="sprites/warden/rot/south-east.png" alt=""><span class="bheart"><img src="ui/sym_bond.png" alt=""></span><img src="sprites/lamp/rot/south-west.png" alt=""></div>
+      <p class="bondtx">He does the damage. She keeps him alive. Neither of you lasts long alone.</p>
+      <div class="kits">
+        <button class="kc"><img src="ui/sym_bond.png" alt=""><span class="kk">Bond</span><b>Stay close</b><span class="kb">The gold bar fills: you both hit harder, attack faster and slowly heal. Drift apart and it fades.</span></button>
+        <button class="kc"><img src="ui/sym_heart.png" alt=""><span class="kk">Rekindle</span><b>Reunite</b><span class="kb">Coming back together after being apart sets off a healing blast.</span></button>
+        <button class="kc"><img src="ui/sym_skull.png" alt=""><span class="kk">Going down</span><b>Revive</b><span class="kb">Stand beside a fallen partner to bring them back. Wait too long and they're out for 20 seconds.</span></button>
+        <button class="kc"><img src="ui/sym_gem.png" alt=""><span class="kk">Level ups</span><b>Shared XP</b><span class="kb">You each pick your own card. Hold up to 6 abilities and 4 passives.</span></button>
+        <button class="kc"><img src="icons/chest.png" alt=""><span class="kk">Treasure</span><b>Gold chests</b><span class="kb">Gatekeepers drop a chest. Grab it for an evolution, a duo or bonus upgrades.</span></button>
+      </div>
+      <div class="gh">Duo abilities <small>own both halves, stand close</small></div>
+      <div class="duos"></div>
+      <div class="gh">Passives <small>level 5 evolutions need these</small></div>
+      <div class="pasgrid"></div>
+      <div class="pasdet"><p class="hint0">Tap a passive.</p></div>
     </section>
   </div>
 </div>
@@ -445,7 +558,7 @@ input#code{border:0;border-style:solid;border-width:12px 24px;border-image:url(u
 </div>
 
 <script src="peerjs.min.js"></script>
-<script src="icons.js?v=1793444587"></script>
-<script src="game.js?v=1793444587"></script>
+<script src="icons.js?v=1793444938"></script>
+<script src="game.js?v=1793444938"></script>
 </body>
 </html>
