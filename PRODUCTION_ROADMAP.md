@@ -12,6 +12,23 @@ Source brief: `DARK_DECO_ART_BRIEF.md`
 - Use nearest-neighbour scaling for pixel art. Maintain readable contrast on the specified slate-violet rooftop floor.
 - Do not replace existing assets or rewrite large gameplay systems without a focused change and regression check.
 
+## Change-control rules — explicit user instruction (2026-10-31)
+
+**Do not change existing game code or existing assets unless Hamza explicitly authorizes that specific implementation work.** Planning, inspection, documentation and reporting are allowed. No code edits, asset replacements, generated-asset imports, deletions, or gameplay changes are authorized by a general "go ahead" to the project.
+
+Whenever any change is authorized and made:
+- Update this Markdown documentation in the same work session/commit.
+- Record every added, modified, moved or deleted file by exact repository path.
+- State whether it is code, art/asset, documentation, or configuration.
+- Explain what changed, why it changed, and which brief requirement it addresses.
+- For assets, include dimensions, frame count/format/transparency where applicable, and the source or generation method.
+- For code, identify affected systems and the tests/checks performed, plus any checks not performed.
+- Include the branch, commit SHA, and date in the change log.
+- Clearly distinguish proposed/planned work from work actually completed. Never mark a planned item complete.
+- If a change cannot be documented accurately, do not make it.
+
+**Default operating mode: read-only audit and Markdown documentation.** Do not merge to `main` or publish/deploy without separate explicit approval.
+
 ## Repository baseline discovered
 - Root app is a vanilla HTML/JS canvas game (`index.html`, `game.js`, `icons.js`) with bundled PeerJS.
 - `game.js` is the large host-authoritative game implementation.
@@ -94,3 +111,6 @@ Source brief: `DARK_DECO_ART_BRIEF.md`
 - 2026-10-31: Located repository and confirmed write permissions.
 - 2026-10-31: Created `production/dark-deco-art-and-gameplay` from `main`.
 - 2026-10-31: Initial repository inspection confirms vanilla canvas/JS architecture and existing icon/sprite/UI directories.
+
+## Change log
+- 2026-10-31 — Documentation-only update: added explicit change-control rules at Hamza's request. Files changed: `PRODUCTION_ROADMAP.md` only. No game code or art assets changed.
