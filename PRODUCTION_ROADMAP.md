@@ -114,3 +114,13 @@ Whenever any change is authorized and made:
 
 ## Change log
 - 2026-10-31 — Documentation-only update: added explicit change-control rules at Hamza's request. Files changed: `PRODUCTION_ROADMAP.md` only. No game code or art assets changed.
+
+
+## Audit findings and updated execution notes (2026-10-31)
+- The 20 new ability icons already have procedural 32×32 fallback drawings in `icons.js`; what is missing is the separate painted PNG override for each. Do not describe them as absent from the game.
+- Warden has complete 8-direction walk/rot/spinrot sheets, but attack1/2/3 have only east and south-east, and cast has only south-east. Lamplighter has 8-direction rot, but only east/north/south walk and shoot strips.
+- The runtime asks for additional hero animations (Warden spin/hurt/down/leap; Lamplighter cast/hurt/down/twirl) whose files were not present in the tracked sprite tree.
+- Enemy and boss sprites, spell-object sprites, impact strips and rooftop tiles/props are not present as dedicated image assets; the current game draws these procedurally.
+- UI directory has the expected families, but has not had visual QA.
+- **Do not start asset production by importing a montage.** Every delivered asset must be an individual validated PNG or a deliberately specified sprite strip with documented frame bounds and anchor points.
+- **Current work mode:** read-only code and existing assets; documentation-only updates are allowed. Additive new files are not to be committed until the user explicitly authorizes that work. Existing files remain untouched.
