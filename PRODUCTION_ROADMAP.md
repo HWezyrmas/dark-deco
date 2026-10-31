@@ -124,3 +124,12 @@ Whenever any change is authorized and made:
 - UI directory has the expected families, but has not had visual QA.
 - **Do not start asset production by importing a montage.** Every delivered asset must be an individual validated PNG or a deliberately specified sprite strip with documented frame bounds and anchor points.
 - **Current work mode:** read-only code and existing assets; documentation-only updates are allowed. Additive new files are not to be committed until the user explicitly authorizes that work. Existing files remain untouched.
+
+
+## Work log — 2026-10-31
+- Completed a source-to-asset coverage audit by reading the art brief, `game.js`, `icons.js`, README, sprite README and tracked asset tree.
+- Confirmed the 20 new ability icons already have procedural 32×32 fallback drawings; the missing part is their painted standalone PNG overrides.
+- Confirmed current hero directional gaps: Warden attack sets only have 2/8 directions each and cast 1/8; Lamplighter walk/shoot have 3/8 each. Several requested action folders are absent.
+- Confirmed dedicated enemy/boss sprites, spell-object sprites, impact strips and modular rooftop environment assets are absent; current visuals are primarily procedural.
+- Created 20 new 64×64 PNG ability-icon drafts locally under `/mnt/data/dark_deco_new_icons/` and packaged them as `/mnt/data/dark_deco_20_ability_icons.zip`. These are new-file drafts only; they have **not** been uploaded to GitHub, visually approved, or connected to runtime code. Existing repo files remain unchanged.
+- No game code, existing assets, or published `main` branch were modified.
