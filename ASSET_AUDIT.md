@@ -283,3 +283,12 @@ The runtime loader requests eight directions in this order: east, south-east, so
 - Read-only inspection of `DARK_DECO_ART_BRIEF.md`, `game.js`, `icons.js`, `README.md`, `sprites/README.txt`, and the tracked repository tree.
 - No game code or existing art files were modified.
 - The earlier generated overview montages are concept references only. They have not been sliced, validated, or added to the repository and must not be counted as completed game assets.
+
+
+## Work log — 2026-10-31
+- Completed a source-to-asset coverage audit by reading the art brief, `game.js`, `icons.js`, README, sprite README and tracked asset tree.
+- Confirmed the 20 new ability icons already have procedural 32×32 fallback drawings; the missing part is their painted standalone PNG overrides.
+- Confirmed current hero directional gaps: Warden attack sets only have 2/8 directions each and cast 1/8; Lamplighter walk/shoot have 3/8 each. Several requested action folders are absent.
+- Confirmed dedicated enemy/boss sprites, spell-object sprites, impact strips and modular rooftop environment assets are absent; current visuals are primarily procedural.
+- Created 20 new 64×64 PNG ability-icon drafts locally under `/mnt/data/dark_deco_new_icons/` and packaged them as `/mnt/data/dark_deco_20_ability_icons.zip`. These are new-file drafts only; they have **not** been uploaded to GitHub, visually approved, or connected to runtime code. Existing repo files remain unchanged.
+- No game code, existing assets, or published `main` branch were modified.
