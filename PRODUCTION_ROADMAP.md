@@ -178,3 +178,11 @@ Whenever any change is authorized and made:
   - `assets/drafts/loot/ASSET_MANIFEST.json` — dimensions and contents.
 - These are draft source assets. They are not runtime-integrated; visual QA, consistency review and in-game readability checks remain outstanding.
 - No existing files, game code or `main` branch were modified.
+
+
+## Section 10 correction (2026-10-31)
+The updated DARK_DECO_ART_BRIEF.md Section 10 is the controlling asset specification. Status correction: the 20 PNGs in assets/ability-icons/ are REJECTED and must not be integrated; the SVG files in assets/drafts/ from batches 02–04 are concept drafts only, not compliant production assets. They do not meet the required file formats, paths, dimensions, backgrounds, exact strip layouts, hero identity/anchors or validation rules. Do not count them as completed deliverables.
+
+Required priority: (1) redo 20 painterly, frame-free 64x64 opaque icons at icons/<id>.png, painted at 256px+ and Lanczos downscaled, with exact Section 5 identity colours; (2) 12 individual 256x256 pure-black spell object PNGs in vfx/; (3) six 768x128 impact strips with six 128x128 frames and fixed anchors; (4) enemy walk/death strips at exact Section 10.5 paths, directions and frame sizes; (5) missing hero strips using existing character designs, 84x84 RGBA frames and consistent foot anchors. Environment work is blocked until the brief provides exact specifications.
+
+Run Section 10.6 validation and inspect every asset at game size before committing. Commit one asset family at a time and log exact paths, dimensions, frame counts and creation tool. Never commit montages, contact sheets, archives or failed assets. Existing code and assets remain untouched; no edits to game.js, icons.js or index.html, and no merge/deploy to main.
