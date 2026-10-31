@@ -300,3 +300,10 @@ The runtime loader requests eight directions in this order: east, south-east, so
 - Each file is a 64×64 RGBA PNG. These are new draft art assets; visual QA and runtime wiring are not complete. Existing `icons.js`, `game.js`, and all pre-existing art were left unchanged.
 - The game already has procedural icon fallbacks for these IDs. This upload adds the painted image candidates only; it does not enable them in the UI.
 - The original zip archive was a local convenience package and is not the canonical repository deliverable; the individual PNGs above are.
+
+
+## Production asset batch 02 — 2026-10-31
+- Added `assets/spell-objects/spell_objects_4x3.png` (256×192 RGBA PNG; 12 separate 64×64 cells: axe arc, blade vortex, light lance, lantern, phoenix, prism, dome, chain hook, starfall, fire orb, moth swarm, healing ring).
+- This is a new draft asset atlas. It is not runtime-wired and needs visual placement QA.
+- No existing source code or existing art assets were modified. No changes were made to `main`.
+- Other locally generated draft candidates from this batch (enemy walk cycles, combat VFX, rooftop tiles/props) are not marked as uploaded or complete until they are actually committed to the repository.
