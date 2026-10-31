@@ -16,6 +16,19 @@ function outline(c){const o=mk(),g=o.getContext('2d');const t=mk(),tg=t.getConte
   for(const [a,b] of [[-1,0],[1,0],[0,-1],[0,1],[-1,-1],[1,1],[-1,1],[1,-1]])g.drawImage(t,a,b);g.drawImage(c,0,0);return o}
 const D={
 
+  hellchain(d){for(let i=0;i<6;i++){d.px(4+i*4,24-i*3,3,2,i%2?P.orange:P.amberD)}for(let i=0;i<6;i++){d.px(26-i*4,24-i*3,3,2,i%2?P.orange:P.amberD)}d.circ(16,8,5,P.orange);d.circ(16,8,2,P.cream)},
+  wyrm(d){d.tri([4,10,20,6,28,12,18,14,28,18,16,22,4,20],P.cyanD);d.tri([6,12,18,9,24,12,16,13],P.cyan);d.px(16,10,2,2,P.white);d.tri([8,10,4,2,12,9],P.white);d.tri([24,16,30,24,22,20],P.cyan)},
+  obelisk(d){for(const [x,h] of [[6,14],[16,22],[26,14]]){d.tri([x-3,28,x+3,28,x+2,28-h,x,28-h-4,x-2,28-h],P.violetD);d.px(x-3,26,7,1,P.gold);d.px(x-1,28-h-3,2,2,P.cream)}d.line(2,29,30,29,P.gold,1)},
+  thunder(d){d.tri([18,2,8,17,15,17,11,30,24,12,17,12,22,2],P.violet);d.tri([18,4,11,15,16,15,14,24,21,13,16,13,20,4],P.white)},
+  bloodmoon(d){d.circ(16,14,11,P.redD);d.circ(14,12,8,P.red);d.circ(12,16,2,P.redD);d.circ(19,10,2,P.redD);for(let i=0;i<5;i++)d.px(5+i*5,27-(i%2)*2,1,3,P.red)},
+  legion(d){for(const [x,a] of [[7,P.blueD],[16,P.blue],[25,P.blueD]]){d.circ(x,10,3,a);d.px(x-3,13,7,9,a);d.line(x+3,14,x+6,8,P.white,1)}d.line(2,26,30,26,P.blue,1)},
+  phoenix(d){d.tri([16,10,2,4,10,16],P.orange);d.tri([16,10,30,4,22,16],P.orange);d.tri([12,12,20,12,16,22],P.amber);d.circ(16,9,3,P.amber);d.px(16,8,1,1,P.white);d.tri([14,20,18,20,16,30],P.red)},
+  heaven(d){for(const x of [8,16,24]){d.px(x-2,2,5,24,P.cream);d.px(x-1,2,3,24,P.white)}d.ring(16,27,10,P.gold,1)},
+  cranes(d){d.tri([4,18,16,12,10,22],P.white);d.tri([16,12,26,4,20,16],P.pink);d.tri([16,12,28,18,18,18],P.white);d.px(26,4,2,2,P.pinkD);d.px(6,26,2,2,P.amber);d.px(12,28,2,2,P.green);d.px(22,26,2,2,P.blue)},
+  starwell(d){d.circ(16,16,13,P.ink);for(let a=0;a<3;a++)d.arc(16,16,11,a*120,a*120+160,a?P.violet:P.pink,2);d.circ(16,16,4,P.ink);d.ring(16,16,5,P.white,1)},
+  clock(d){d.circ(16,16,13,P.cyanD);d.circ(16,16,11,P.ink);d.ring(16,16,12,P.gold,2);for(let i=0;i<12;i++){const a=i/12*Math.PI*2;d.px(16+Math.cos(a)*9,16+Math.sin(a)*9,1,1,P.gold)}d.line(16,16,16,7,P.white,1);d.line(16,16,22,16,P.cyan,1)},
+  fireworks(d){for(let i=0;i<12;i++){const a=i/12*Math.PI*2;d.line(14+Math.cos(a)*3,12+Math.sin(a)*3,14+Math.cos(a)*10,12+Math.sin(a)*10,i%2?P.pink:P.amber,1)}d.circ(14,12,2,P.white);d.line(22,30,16,18,P.amberD,1);d.circ(25,24,3,P.green);d.px(25,24,1,1,P.white)},
+
   guillotine(d){d.line(16,3,16,15,P.brown,2);d.px(14,2,4,2,P.gold);d.tri([5,15,27,15,24,27,8,27],P.steel);d.tri([7,16,25,16,23,21,9,21],P.white);d.px(8,25,16,2,P.cyan);d.line(4,29,28,29,P.cyan,1);d.px(15,17,2,2,P.gold)},
   vortex(d){d.arc(16,17,13,200,520,P.cyan,2);d.arc(16,17,8,0,300,P.blue,2);d.arc(16,17,4,90,400,P.white,1);d.line(25,6,29,10,P.steel,2);d.px(26,4,3,3,P.white);d.line(5,24,9,28,P.steel,2);d.px(3,27,3,3,P.white)},
   grip(d){d.px(8,10,17,13,P.cyan);for(let i=0;i<4;i++)d.circ(10+i*4,10,2,P.steelD);for(let i=0;i<4;i++)d.px(9+i*4,8,3,2,P.white);d.px(5,14,5,6,P.cyan);d.px(6,15,3,3,P.white);d.px(14,23,5,7,P.cyanD);d.line(4,29,28,29,P.cyan,1)},
