@@ -412,6 +412,8 @@ input#code{border:0;border-style:solid;border-width:12px 24px;border-image:url(u
 .abdet,.pasdet,.duo,.gtip{border-width:10px 12px;border-image:url(ui/btn_ghost_9.png) 24 fill/10px 12px stretch;padding:4px 4px}
 
 .duo .tx small span{display:inline;font:inherit;line-height:inherit}.duo .tx small{display:block;margin:2px 0 3px}
+
+@media (max-width:520px){.top{position:relative}.tr{position:absolute;right:0;top:0;display:grid;grid-template-columns:repeat(2,30px);gap:5px;max-width:none}.tr .hb.sym{width:30px;height:30px}.who{max-width:calc(100% - 72px)}#kit{gap:3px}.kw{padding:4px 4px 6px}.kw img{width:20px;height:20px}.mid{gap:8px}}
 </style>
 </head>
 <body>
@@ -542,6 +544,7 @@ input#code{border:0;border-style:solid;border-width:12px 24px;border-image:url(u
     <div class="sklab">Attacks</div><div class="skgrid" id="skW"></div>
     <div class="sklab">Skill changes, stats and pair cards</div><div class="skgrid" id="skM"></div>
     <p class="small" id="skNote"></p>
+    <button class="btn ghost" id="numT" style="max-width:320px;align-self:center">Damage numbers</button>
   </div>
 </div>
 
@@ -558,7 +561,7 @@ input#code{border:0;border-style:solid;border-width:12px 24px;border-image:url(u
 </div>
 
 <script src="peerjs.min.js"></script>
-<script src="icons.js?v=1793446951"></script>
-<script src="game.js?v=1793446951"></script>
+<script src="icons.js?v=1793447840"></script>
+<script src="game.js?v=1793447840"></script>
 </body>
 </html>
