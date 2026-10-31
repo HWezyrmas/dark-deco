@@ -1,0 +1,10 @@
+{
+  "pack": "Dark Deco Production Art Batch 03 — Directional Hero Coverage",
+  "date": "2026-10-31",
+  "file": "assets/drafts/heroes/hero_directional_coverage.svg",
+  "dimensions": "2048x256",
+  "cell": "64x64",
+  "layout": "32 columns per row: 8 directions x 4 frames; rows Warden attack, Warden cast, Lamplighter walk, Lamplighter shoot. Direction order is east, south-east, south, south-west, west, north-west, north, north-east.",
+  "status": "Draft directional animation atlas. Stylized source art, not a drop-in replacement for the existing per-direction PNG strips. Needs character identity review, frame timing, foot-anchor and game-scale QA.",
+  "constraints": "Additive file only. Existing code and sprite files unchanged."
+}

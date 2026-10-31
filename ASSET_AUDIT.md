@@ -319,3 +319,11 @@ The runtime loader requests eight directions in this order: east, south-east, so
 - These are newly authored vector-source drafts with transparent backgrounds and crisp pixel-aligned geometry. They are not runtime-wired; animation timing, in-game scale, sprite anchors, collision/seam fit and visual QA remain outstanding.
 - No existing code, art or configuration was modified. `main` was not changed.
 - Standing authorization update: Hamza has explicitly authorized automatic upload of new additive assets and documentation to this production branch. This does **not** authorize editing or replacing existing files, changing game code, merging to `main`, or deploying.
+
+
+## Production asset batch 03 — 2026-10-31
+- Added `assets/drafts/heroes/hero_directional_coverage.svg` and matching JSON manifest.
+- Atlas dimensions: 2048×256; 64×64 cells; 32 columns per row (8 directions × 4 frames) and four rows: Warden attack, Warden cast, Lamplighter walk, Lamplighter shoot.
+- Direction order documented as east, south-east, south, south-west, west, north-west, north, north-east.
+- This is a draft directional source atlas, not a drop-in replacement for the existing per-direction PNG strips. Character identity, timing, foot anchors and game-scale QA remain outstanding.
+- No existing code or sprite files modified; `main` remains untouched.
