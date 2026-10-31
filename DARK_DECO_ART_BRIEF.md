@@ -375,3 +375,34 @@ Then also:
 4. Enemy sprites (10.5).
 5. The missing hero directions and animations (10.5).
 6. The environment: tiles, bridges, skyline and props. Its exact specs will be added to this brief before that work starts; don't start without them.
+
+---
+
+## 11. Required working method for ChatGPT (added after batches 02–04)
+
+**To ChatGPT, read this first.** Batches 02–04 (everything in `assets/drafts/` and `assets/spell-objects/spell_objects_4x3.png`) were made by **writing SVG or code that draws rectangles, polygons and circles**. That method can never produce this game's art. The heroes came out as a grey box on a red box, and the spell objects as generic shapes. They are all **rejected**, as you already noted in commit `057682b`. The problem is not the details; it is the method.
+
+### 11.1 The rule
+1. **Do not write SVG, canvas code, Python drawing code or any other code to create art.** No `<rect>`, `<polygon>`, PIL `draw.*` or similar, for any asset, ever.
+2. **Use your image generation tool** (the built-in image model) to create **painted raster images** from the prompts in this brief. That's the same kind of tool that made the painted UI sheets and the existing icons in `icons/`.
+3. **Show every generated image to Hamza in the chat first.** Do not commit anything to GitHub until Hamza has looked at that specific image and approved it.
+4. **After approval, hand the full-resolution image to Hamza as is.** Claude cuts, keys, sizes, validates and wires assets into the game. Don't slice, shrink or convert the images yourself, because that's where the quality was lost.
+5. Code is fine only for checking files, e.g. the validation script in 10.6. Never use it to make pixels.
+
+### 11.2 Your next task, exactly
+1. Generate **icon sheet A (Warden)** with the image generator. Use this prompt word for word:
+
+   > A single sprite sheet of 10 square game ability icons in 2 rows of 5, on a solid black background with even spacing. The style is dark art deco noir with neon accents and painterly pixel art, matching a premium mobile RPG icon set. Each icon has a dark navy background, rich lighting and glow, and no text, borders or frames. Row 1: 1) a giant spectral executioner's axe falling from above, steel blade glowing lilac; 2) a mint-green tornado made of spinning battle axes; 3) a giant jade-green ghostly stone fist bursting up through cracked ground; 4) a hot pink-red explosion bursting into radiating shards of shrapnel; 5) glowing orange burning chains wrapped around each other with fiery links. Row 2: 6) a spectral teal dragon head breathing a cone of ghostfire; 7) three tall black-and-gold art deco obelisks erupting from the ground; 8) a violet lightning bolt striking down from a stormy sky; 9) a huge blood-red full moon with crimson drops beneath it; 10) three ghostly blue warrior silhouettes charging forward in a row.
+
+2. Show it to Hamza and wait for approval or changes.
+3. Then do **icon sheet B (Lamplighter)** the same way, then spell-object sheets C and D, then impact sheet E. The prompts for B to E are the ones Hamza has; ask him for them if you don't have them.
+4. One sheet per message. Don't batch, and don't move on until the current sheet is approved.
+
+### 11.3 What not to do
+- No new asset categories that aren't in this brief (loot, portals, shrines, status icons and so on). They aren't in the game.
+- No commits of drafts, concepts, atlases, SVG, JSON manifests or zips.
+- No "automatic upload" of new files. Every commit needs Hamza's approval of that specific asset first.
+- Don't redesign the heroes. They already exist as sprites in `sprites/warden/` and `sprites/lamp/`. Any new hero animation must look exactly like them, so hero animation is best made in PixelLab from those sprites, not with your image generator.
+
+### 11.4 Cleaning up
+You may delete `assets/drafts/`, `assets/spell-objects/` and `assets/ability-icons/` from the production branch in one commit titled "remove rejected draft assets", once Hamza approves the deletion. Don't touch anything else.
