@@ -322,6 +322,8 @@ function openSkills(){const c=meC();if(!c)return;const I=window.DD_ICONS||{};
   const st=[];if(c.st.dmg>1.001)st.push('+'+Math.round((c.st.dmg-1)*100)+'% damage');if(c.st.spd>1.001)st.push('+'+Math.round((c.st.spd-1)*100)+'% speed');if(c.st.cdr>.001)st.push(Math.round(c.st.cdr*100)+'% faster attacks');if(c.st.mag>1.001)st.push('+'+Math.round((c.st.mag-1)*100)+'% gem reach');st.push(Math.round(c.max)+' max health');
   rows.push(`<div class="ski" style="--wc:${C.heal}"><img src="${I.hp||''}" alt=""><div class="t"><b>Stats</b><span>${st.join(' · ')}</span></div></div>`);
   $('skM').innerHTML=rows.join('');$('skNote').textContent=solo?'':'The game keeps running while this is open.';$('sSkills').hidden=false}
+$('bGuide').addEventListener('click',()=>{audioInit();$('sGuide').hidden=false});$('guideClose').addEventListener('click',()=>{$('sGuide').hidden=true});
+document.querySelectorAll('.gt').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.gt').forEach(x=>x.classList.toggle('on',x===b));document.querySelectorAll('.gp').forEach(s=>s.hidden=s.dataset.g!==b.dataset.g);SFX.tick&&SFX.tick()}));
 $('skillsBtn').addEventListener('click',()=>{openSkills();$('skillsBtn').blur()});$('skillsBtn2').addEventListener('click',openSkills);$('skillsClose').addEventListener('click',()=>{$('sSkills').hidden=true});
 function setHud(){const c=meC();if(!c)return;
   $('track').querySelectorAll('i').forEach(n=>n.remove());for(const [t,cl] of [[ELITE_T[0],''],[ELITE_T[1],''],[BOSS_T,'boss']]){const i=document.createElement('i');i.className=cl;i.style.left=(t/RUN*100)+'%';i.dataset.t=t;$('track').appendChild(i)}const D=CL[c.cls],t=document.body.classList.contains('touch');$('name').textContent=D.name;$('name').style.color=D.color;

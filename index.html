@@ -167,6 +167,17 @@ body.touch .keys.kb{display:none} .keys.tch{display:none} body.touch .keys.tch{d
 @media (max-width:420px){.offers{gap:7px}.pick{padding:24px 5px 10px;border-radius:8px 8px 18px 18px}.pick .ic{width:58px;height:58px}.pick .ic img{width:50px;height:50px}.pick .nm{font-size:14px}.pick .d{font-size:10.5px}.lvban{font-size:24px;padding:9px 34px 7px}}
 /* learned skills */
 #sSkills{background:rgba(10,8,22,.92)}
+#sGuide{background:#0b0918;z-index:30;align-items:start}
+.gd{width:100%;max-width:520px;display:flex;flex-direction:column;gap:10px;text-align:left}
+.gtabs{display:flex;gap:6px}.gt{flex:1;font:600 10px var(--ui);letter-spacing:.2em;text-transform:uppercase;color:var(--fog);background:transparent;border:1px solid #3a3456;padding:10px 6px 8px;cursor:pointer}
+.gt.on{color:#120d22;background:var(--moon);border-color:var(--moon)}
+.gp{display:flex;flex-direction:column;gap:8px;border-left:3px solid var(--gc);padding-left:12px}
+.ghead{display:flex;gap:12px;align-items:center}.ghead img{width:84px;height:84px;image-rendering:pixelated;flex:0 0 auto;filter:drop-shadow(0 0 10px color-mix(in srgb,var(--gc) 45%,transparent))}
+.ghead .role{font:8px var(--pix);letter-spacing:.14em;color:var(--fog);text-transform:uppercase}.ghead b{display:block;font-family:var(--display);font-weight:400;font-size:26px;color:var(--gc);letter-spacing:.06em;margin:2px 0}.ghead p{margin:0;font-size:13px;line-height:1.45}
+.gl{display:grid;grid-template-columns:96px 1fr;gap:10px;align-items:start;padding:8px 0;border-top:1px solid #2a2545}
+.gl .k{font:8px var(--pix);letter-spacing:.08em;color:var(--gc);text-transform:uppercase;line-height:1.5;padding-top:2px}.gl p{margin:0;font-size:13px;line-height:1.5}.gl b.r{color:#ff5a7a}
+.gl.tip p{color:var(--fog)}
+@media (max-width:520px){.gl{grid-template-columns:1fr;gap:3px}.ghead img{width:64px;height:64px}}
 .sk{width:100%;max-width:520px;display:flex;flex-direction:column;gap:14px}
 .skh{display:flex;justify-content:space-between;align-items:center}
 .skh h2{font-size:26px}
@@ -234,6 +245,7 @@ body.touch .keys.kb{display:none} .keys.tch{display:none} body.touch .keys.tch{d
       <button class="btn" id="bHost">Host a game</button>
       <div class="joinrow"><input id="code" maxlength="4" placeholder="CODE" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Room code"><button class="btn ghost" id="bJoin">Join</button></div>
       <button class="btn ghost" id="bSolo">Practice with a bot</button>
+      <button class="btn ghost" id="bGuide">Meet the heroes</button>
     </div>
     <div class="status" id="menuStatus"></div>
     <p class="small">Turn sound on. Works over Wi-Fi or mobile data.</p>
@@ -249,7 +261,7 @@ body.touch .keys.kb{display:none} .keys.tch{display:none} body.touch .keys.tch{d
     <h2>Choose a class</h2>
     <div class="classes">
       <button class="cls" data-c="warden" aria-pressed="false"><span class="role">Protector · 140 health</span><b>Warden</b><span>A fury of blades: fast combos build Rage, Whirlwind spends it, and at full Rage he unleashes Bladestorm. Heroic Leap crashes into crowds. Dome shields you both and blasts the swarm back.</span></button>
-      <button class="cls" data-c="lamp" aria-pressed="false"><span class="role">Healer · 90 health</span><b>Lamplighter</b><span>A beam that grows hotter the longer it holds. Shine it through the Warden to heal him. Solar Lance: aim a huge beam; through your partner it heals and powers them up.</span></button>
+      <button class="cls" data-c="lamp" aria-pressed="false"><span class="role">Healer · 90 health</span><b>Lamplighter</b><span>Shoots homing light bolts that heal the Warden when they fly through him. Step blinks and leaves a healing pool; Solar Lance heals and powers him up.</span></button>
     </div>
     <div class="picks"><span id="pickMe">You: ·</span><span class="m" id="pickMate"></span></div>
     <div class="keys kb"><b>WASD</b><span>Move</span><b>Q or Space</b><span>Leap (Storm at full Rage) / Step</span><b>E</b><span>Dome / Flare</span></div>
@@ -266,6 +278,35 @@ body.touch .keys.kb{display:none} .keys.tch{display:none} body.touch .keys.tch{d
     <div class="offers" id="offers"></div>
     <div id="mateChoice"></div>
     <div class="lvfoot"><button class="hb" id="skillsBtn2">Learned skills</button></div>
+  </div>
+</div>
+
+<div class="scr" id="sGuide" hidden>
+  <div class="gd">
+    <div class="skh"><h2>Meet the heroes</h2><button class="hb" id="guideClose">Close</button></div>
+    <div class="gtabs"><button class="gt on" data-g="warden">Warden</button><button class="gt" data-g="lamp">Lamplighter</button><button class="gt" data-g="both">Together</button></div>
+    <section class="gp" data-g="warden" style="--gc:var(--warden)">
+      <div class="ghead"><img src="sprites/warden/rot/south.png" alt=""><div><span class="role">Protector · 140 health</span><b>Warden</b><p>A berserker with two axes. Get in close and let the axes work while she stays behind you.</p></div></div>
+      <div class="gl"><span class="k">Automatic</span><p><b>Fury Strikes:</b> a 3-hit axe combo on anything near you. Every hit builds <b class="r">Rage</b>, the red bar under your health.</p></div>
+      <div class="gl"><span class="k">Rage</span><p><b>Whirlwind</b> spends Rage on its own when enemies surround you. At full Rage the small button turns into <b class="r">STORM</b>: tap it for Bladestorm, a long spin you can't be hurt in.</p></div>
+      <div class="gl"><span class="k">Small button · Q</span><p><b>Heroic Leap:</b> jump the way you're moving and slam down on a crowd. You can't be hurt in the air.</p></div>
+      <div class="gl"><span class="k">Big button · E</span><p><b>Dome:</b> a shield you can both stand in. Enemies are pushed out, bullets stop at its edge, and you take less damage inside.</p></div>
+      <div class="gl tip"><span class="k">Good picks</span><p>Iron Skin, Ravager, War Banner and Armor. You're the wall, so take the hits for her.</p></div>
+    </section>
+    <section class="gp" data-g="lamp" style="--gc:var(--lamp)" hidden>
+      <div class="ghead"><img src="sprites/lamp/rot/south.png" alt=""><div><span class="role">Healer · 90 health</span><b>Lamplighter</b><p>Fragile but deadly from a distance. Keep moving, stay behind the Warden and keep him alive.</p></div></div>
+      <div class="gl"><span class="k">Automatic</span><p><b>Light Bolts:</b> shoots the nearest enemy, faster the longer you keep firing. Bolts that fly through the Warden heal him.</p></div>
+      <div class="gl"><span class="k">Small button · Q</span><p><b>Step:</b> a quick blink in the direction you're moving. It leaves a pool of light that heals whoever stands in it.</p></div>
+      <div class="gl"><span class="k">Big button · E</span><p><b>Solar Lance:</b> a huge beam. Drag the button to aim, or just tap and it aims itself. Through your partner it heals 30% and powers them up; through the Dome it splits into a rainbow.</p></div>
+      <div class="gl tip"><span class="k">Good picks</span><p>Glow Garden, Sun Kite, Halo Pulse and Regeneration help you both. Star Fall and Prism hit hardest.</p></div>
+    </section>
+    <section class="gp" data-g="both" style="--gc:var(--gold)" hidden>
+      <div class="gl"><span class="k">Bond</span><p>Stay close and the gold <b>Bond</b> bar fills: you both hit harder, attack faster and slowly heal. Drift apart and it fades. Coming back together after being apart sets off a <b>Rekindle</b> blast.</p></div>
+      <div class="gl"><span class="k">Level ups</span><p>Experience is shared, and you each pick your own card. You hold up to 6 abilities and 4 passives. Level 3 of an ability adds a new effect; level 5 evolves it if you own the passive the card names.</p></div>
+      <div class="gl"><span class="k">Duo abilities</span><p>When you each own the right pair of abilities, a duo card can appear, like Ember Storm (Whirlwind + Fireflies). Duos only work while you stand close.</p></div>
+      <div class="gl"><span class="k">Treasure</span><p>Gatekeepers drop a gold chest. Grab it for an evolution, a duo or bonus upgrades.</p></div>
+      <div class="gl"><span class="k">Going down</span><p>If one of you falls, the other stands beside them to revive. Wait too long and they're out for 20 seconds.</p></div>
+    </section>
   </div>
 </div>
 
@@ -292,7 +333,7 @@ body.touch .keys.kb{display:none} .keys.tch{display:none} body.touch .keys.tch{d
 </div>
 
 <script src="peerjs.min.js"></script>
-<script src="icons.js?v=1793441408"></script>
-<script src="game.js?v=1793441408"></script>
+<script src="icons.js?v=1793441504"></script>
+<script src="game.js?v=1793441504"></script>
 </body>
 </html>
