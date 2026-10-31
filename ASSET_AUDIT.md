@@ -237,3 +237,49 @@ Whenever any change is authorized and made:
 
 ## Documentation/change log
 - 2026-10-31 — Documentation-only update: added explicit change-control rules at Hamza's request. Files changed: `ASSET_AUDIT.md` only. No game code or art assets changed.
+
+
+## Deeper source-to-asset audit (read-only, 2026-10-31)
+
+### Ability icon coverage
+- `icons.js` defines 77 procedural icon drawings (32×32 canvas output with a dark outline).
+- The painted-PNG override list contains 57 keys.
+- The following 20 ability icons have procedural drawings but no corresponding painted PNG override in the current list:
+  - Warden: `guillotine`, `vortex`, `grip`, `carnage`, `hellchain`, `wyrm`, `obelisk`, `thunder`, `bloodmoon`, `legion`.
+  - Lamplighter: `constellation`, `aurora`, `rose`, `wisp`, `phoenix`, `heaven`, `cranes`, `starwell`, `clock`, `fireworks`.
+- Therefore these are **not missing from the running game's icon fallback**; they are missing as standalone painted PNGs. Adding new PNGs under these exact IDs can be an additive asset-only task later, without editing the code, because the existing icon code already references the corresponding IDs in its procedural map. Runtime use of those PNGs would still require an authorized code change to add them to the override list; do not do that under the current read-only-code rule.
+
+### Hero sprite direction coverage
+The runtime loader requests eight directions in this order: east, south-east, south, south-west, west, north-west, north, north-east. Missing directions borrow a mirrored or nearest available direction.
+
+| Class / animation | Files present | Expected | Finding |
+|---|---:|---:|---|
+| Warden walk | 8 | 8 | Complete direction set |
+| Warden rot | 8 | 8 | Complete direction set |
+| Warden spinrot | 8 | 8 | Complete direction set |
+| Warden attack | 2 | 8 | 6 directions borrowed |
+| Warden attack2 | 2 | 8 | 6 directions borrowed |
+| Warden attack3 | 2 | 8 | 6 directions borrowed |
+| Warden cast | 1 | 8 | 7 directions borrowed |
+| Lamplighter rot | 8 | 8 | Complete direction set |
+| Lamplighter walk | 3 | 8 | 5 directions borrowed |
+| Lamplighter shoot | 3 | 8 | 5 directions borrowed |
+
+- Runtime loader also requests Warden spin/hurt/down/leap and Lamplighter cast/hurt/down/twirl directional strips; no files for these animation folders appeared in the tracked `sprites/` tree.
+- The sprite README describes 64×64 strips. The current runtime also has a tall-sprite preparation path that places imported art into an 84×80 internal canvas. Confirm the actual PNG frame dimensions and foot anchors before producing replacements.
+- Existing sprite paths are loaded asynchronously; failures are silently ignored and fall back to drawn characters. No code changes were made.
+
+### Enemy, spell and environment coverage
+- No dedicated enemy/boss sprite files were found in `sprites/`; enemy silhouettes and variants are drawn by `drawEnemy()` in `game.js`.
+- The six enemy types in the brief (Shadow, Brute, Gunman, Bomber, Gatekeeper, Foreman) are therefore procedural placeholders, not finished sprite assets.
+- Spell/projectile shapes and rooftop environment are primarily drawn at runtime in `game.js`; dedicated spell-object and six-frame impact PNG strips were not found in the tracked asset inventory.
+- UI inventory includes 87 paths and the expected card, panel, bar, button, banner, joystick and symbol families. This is path-level coverage only; visual and nine-slice quality has not yet been inspected.
+
+### Important implementation constraint
+- `SPR_ANIMS` declares animation names, while the actual loader requests directional files and falls back to the nearest/mirrored direction. Do not treat a declared animation name as proof that art exists.
+- The runtime code and README currently describe some hero details differently from the art brief. The brief should guide future art, but do not alter gameplay or labels as part of this asset audit.
+
+### Work actually performed in this audit
+- Read-only inspection of `DARK_DECO_ART_BRIEF.md`, `game.js`, `icons.js`, `README.md`, `sprites/README.txt`, and the tracked repository tree.
+- No game code or existing art files were modified.
+- The earlier generated overview montages are concept references only. They have not been sliced, validated, or added to the repository and must not be counted as completed game assets.
