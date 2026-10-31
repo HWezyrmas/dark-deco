@@ -137,7 +137,7 @@ const PAIRS={
 };
 const CL={
   warden:{name:'Warden',color:C.cyan,spd:56,hp:140,s1:'Leap',s2:'Dome',cd1:5,cd2:12,start:'cleave'},
-  lamp:{name:'Lamplighter',color:C.amber,spd:68,hp:90,s1:'Step',s2:'Lance',cd1:4,cd2:11,start:'beam'},
+  lamp:{name:'Lamplighter',color:C.amber,spd:58,hp:90,s1:'Step',s2:'Lance',cd1:4,cd2:11,start:'beam'},
 };
 const WCOL={ravager:'#8ff3ff',blood:'#ff5a6a',charge:'#a8f6ff',earth:'#6fe0ff',hook:'#d6e2ff',banner:'#ffd27a',shout:'#ff9a7a',starfall:'#fff3a0',lanterns:'#ff9fb8',garden:'#9dffb0',halo:'#ffe7a0',kite:'#ffd08a',cleave:'#bff9ff',whirl:'#7fd7ff',slam:'#6fb0ff',shield:'#f2cf7a',riposte:'#ffffff',twirl:'#ffc861',flies:'#d8ff6a',moths:'#ff8fd0',candle:'#ff9a3c',chain:'#fff07a',beam:'#fff0a8',prism:'#c9a0ff',lighthouse:'#ffe08a',lance:'#fff0a8'};
 function wCount(id,lv){if(lv<1)return 0;if(id==='prism')return lv>=5?4:lv>=3?2:1;if(id==='twirl')return lv>=5?7:2+lv;if(id==='moths')return lv>=5?6:3+Math.floor((lv-1)/2);if(id==='candle')return lv>=5?3:lv>=3?2:1;if(id==='chain')return lv>=5?9:3+lv;if(id==='flies')return lv>=5?6:2+(lv>=2)+(lv>=4);if(id==='shield')return lv>=5?5:3+Math.floor((lv-1)/3);if(id==='prism')return lv>=5?4:1+Math.floor((lv-1)/2);if(id==='lighthouse')return lv>=5?2:1;return 0}
@@ -360,8 +360,9 @@ function healP(c,amt,show=true){if(c.state!=='ok')return;if(teamMods.has('ward')
 
 /* ================= host: damage ================= */
 const QUIETW=new Set(['ravager','halo','starfall','earth','lanterns','kite','garden','banner','shout','flies','candle','lighthouse']);
+const ROLE_DMG={warden:1.1,lamp:.62};
 function hitE(e,base,src,o={}){if(!alive(e))return false;if(o.w&&QUIETW.has(o.w)&&!o.exec)o.quiet=1;
-  const crit=o.crit??(rnd()<.15);if(src)e.ls=src;let a=Math.round(base*(src?src.st.dmg:1)*(src&&src.shoutT>0?1.2:1)*(src&&src.pow>0?1.5:1)*(src&&chars.length>1?1+.25*bond:1)*(.85+rnd()*.3));if(crit)a*=2;
+  const crit=o.crit??(rnd()<.15);if(src)e.ls=src;let a=Math.round(base*(src?src.st.dmg:1)*(src&&src.shoutT>0?1.2:1)*(src&&src.pow>0?1.5:1)*(src&&chars.length>1?1+.25*bond:1)*(src?ROLE_DMG[src.cls]||1:1)*(.85+rnd()*.3));if(crit)a*=2;
   if(window.__DLOG&&src)__DLOG[(src.cls==='lamp'?'L:':'W:')+(o.w||'other')]=(__DLOG[(src.cls==='lamp'?'L:':'W:')+(o.w||'other')]||0)+a;
   e.hp-=a;e.hit=.1;e.sq=.4;if(o.frz)e.frz=Math.max(e.frz||0,o.frz);const kr=e.kind>=4?0:e.kind===1?.35:1;e.kx+=(o.kx||0)*kr;e.ky+=(o.ky||0)*kr;if(o.up&&e.kind!==1&&e.kind<4)e.vz=Math.max(e.vz,o.up);if(o.stun)e.stun=Math.max(e.stun||0,o.stun);
   if(src&&src.cls==='warden'&&((src.pow>0&&teamMods.has('litsteel'))||src.lit>0))e.burn=Math.max(e.burn||0,2);
@@ -476,7 +477,7 @@ function updLance(c,dt){const Ln=c.lance;Ln.t+=dt;Ln.x=c.x;Ln.y=c.y;if(Ln.t>=Ln.
     for(const e of en){if(!alive(e))continue;const px=e.x-sx,py=(e.y-8-e.z)-sy,along=px*Ln.dx+py*Ln.dy,perp=Math.abs(px*Ln.dy-py*Ln.dx);if(along>0&&along<LEN&&perp<wd+rad(e)*.6)hitE(e,15,c,{quiet:1,w:'lance',kx:Ln.dx*110,ky:Ln.dy*80,col:WCOL.lance,crit:false})}
     if(Ln.refr&&dome){for(let i=0;i<6;i++){const a=i/6*TAU+Ln.t*1.2,rx=Math.cos(a),ry=Math.sin(a)*.6,cx=dome.x,cy=dome.y-14;for(const e of en){if(!alive(e))continue;const px=e.x-cx,py=(e.y-8)-cy,along=px*rx+py*ry,perp=Math.abs(px*ry-py*rx);if(along>0&&along<150&&perp<9)hitE(e,12,c,{quiet:1,w:'lance',col:WCOL.lance,crit:false})}}}}
   const p=partnerOf(c);if(p&&!Ln.healed){const px=p.x-sx,py=(p.y-12)-sy,along=px*Ln.dx+py*Ln.dy,perp=Math.abs(px*Ln.dy-py*Ln.dx);
-    if(along>0&&along<LEN&&perp<wd+8){if(p.state==='down'&&c.mods.has('dawn'))revive(p,c);if(p.state==='ok'){Ln.healed=true;p.pow=c.mods.has('brightflare')?8:5;healP(p,p.max*.3);emit('heal',p.idx);emit('learn',p.idx,'Solar Lance','Empowered','Healed and hitting harder for a few seconds',C.amber);emit('sfx','flare');emit('tint','255,215,130',.3)}}}
+    if(along>0&&along<LEN&&perp<wd+8){if(p.state==='down'&&c.mods.has('dawn'))revive(p,c);if(p.state==='ok'){Ln.healed=true;p.pow=c.mods.has('brightflare')?8:5;healP(p,p.max*.35);emit('heal',p.idx);emit('learn',p.idx,'Solar Lance','Empowered','Healed and hitting harder for a few seconds',C.amber);emit('sfx','flare');emit('tint','255,215,130',.3)}}}
   if(dome&&!Ln.refr){const px=dome.x-sx,py=(dome.y-14)-sy,along=px*Ln.dx+py*Ln.dy,perp=Math.abs(px*Ln.dy-py*Ln.dx);if(along>0&&along<LEN&&perp<36){Ln.refr=true;emit('num',dome.x,dome.y-52,'PRISM DOME','#ffd84a',1.4);emit('sfx','boom');emit('big',.3,1.05,.04,6)}}}
 function dirOf(c){let dx=c.mx,dy=c.my;if(!dx&&!dy){dx=c.f;dy=0}const l=len(dx,dy)||1;return[dx/l,dy/l]}
 function fired(c,w){emit('wfire',c.idx,w.id)}
@@ -513,7 +514,7 @@ function updProj(dt){
       if(d<8){p.hit.add(p.tgt);hitE(p.tgt,p.dmg,p.src,{w:'shield',kx:dx/d*140,ky:dy/d*100,col:C.cyan});if(duo('pax',p.src))for(let i=0;i<2;i++){const a=rnd()*TAU;proj.push({k:'lbolt',x:p.x,y:p.y,vx:Math.cos(a)*230,vy:Math.sin(a)*230,a,life:.5,tgt:nearestEnemy(p,90,p.hit),dmg:p.dmg*.5,src:p.src,heat:0,pierce:0,hit:new Set([p.tgt]),lv:-1,child:1,healed:true,rb:1})}emit('sfx','hit',0);p.bounce--;p.tgt=p.bounce>0?nearestEnemy(p,110,p.hit):null;if(!p.tgt)p.life=0}}
     else if(p.k==='lbolt'){if(p.tgt&&alive(p.tgt)&&!p.child){const dx=p.tgt.x-p.x,dy=p.tgt.y-8-p.tgt.z-p.y,d=len(dx,dy)||1,v=len(p.vx,p.vy);p.vx+=(dx/d*v-p.vx)*Math.min(1,dt*7);p.vy+=(dy/d*v-p.vy)*Math.min(1,dt*7)}
       p.x+=p.vx*dt;p.y+=p.vy*dt;p.a=Math.atan2(p.vy,p.vx);
-      const mate=partnerOf(p.src);if(mate&&mate.state==='ok'&&!p.healed&&len(mate.x-p.x,(mate.y-12-p.y)*1.3)<10){p.healed=true;healP(mate,2.2*(1+bond),false);mate.lit=1.2;emit('heal',mate.idx)}
+      const mate=partnerOf(p.src);if(mate&&mate.state==='ok'&&!p.healed&&len(mate.x-p.x,(mate.y-12-p.y)*1.3)<10){p.healed=true;healP(mate,3.2*(1+bond),false);mate.lit=1.2;emit('heal',mate.idx)}
       for(const e of en){if(!alive(e)||p.hit.has(e))continue;if(len(e.x-p.x,(e.y-8-e.z-p.y)*1.3)<5+rad(e)*.5){p.hit.add(e);hitE(e,p.dmg,p.src,{w:p.child?'prism':'beam',col:WCOL.beam,kx:p.vx*.25,ky:p.vy*.2,crit:rnd()<.08,dir:p.a});emit('pop',p.x,p.y,p.child?1:0);
           const pw=!p.child&&p.src.weapons.find(w=>w.id==='prism');if(pw){const n=wCount('prism',pw.lv)+(p.src.st.proj||0),sk=new Set(p.hit);for(let i=0;i<n;i++){const e2=nearestEnemy(e,70,sk);if(!e2)break;sk.add(e2);const dx=e2.x-p.x,dy=e2.y-8-e2.z-p.y,d=len(dx,dy)||1;proj.push({k:'lbolt',x:p.x,y:p.y,vx:dx/d*240,vy:dy/d*240,a:Math.atan2(dy,dx),life:.4,tgt:e2,dmg:p.dmg*.6*lvm(pw).d,src:p.src,heat:.2,pierce:0,hit:new Set([e]),lv:1,child:1,healed:true})}}
           if(p.pierce>0)p.pierce--;else{p.life=0;break}}}}
@@ -594,11 +595,11 @@ function updProj2(p,dt){
     else{p.life=0;emit('lburst',r1(p.tx),r1(p.ty),Math.round(p.r),p.evo?1:0);for(const e of en){if(!alive(e))continue;const dx=e.x-p.tx,dy=e.y-p.ty,d=len(dx,dy*1.4)||1;if(d<p.r+rad(e)*.4)hitE(e,p.dmg,p.src,{w:'lanterns',col:WCOL.lanterns,kx:dx/d*160,ky:dy/d*110,up:70,dir:Math.atan2(dy,dx)})}
       if(p.evo)zones.push({x:p.tx,y:p.ty,r:18,life:2.5*p.du,tick:0,dmg:5*lvm({lv:5}).d,src:p.src,col:'#ff7a3a'})}return true}
   if(p.k==='flower'){p.a=clamp(1-p.life/p.max,0,1);p.tick-=dt;if(p.tick<=0){p.tick=.5;for(const e of en){if(!alive(e))continue;if(len(e.x-p.x,(e.y-p.y)*1.5)<p.r+rad(e)*.4){e.slowT=.7;hitE(e,p.dmg,p.src,{w:'garden',quiet:1,col:WCOL.garden,crit:false})}}
-      for(const q of chars)if(q.state==='ok'&&len(q.x-p.x,(q.y-p.y)*1.5)<p.r+4){q.flAcc=(q.flAcc||0)+(p.evo?.8:.5);if(q.flAcc>=1){q.flAcc-=1;healP(q,1,false);if(rnd()<.3)emit('heal',q.idx)}}}
+      for(const q of chars)if(q.state==='ok'&&len(q.x-p.x,(q.y-p.y)*1.5)<p.r+4){q.flAcc=(q.flAcc||0)+(p.evo?1.1:.7);if(q.flAcc>=1){q.flAcc-=1;healP(q,1,false);if(rnd()<.3)emit('heal',q.idx)}}}
     if(p.life-dt<=0&&p.evo&&!p.burst){p.burst=1;emit('petals',r1(p.x),r1(p.y));for(const e of en){if(!alive(e))continue;if(len(e.x-p.x,(e.y-p.y)*1.4)<24)hitE(e,12*lvm({lv:5}).d,p.src,{w:'garden',col:WCOL.garden,crit:false})}}return true}
   if(p.k==='halo'){p.t+=dt;if(p.t<0)return true;const k=clamp(p.t/.5,0,1),r=p.R*(1-Math.pow(1-k,2));p.a=r;if(p.t>.55){p.life=0;return true}
     for(const e of en){if(!alive(e)||p.hit.has(e))continue;const dx=e.x-p.x,dy=e.y-p.y,d=len(dx,dy*1.4)||1;if(Math.abs(d-r)<9+rad(e)*.4){p.hit.add(e);hitE(e,p.dmg,p.src,{w:'halo',col:WCOL.halo,kx:dx/d*190,ky:dy/d*130,stun:p.evo?.5:0,dir:Math.atan2(dy,dx)})}}
-    if(p.evo&&!p.healed){const m=partnerOf(p.src);if(m&&m.state==='ok'&&Math.abs(len(m.x-p.x,(m.y-p.y)*1.4)-r)<12){p.healed=true;healP(m,5);emit('heal',m.idx)}}return true}
+    if(p.evo&&!p.healed){const m=partnerOf(p.src);if(m&&m.state==='ok'&&Math.abs(len(m.x-p.x,(m.y-p.y)*1.4)-r)<12){p.healed=true;healP(m,8);emit('heal',m.idx)}}return true}
   return false}
 
 function hurtP(c,dmg,sx,sy,heavy){if(c.state!=='ok'||c.dash>0||c.inv>0||c.fall||c.leapT>0||c.bs>0)return;addRage(c,8);if(inDome(c.x,c.y))dmg*=.7;dmg*=(1+T/320)*(1-Math.min(.5,c.st.arm||0));
@@ -618,7 +619,7 @@ function updPlayers(dt){
   if(chars.length>1){const [a,b]=chars;const close=a.state==='ok'&&b.state==='ok'&&len(a.x-b.x,(a.y-b.y)*1.4)<75,bm=teamMods.has('bond')?2:1;
     bond=close?Math.min(1,bond+dt*.7*bm):Math.max(0,bond-dt*.18);if(bond<.3&&!apart){apart=true;emit('msg','Apart, your bond fades')}if(apart&&close&&bond>.55){apart=false;rekindle(a,b)}
     if(close){const r=(1+2*bond)*(teamMods.has('bond')?3:1)*dt;for(const c of chars){c.tetherAcc=(c.tetherAcc||0)+r;if(c.tetherAcc>=1){c.tetherAcc-=1;healP(c,1,false)}}}tether=close?1:0}else{bond=0;tether=0}
-  for(const p of pools){p.life-=dt;for(const c of chars)if(c.state==='ok'&&len(c.x-p.x,(c.y-p.y)*2)<26){p.hb=(p.hb||0)-dt;if(p.hb<=0){p.hb=.5;healP(c,3*(p.pw||1))}}}pools=pools.filter(p=>p.life>0);
+  for(const p of pools){p.life-=dt;for(const c of chars)if(c.state==='ok'&&len(c.x-p.x,(c.y-p.y)*2)<26){p.hb=(p.hb||0)-dt;if(p.hb<=0){p.hb=.5;healP(c,4*(p.pw||1))}}}pools=pools.filter(p=>p.life>0);
   if(chars.every(c=>c.state!=='ok')&&!endState)endRun(false)}
 let tether=0,bond=1,apart=false,chestQ=0;
 function rekindle(a,b){const mx=(a.x+b.x)/2,my=(a.y+b.y)/2;emit('rekindle',mx,my);for(const c of chars){healP(c,20);c.pow=Math.max(c.pow,3)}
