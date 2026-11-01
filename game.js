@@ -1420,7 +1420,13 @@ function polyF(g,pts,col,al){g.globalAlpha=al;g.fillStyle=col;g.beginPath();g.mo
 function strokeE(g,x,y,rx,ry,col,w,al){g.globalAlpha=al;g.strokeStyle=col;g.lineWidth=w;g.beginPath();g.ellipse(x,y,Math.max(.1,rx),Math.max(.1,ry),0,0,TAU);g.stroke();g.lineWidth=1;g.globalAlpha=1}
 function fillE(g,x,y,rx,ry,col,al){g.globalAlpha=al;g.fillStyle=col;g.beginPath();g.ellipse(x,y,Math.max(.1,rx),Math.max(.1,ry),0,0,TAU);g.fill();g.globalAlpha=1}
 function sparkle(g,x,y,s,col){x=Math.round(x);y=Math.round(y);R(g,x-s,y,s*2+1,1,col);R(g,x,y-s,1,s*2+1,col);if(s>2){R(g,x-1,y-1,3,3,col)}}
-function bigAxe(x,y,k,al,glow){// deco axe head pointing down, handle up; x,y = blade edge centre
+// painted spell objects (fx/*.png, from art sheets). drawFX returns false until loaded so the code-drawn fallback runs
+const FXI={},FXC={};for(const n of ['axe','fist_open','fist_shut','obelisk','dragon','moon']){const im=new Image();im.onload=()=>{FXI[n]=im};im.src='fx/'+n+'.png?v=1'}
+function fxImg(n,h){const im=FXI[n];if(!im)return null;h=Math.max(4,Math.round(h));const key=n+'|'+h;let c=FXC[key];if(!c){const w=Math.max(1,Math.round(im.width*h/im.height));c=mk(w,h);const g=c.getContext('2d');g.imageSmoothingEnabled=true;g.imageSmoothingQuality='high';g.drawImage(im,0,0,w,h);FXC[key]=c}return c}
+function drawFX(n,cx,by,h,al,o={}){const c=fxImg(n,h);if(!c||al<=0)return !!c;const w=c.width,show=o.rise==null?1:Math.max(0,Math.min(1,o.rise)),sh=Math.max(1,Math.round(c.height*show));
+  for(const [g,a] of [[lg,al],[eg,al*(o.glow??.35)]]){if(a<=0)continue;g.save();g.globalAlpha=Math.min(1,a);g.translate(Math.round(cx),Math.round(by));if(o.flip)g.scale(-1,1);if(o.rot)g.rotate(o.rot);
+    g.drawImage(c,0,0,w,sh,-Math.round(w/2),-sh+Math.round(o.oy||0),w,sh);g.restore()}return true}
+function bigAxe(x,y,k,al,glow){if(drawFX('axe',x,y+4*k,62*k,al,{glow:.4}))return;// deco axe head pointing down, handle up; x,y = blade edge centre
   const hw=16*k,hh=20*k;eg.globalAlpha=al*.55;eg.fillStyle=glow;eg.fillRect(Math.round(x-1),Math.round(y-hh-34*k),3,Math.round(34*k));
   R(lg,x-1,y-hh-36*k,2,36*k,'#4a3020');R(lg,x,y-hh-36*k,1,36*k,'#7a5030');R(lg,x-2,y-hh-38*k,4,3,C.gold);
   const blade=[x-hw,y-hh*.35,x-hw*.6,y-hh,x+hw*.6,y-hh,x+hw,y-hh*.35,x+hw*.7,y,x-hw*.7,y];
@@ -1452,7 +1458,8 @@ function drawSpx(){
       fillE(lg,x,y,s.R*1.1,s.R*.5,'#000000',.4*al);strokeE(eg,x,y,s.R*1.1,s.R*.5,'#9fffc8',2,.5*al);
       const fx=x,fy=y-Math.max(0,h)*k-6*k+(h<0?-h:0),glow='rgba(120,255,170,.5)',ink='#eafff2';
       eg.globalAlpha=al*.85;lg.globalAlpha=al;
-      if(open>0){const sp=open;polyF(lg,[fx-11*k,fy,fx+11*k,fy,fx+12*k,fy-14*k,fx-12*k,fy-14*k],'#3a9a68',al*.8);
+      if(FXI.fist_open&&FXI.fist_shut){lg.globalAlpha=eg.globalAlpha=1;drawFX(open>.5?'fist_open':'fist_shut',fx,fy+6*k,(open>.5?40:36)*k,al,{glow:.4});if(open<=0&&h<4&&t>.5&&rnd()<.5&&parts.length<480)parts.push({x:s.x+(rnd()-.5)*s.R,y:s.y,vx:0,vy:-30,life:.3,max:.3,col:'#9fffc8',em:true,streak:1})}
+      else if(open>0){const sp=open;polyF(lg,[fx-11*k,fy,fx+11*k,fy,fx+12*k,fy-14*k,fx-12*k,fy-14*k],'#3a9a68',al*.8);
         for(let i=0;i<4;i++){const bx=fx+(-9+i*6)*k,tilt=(i-1.5)*3*sp*k,top=fy-14*k-(14+(i===1||i===2?3:0))*k*(.4+.6*sp);polyF(lg,[bx-2.5*k,fy-13*k,bx+2.5*k,fy-13*k,bx+2.5*k+tilt,top,bx-2.5*k+tilt,top],'#62d494',al*.85);lg.strokeStyle=ink;lg.beginPath();lg.moveTo(bx-2.5*k,fy-13*k);lg.lineTo(bx-2.5*k+tilt,top);lg.lineTo(bx+2.5*k+tilt,top);lg.lineTo(bx+2.5*k,fy-13*k);lg.stroke()}
         polyF(lg,[fx+11*k,fy-4*k,fx+19*k,fy-12*k*sp-4*k,fx+16*k,fy-16*k*sp-4*k,fx+10*k,fy-10*k],'#62d494',al*.85);strokeE(eg,fx,fy-12*k,16*k,14*k,'#9fffc8',2,al*.35)}
       else{polyF(eg,[fx-15*k,fy+1,fx+15*k,fy+1,fx+16*k,fy-20*k,fx-16*k,fy-20*k],glow,al*.35);polyF(lg,[fx-13*k,fy,fx+13*k,fy,fx+14*k,fy-18*k,fx-14*k,fy-18*k],'#3a9a68',al*.85);polyF(lg,[fx-12*k,fy-9*k,fx+12*k,fy-9*k,fx+13*k,fy-17*k,fx-13*k,fy-17*k],'#62d494',al*.9);for(let i=0;i<4;i++){const bx=fx+(-10+i*6.5)*k;fillE(lg,bx,fy-18*k,3.2*k,2.8*k,'#a8ffc8',al);fillE(lg,bx,fy-19*k,1.2*k,1*k,'#ffffff',al)}
@@ -1493,7 +1500,7 @@ function drawSpx(){
 
 const FWC=['#ff6fd8','#ffd84a','#6fffb0','#7ab8ff','#ff8a3a','#d8a8ff'];
 function chainLine(x1,y1,x2,y2,p,col,al){const L=len(x2-x1,y2-y1),ex=x1+(x2-x1)*p,ey=y1+(y2-y1)*p;eg.globalAlpha=al*.55;eg.strokeStyle=col;eg.lineWidth=5;eg.beginPath();eg.moveTo(x1,y1);eg.lineTo(ex,ey);eg.stroke();eg.lineWidth=1;const n=Math.max(2,Math.floor(L*p/5));for(let i=0;i<n;i++){const k=i/(L/5),x=x1+(x2-x1)*k,y=y1+(y2-y1)*k;lg.globalAlpha=al;R(lg,x-2,y-2,i%2?5:3,i%2?3:5,'#2a1004');R(lg,x-1,y-1,i%2?3:1,i%2?1:3,'#ffb070');eg.globalAlpha=al;R(eg,x-1,y-1,2,2,'#ffd090')}lg.globalAlpha=eg.globalAlpha=1}
-function obel(x,y,h,al){const w=4;lg.globalAlpha=al;R(lg,x-w-1,y-1,w*2+3,3,'#1a1424');polyF(lg,[x-w,y,x+w,y,x+w-1,y-h,x,y-h-5,x-w+1,y-h],'#2a2440',al);polyF(lg,[x-w,y,x-1,y,x-1,y-h,x-w+1,y-h],'#3e3660',al);R(lg,x-w,y-3,w*2+1,1,C.gold);R(lg,x-w+1,y-h*.6,w*2-1,1,C.goldD);R(lg,x-1,y-h-4,2,3,'#fff1c4');eg.globalAlpha=al;R(eg,x-1,y-h-4,2,3,C.gold);R(eg,x-w,y-3,w*2+1,1,'rgba(242,207,122,.5)');lg.globalAlpha=eg.globalAlpha=1}
+function obel(x,y,h,al,full){if(FXI.obelisk){const H=Math.round((full||h)*1.45);lg.globalAlpha=al*.5;fillE(lg,x,y,H*.22,H*.08,'#000000',al*.5);lg.globalAlpha=1;drawFX('obelisk',x,y+2,H,al,{rise:h/(full||h),glow:.45});return}const w=4;lg.globalAlpha=al;R(lg,x-w-1,y-1,w*2+3,3,'#1a1424');polyF(lg,[x-w,y,x+w,y,x+w-1,y-h,x,y-h-5,x-w+1,y-h],'#2a2440',al);polyF(lg,[x-w,y,x-1,y,x-1,y-h,x-w+1,y-h],'#3e3660',al);R(lg,x-w,y-3,w*2+1,1,C.gold);R(lg,x-w+1,y-h*.6,w*2-1,1,C.goldD);R(lg,x-1,y-h-4,2,3,'#fff1c4');eg.globalAlpha=al;R(eg,x-1,y-h-4,2,3,C.gold);R(eg,x-w,y-3,w*2+1,1,'rgba(242,207,122,.5)');lg.globalAlpha=eg.globalAlpha=1}
 function drawSpx2(){
   for(const s of spx){if(s.t<0)continue;const t=s.t,f=Math.max(0,Math.min(1,(s.life-t)/.35));
     if(s.k==='hch'){const cx=s.cx+ox,cy=s.cy+oy,P2=s.pts,n=P2.length/2;
@@ -1505,20 +1512,21 @@ function drawSpx2(){
     else if(s.k==='wyrm'){const c=chars.find(q=>q.idx===s.ci);if(!c)continue;const a=s.a,ca=Math.cos(a),sa=Math.sin(a)*.7,hx=c.x+ox-ca*6,hy=c.y+oy-30,on=t>.2&&t<s.dur+.2,al=Math.min(1,t/.2)*f,F=ca>=0?1:-1;
       if(on){for(let q=0;q<7;q++){const k=(q+((tAll*6)%1))/7,an=a+(Math.sin(tAll*9+q)*.6)*s.half,dd=k*s.R,bx=hx+Math.cos(an)*dd,by=hy+12*k+Math.sin(an)*dd*.7,rr=3+k*s.R*Math.tan(s.half)*.8;fillE(eg,bx,by,rr,rr*.7,q%2?WCOL.wyrm:'#7a6aff',.22*al*(1-k*.5))}
         for(let i=0;i<14&&parts.length<490;i++){const an=a+(rnd()*2-1)*s.half,sp=120+rnd()*120;parts.push({x:hx-ox+ca*10,y:hy-oy+sa*10,vx:Math.cos(an)*sp,vy:Math.sin(an)*sp*.7+20,life:s.R/sp,max:s.R/sp,col:rnd()<.25?'#ffffff':rnd()<.6?WCOL.wyrm:'#7a6aff',em:true,sz:rnd()<.6?3:2})}}
-      const op=on?.9:.25;polyF(eg,[hx-F*14,hy+6,hx-F*4,hy-10,hx+F*10,hy-6,hx+F*20,hy-2+(on?-3:0),hx+F*10,hy+1,hx+F*20,hy+5+(on?4:0),hx+F*8,hy+9,hx-F*6,hy+14],WCOL.wyrm,.5*al);
+      const ang=Math.atan2(sa,ca),rot=Math.max(-.7,Math.min(.7,F>0?ang:(ang>0?Math.PI-ang:-Math.PI-ang)));
+      if(drawFX('dragon',hx-F*4,hy+10,40,al*.9,{flip:F<0,rot,glow:.45,oy:0}));else{const op=on?.9:.25;polyF(eg,[hx-F*14,hy+6,hx-F*4,hy-10,hx+F*10,hy-6,hx+F*20,hy-2+(on?-3:0),hx+F*10,hy+1,hx+F*20,hy+5+(on?4:0),hx+F*8,hy+9,hx-F*6,hy+14],WCOL.wyrm,.5*al);
       polyF(lg,[hx-F*12,hy+5,hx-F*3,hy-8,hx+F*9,hy-5,hx+F*18,hy-2+(on?-3:0),hx+F*9,hy+1,hx+F*18,hy+5+(on?4:0),hx+F*7,hy+8,hx-F*5,hy+12],'#1d6f66',.75*al);
       polyF(lg,[hx-F*6,hy-6,hx-F*12,hy-16,hx-F*2,hy-8],'#bffff4',al);polyF(lg,[hx,hy-7,hx-F*4,hy-18,hx+F*4,hy-7],'#bffff4',al);R(lg,hx+F*6-1,hy-4,3,2,'#ffffff');R(eg,hx+F*6-1,hy-4,3,2,'#ffffff');
-      polyF(eg,[hx-F*10,hy+12,hx-F*22,hy+26,hx-F*6,hy+18],WCOL.wyrm,.35*al)}
+      polyF(eg,[hx-F*10,hy+12,hx-F*22,hy+26,hx-F*6,hy+18],WCOL.wyrm,.35*al)}}
     else if(s.k==='obel'){const k=s.a;for(let ri=0;ri<s.rings;ri++){const R0=(38+ri*30)*k,n=10+ri*4,hh=(20+ri*8);for(let i=0;i<n;i++){const an=i/n*TAU,tt=t-(.08+ri*.35+i*.025);if(tt<0)continue;const px=s.x+ox+Math.cos(an)*R0,py=s.y+oy+Math.sin(an)*R0*.6,rise=tt<.1?tt/.1:tt<.55?1:Math.max(0,1-(tt-.55)/.25);
         if(tt<.12&&!s['p'+ri+'_'+i]){s['p'+ri+'_'+i]=1;for(let q=0;q<4&&parts.length<500;q++)parts.push({x:px-ox,y:py-oy,vx:(rnd()-.5)*60,vy:-30-rnd()*50,life:.4,max:.4,col:'#5a5276',sz:2,grav:1})}
-        if(rise>0)obel(Math.round(px),Math.round(py),Math.round(hh*rise),Math.min(1,rise*1.5))}}}
+        if(rise>0)obel(Math.round(px),Math.round(py),Math.round(hh*rise),Math.min(1,rise*1.5),hh)}}}
     else if(s.k==='thun'){const P2=s.pts;for(let i=0;i<P2.length/2;i++){const tt=t-(.12+i*.13);if(tt<-.08||tt>.3)continue;const x=Math.round(P2[i*2]+ox),y=Math.round(P2[i*2+1]+oy);
         if(tt<0){strokeE(eg,x,y,10,4.5,WCOL.thunder,1,.6);continue}const a=1-tt/.3;let px=x+(rnd()-.5)*10,py=y-150;const seg=[];for(let k=0;k<10;k++){const ny=py+15,nx=k===9?x:px+(rnd()-.5)*12;seg.push([px,py,nx,ny]);px=nx;py=ny}
         for(const [x1,y1,x2,y2] of seg){eg.globalAlpha=a;eg.strokeStyle=WCOL.thunder;eg.lineWidth=5;eg.beginPath();eg.moveTo(x1,y1);eg.lineTo(x2,y2);eg.stroke();lg.globalAlpha=a;lg.strokeStyle='#ffffff';lg.lineWidth=2;lg.beginPath();lg.moveTo(x1,y1);lg.lineTo(x2,y2);lg.stroke()}
         eg.lineWidth=lg.lineWidth=1;fillE(eg,x,y-3,14*a+4,7*a+2,'#ffffff',a*.8);strokeE(eg,x,y,22*(1-a)+6,(22*(1-a)+6)*.45,WCOL.thunder,3,a);fillE(lg,x,y,10,4,'#120a22',.35*a);eg.globalAlpha=lg.globalAlpha=1}}
     else if(s.k==='moon'){const up=Math.min(1,t/.6),fa=Math.min(up,f),mx=Math.round(lw*.78),my=Math.round(lh*.17+(1-up)*30),r0=Math.max(10,Math.round(Math.min(lw,lh)*.07));
-      lg.globalAlpha=.1*fa;lg.fillStyle='#ff1030';lg.fillRect(0,0,lw,lh);fillE(eg,mx,my,r0*2.2,r0*2.2,'rgba(255,40,70,.25)',fa);fillE(eg,mx,my,r0*1.4,r0*1.4,'rgba(255,60,80,.35)',fa);fillE(lg,mx,my,r0,r0,'#b8102c',fa);fillE(lg,mx-r0*.25,my-r0*.2,r0*.75,r0*.75,'#e0283c',fa);
-      for(const [cx2,cy2,rr] of [[-.3,.2,.18],[.25,-.25,.14],[.35,.3,.1],[-.1,-.4,.09]])fillE(lg,mx+cx2*r0,my+cy2*r0,rr*r0,rr*r0,'#8a0c22',fa);fillE(eg,mx,my,r0,r0,'rgba(255,90,110,.4)',fa);
+      lg.globalAlpha=.1*fa;lg.fillStyle='#ff1030';lg.fillRect(0,0,lw,lh);lg.globalAlpha=1;if(FXI.moon){fillE(eg,mx,my,r0*2.4,r0*2.4,'rgba(255,40,70,.22)',fa);drawFX('moon',mx,my+r0*1.25,r0*2.6,fa,{glow:.5})}else{fillE(eg,mx,my,r0*2.2,r0*2.2,'rgba(255,40,70,.25)',fa);fillE(eg,mx,my,r0*1.4,r0*1.4,'rgba(255,60,80,.35)',fa);fillE(lg,mx,my,r0,r0,'#b8102c',fa);fillE(lg,mx-r0*.25,my-r0*.2,r0*.75,r0*.75,'#e0283c',fa);
+      for(const [cx2,cy2,rr] of [[-.3,.2,.18],[.25,-.25,.14],[.35,.3,.1],[-.1,-.4,.09]])fillE(lg,mx+cx2*r0,my+cy2*r0,rr*r0,rr*r0,'#8a0c22',fa);fillE(eg,mx,my,r0,r0,'rgba(255,90,110,.4)',fa)}
       const c=chars.find(q=>q.idx===s.ci);if(c&&rnd()<.6*fa){const e=en[(rnd()*en.length)|0];if(e&&alive(e)&&len(e.x-c.x,e.y-c.y)<170)parts.push({x:e.x+(rnd()-.5)*8,y:e.y-8,vx:(rnd()-.5)*10,vy:-30-rnd()*20,life:.7,max:.7,col:'#ff2a4a',em:true,sz:1})}
       if(c){strokeE(eg,c.x+ox,c.y+oy,170,170*.45,'#ff2a4a',1,.25*fa)}lg.globalAlpha=eg.globalAlpha=1}
     else if(s.k==='leg'){const c=chars.find(q=>q.idx===s.ci);for(let g=0;g<s.n;g++){const [gx,gy]=legPos(s.x,s.y,s.a,s.n,g,Math.min(t,s.back?2.1:1.05),s.back),x=Math.round(gx+ox),y=Math.round(gy+oy),al=Math.min(1,t/.15)*f*.85,F=(s.back&&t>1.05?-1:1)*(Math.cos(s.a)>=0?1:-1);
