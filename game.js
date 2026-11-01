@@ -1990,7 +1990,7 @@ function buildMag(){const I=window.DD_ICONS||{};gPlay('warden',0);gPlay('lamp',0
 let last=performance.now();
 function frame(now){const dt=Math.min(.05,(now-last)/1000)*(FAST?4:1);last=now;
   if(mode==='play'||mode==='pick'||mode==='end'){if(mode==='end'){tAll+=dt;if(isHost&&mateJoined){snapT-=dt;if(snapT<=0){snapT=.2;snapshot()}}render()}else update(Math.min(dt,FAST?.08:.05))}
-  else{tAll+=dt;cam.x=220+Math.sin(tAll*.12)*160;cam.y=230+Math.cos(tAll*.09)*120;render()}
+  else{tAll+=dt;if(!document.body.classList.contains('intitle')){cam.x=220+Math.sin(tAll*.12)*160;cam.y=230+Math.cos(tAll*.09)*120;render()}}
   requestAnimationFrame(frame)}
 go('menu');requestAnimationFrame(frame);
 function simBot(c,dt){if(c.state!=='ok'){moveChar(c,0,0,dt);return}let ix=0,iy=0;const brawl=c.cls==='warden'&&c.hp>c.max*.4,ne=nearestEnemy(c,brawl?110:46);

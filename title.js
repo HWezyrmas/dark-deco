@@ -4,9 +4,9 @@ const $=id=>document.getElementById(id),root=$('title'),stage=$('tStage'),back=$
 const L={sky:$('tSky'),fogB:$('tFogB'),towers:$('tTowers'),heroes:$('tHeroes'),fogF:$('tFogF')};
 let W=0,H=0,DPR=1,t0=performance.now(),tapped=false,flash=0,bolt=null,par={x:0,y:0},parT={x:0,y:0},drops=[],embers=[],sparks=[],menuK=0,menuT=0,run=true;
 const REDUCE=matchMedia('(prefers-reduced-motion: reduce)').matches;
-function size(){const r=stage.getBoundingClientRect();W=r.width;H=r.height;DPR=Math.min(2,devicePixelRatio||1);for(const c of [back,front,mid]){c.width=Math.round(W*DPR);c.height=Math.round(H*DPR)}bg.setTransform(DPR,0,0,DPR,0,0);fg.setTransform(DPR,0,0,DPR,0,0);mg.setTransform(DPR,0,0,DPR,0,0)}
+function size(){const r=stage.getBoundingClientRect();W=r.width;H=r.height;DPR=Math.min(1,devicePixelRatio||1)*(W*H>500000?.6:.75);for(const c of [back,front,mid]){c.width=Math.round(W*DPR);c.height=Math.round(H*DPR)}bg.setTransform(DPR,0,0,DPR,0,0);fg.setTransform(DPR,0,0,DPR,0,0);mg.setTransform(DPR,0,0,DPR,0,0)}
 addEventListener('resize',size);size();
-for(let i=0;i<110;i++)drops.push({x:Math.random(),y:Math.random(),v:.9+Math.random()*.8,l:8+Math.random()*14});
+for(let i=0;i<70;i++)drops.push({x:Math.random(),y:Math.random(),v:.9+Math.random()*.8,l:8+Math.random()*14});
 // heroes image is width-fitted and bottom-anchored: the lantern sits at ~ (0.905, 0.43) of the 1024x1536 picture
 function lantern(){const hr=L.heroes.getBoundingClientRect(),sr=stage.getBoundingClientRect();const ih=hr.width*1.5;return[hr.left-sr.left+hr.width*.884,hr.bottom-sr.top-ih+ih*.45]}
 function ease(k){k=Math.max(0,Math.min(1,k));return 1-Math.pow(1-k,3)}
@@ -16,7 +16,7 @@ function mkBranch(x,y,ex,ey,depth,out){const pts=[[x,y]],n=10+((Math.random()*6)
 function mkStrike(to){const out=[];const ex=to?to[0]:W*(.2+Math.random()*.6),ey=to?to[1]:H*(.45+Math.random()*.15);mkBranch(ex+(Math.random()-.5)*W*.3,-10,ex,ey,0,out);return{segs:out,t:0,to,cx:ex,cy:H*(.08+Math.random()*.2),re:Math.random()<.6?.09:-1}}
 function spires(){const r=L.towers.getBoundingClientRect(),sr=stage.getBoundingClientRect();return[[r.left-sr.left+r.width*.145,r.top-sr.top+r.height*.03],[r.left-sr.left+r.width*.855,r.top-sr.top+r.height*.03]]}
 function heroGround(){const hr=L.heroes.getBoundingClientRect(),sr=stage.getBoundingClientRect(),ih=hr.width*1.5;return[hr.left-sr.left+hr.width*.5,hr.bottom-sr.top-ih+ih*.79,hr.width/W]}
-let strikes=[],arcs=[],bif=null;
+let strikes=[],arcs=[],bif=null,lastHF=-1,lastTF=-1,lastTr={},odd=0;
 function bifrost(){bif={t:0};flash=Math.max(flash,.8);if(window.__ddTitleSfx)window.__ddTitleSfx('bifrost')}
 function hsl(h,l,a){return`hsla(${h%360},100%,${l}%,${a})`}
 function drawBifrost(g,t){if(!bif)return;bif.t+=1/60;const T2=bif.t,[gx,gy,sc]=heroGround(),dur=2.4;if(T2>dur+2.5){bif=null;return}
@@ -42,25 +42,23 @@ let shards=[];
 function mkBolt(){const x=W*(.25+Math.random()*.5);let y=0,px=x;const pts=[[px,0]];while(y<H*.55){y+=H*.04+Math.random()*H*.04;px+=(Math.random()-.5)*W*.12;pts.push([px,y])}return{pts,t:0}}
 function frame(now){requestAnimationFrame(frame);if(!document.body.classList.contains('intitle')){run=false;return}run=true;
   {const r=stage.getBoundingClientRect();if(Math.abs(r.width-W)>1||Math.abs(r.height-H)>1)size()}
-  const t=(now-t0)/1000,dt=1/60;
+  const t=(now-t0)/1000,dt=1/30;
   par.x+=(parT.x-par.x)*.06;par.y+=(parT.y-par.y)*.06;
   menuK+=((tapped&&!(bif&&bif.t<1.6)?1:0)-menuK)*.05;
   // camera push-in: each layer settles from a bigger scale; deeper layers move less with parallax
   const push=REDUCE?1:ease(t/9),hk=REDUCE?1:ease((t-.5)/3.5),mk=menuK;
-  const set=(el,s,dx,dy)=>{el.style.transform=`translate3d(${dx}px,${dy}px,0) scale(${s})`};
+  const set=(el,s,dx,dy)=>{const v=`translate3d(${dx.toFixed(1)}px,${dy.toFixed(1)}px,0) scale(${s.toFixed(4)})`;if(lastTr[el.id]!==v){lastTr[el.id]=v;el.style.transform=v}};
   set(L.sky,1.22-.16*push,par.x*-6,par.y*-4-mk*H*.03);
-  set(L.fogB,1,par.x*-10,par.y*-6-mk*H*.05);
   set(L.towers,1.42-.32*push,par.x*-16,par.y*-8+(1-push)*H*.06-mk*H*.08);
   set(L.heroes,(1.12-.12*hk)*(1-.15*mk),par.x*-26,par.y*-12+(1-hk)*H*.14-mk*H*.21);
-  set(L.fogF,1,par.x*-34,par.y*-14);
   // lightning reveal at 2.3s, then now and then
   if(!REDUCE&&((t>2.3&&!root.dataset.lit)||(t>7&&Math.random()<.004))){const first=!root.dataset.lit;root.dataset.lit=1;flash=1;const sp=spires(),hitSpire=!first&&Math.random()<.45,to=hitSpire?sp[(Math.random()*2)|0]:null;strikes.push(mkStrike(to));if(!first&&Math.random()<.3)strikes.push(mkStrike(null));
     if(to)for(let i=0;i<5;i++)arcs.push({x:to[0],y:to[1],t:-i*.05,l:.7+Math.random()*.6});if(tapped&&window.__ddTitleSfx)window.__ddTitleSfx('thunder')}
   else if(!REDUCE&&t>5&&Math.random()<.006){const [sx,sy]=[W*(.1+Math.random()*.8),H*(.05+Math.random()*.25)];strikes.push({segs:[],t:0,cx:sx,cy:sy,sheet:1});flash=Math.max(flash,.25)}
   flash=Math.max(0,flash-dt*2.2);if(!REDUCE&&tapped&&!bif&&Math.random()<.0009)bifrost();
-  const heroLight=t<2.3?.18+.12*ease(t/2.3):1;L.heroes.style.filter=`brightness(${(heroLight+flash*.9).toFixed(3)}) saturate(${(.7+.3*Math.min(1,heroLight)).toFixed(2)})`;
-  L.towers.style.filter=`brightness(${(.55+.45*push+flash*.6+(Math.random()<.03?-.15:0)).toFixed(3)})`;
-  $('tFlash').style.opacity=(flash*.55).toFixed(3);
+  const heroLight=t<2.3?.18+.12*ease(t/2.3):1,q=v=>Math.round(v*20)/20;const hf=q(heroLight+flash*.9),tf=q(.55+.45*push+flash*.6);if(hf!==lastHF){lastHF=hf;L.heroes.style.filter=hf===1?'':`brightness(${hf})`}if(tf!==lastTF){lastTF=tf;L.towers.style.filter=tf===1?'':`brightness(${tf})`}
+  {const fo=(flash*.55).toFixed(2);if(fo!==lastTr.fl){lastTr.fl=fo;$('tFlash').style.opacity=fo}}
+  odd^=1;if(odd&&!bif&&!strikes.length)return;
   // back canvas: searchlights and the bolt (behind towers)
   bg.clearRect(0,0,W,H);bg.globalCompositeOperation='lighter';
   for(const [ox,sp,ph] of [[.18,.35,0],[.82,.28,2]]){const a=-Math.PI/2+Math.sin(t*sp+ph)*.45,x0=W*ox,y0=H*.78-mk*H*.05,len=H*1.1;const g=bg.createLinearGradient(x0,y0,x0+Math.cos(a)*len,y0+Math.sin(a)*len);g.addColorStop(0,'rgba(255,226,170,.16)');g.addColorStop(1,'rgba(255,226,170,0)');bg.fillStyle=g;bg.beginPath();bg.moveTo(x0,y0);bg.lineTo(x0+Math.cos(a-.07)*len,y0+Math.sin(a-.07)*len);bg.lineTo(x0+Math.cos(a+.07)*len,y0+Math.sin(a+.07)*len);bg.closePath();bg.fill()}

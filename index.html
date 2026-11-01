@@ -485,24 +485,25 @@ em.r{font-style:normal;font-weight:700;color:#d81b50}
 
 /* ===== title screen ===== */
 #title{position:fixed;inset:0;z-index:1;display:none;background:#0d0a1e url(title/sky.jpg) center/cover;overflow:hidden}
-#title::before{content:"";position:absolute;inset:-40px;background:inherit;filter:blur(24px) brightness(.55)}
+#title::before{content:"";position:absolute;inset:0;background:rgba(8,6,18,.55)}
 body.intitle #title{display:block}
 #tStage{position:absolute;top:0;bottom:0;left:50%;width:min(100vw,calc(100vh * .6667));transform:translateX(-50%);overflow:hidden}
 .tl{position:absolute;inset:0;will-change:transform;transform-origin:50% 80%}
 #tSky{background:url(title/sky.jpg) center/cover}
 #tTowers{background:url(title/towers.webp) center top/cover}
 #tHeroes{top:auto;height:150%;max-height:none;background:url(title/heroes.webp) center bottom/100% auto no-repeat;transform-origin:50% 100%}
-.fog{background:url(title/fog.webp) 0 50%/auto 100% repeat-x;mix-blend-mode:screen;pointer-events:none}
-#tFogB{top:52%;height:22%;opacity:.55;animation:fogx 70s linear infinite}
-#tFogF{top:auto;bottom:-4%;height:26%;opacity:.7;animation:fogx 38s linear infinite reverse}
-@keyframes fogx{to{background-position:-200vh 50%}}
-#tBack,#tFront,#tMid{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
-#tFlash{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 20%,#e8dcff,#7a5cff 60%,transparent);opacity:0;pointer-events:none;mix-blend-mode:screen}
+.fog{inset:auto;left:0;width:200%;background:url(title/fog.webp) 0 50%/50% 100% repeat-x;pointer-events:none;will-change:transform}
+#tFogB{top:52%;height:22%;opacity:.5;animation:fogx 70s linear infinite}
+#tFogF{bottom:-4%;height:26%;opacity:.6;animation:fogx 38s linear infinite reverse}
+@keyframes fogx{to{transform:translate3d(-50%,0,0)}}
+#tBack,#tFront,#tMid{image-rendering:auto;position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+#tFlash{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 20%,rgba(232,220,255,.9),rgba(122,92,255,.4) 60%,transparent);opacity:0;pointer-events:none;will-change:opacity}
 #tBlack{position:absolute;inset:0;background:#05040b;pointer-events:none;animation:tblack 1.6s ease-out forwards}
 @keyframes tblack{0%{opacity:1}100%{opacity:0}}
 #tLogo{position:absolute;left:5%;right:5%;top:14%;transform-origin:50% 0;opacity:0;animation:tlogo 1.8s cubic-bezier(.2,.8,.2,1) 2.9s forwards;transition:top .9s cubic-bezier(.2,.8,.2,1),transform .9s cubic-bezier(.2,.8,.2,1);filter:drop-shadow(0 6px 18px rgba(0,0,0,.7))}
 #tLogo img{width:100%;display:block}
 @keyframes tlogo{0%{opacity:0;transform:scale(1.35);filter:blur(12px) brightness(3)}60%{opacity:1;filter:blur(0) brightness(1.4)}100%{opacity:1;transform:scale(1);filter:blur(0) brightness(1) drop-shadow(0 6px 18px rgba(0,0,0,.7))}}
+body.inlobby #tLogo .sweep{animation:none}
 #tLogo .sweep{position:absolute;inset:0;-webkit-mask:url(title/logo.webp) center/100% 100% no-repeat;mask:url(title/logo.webp) center/100% 100% no-repeat;background:linear-gradient(105deg,transparent 35%,rgba(255,250,225,.95) 50%,transparent 65%) -150% 0/250% 100% no-repeat;mix-blend-mode:screen;animation:sweep 6s ease-in-out 3.9s infinite}
 @keyframes sweep{0%{background-position:-150% 0}25%,100%{background-position:150% 0}}
 #tTap{position:absolute;left:0;right:0;bottom:9%;text-align:center;font:600 13px var(--ui);letter-spacing:.42em;text-transform:uppercase;color:#ffe7b0;text-shadow:0 0 12px rgba(255,190,90,.9),0 2px 4px #000;opacity:0;animation:tapin 1s ease 4.4s forwards,tappulse 2.2s ease-in-out 5.4s infinite}
@@ -532,7 +533,7 @@ body.titled #sMenu .btns>*:nth-child(1){animation-delay:.25s}body.titled #sMenu 
 @media (prefers-reduced-motion:reduce){#tBlack,#tLogo,#tTap,.btn::after{animation:none!important;opacity:1}}
 
 /* ===== lobby: hero select over the title scene ===== */
-body.inlobby #tLogo{opacity:0!important;transition:opacity .4s}body.inlobby #tTowers,body.inlobby #tHeroes{filter:blur(3px) brightness(.6)!important}
+body.inlobby #tLogo{opacity:0!important;transition:opacity .4s}body.inlobby #tHeroes{opacity:.35}
 body.intitle #sLobby{background:linear-gradient(180deg,rgba(9,7,20,.35),rgba(9,7,20,.82) 30%,rgba(9,7,20,.9));align-items:start;padding:max(14px,env(safe-area-inset-top)) 12px 18px}
 .lob{width:100%;max-width:460px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
 #sLobby:not([hidden]) .lob>*{animation:lobin .6s cubic-bezier(.2,.8,.2,1) both}
@@ -807,8 +808,8 @@ body.intitle #sLobby{background:linear-gradient(180deg,rgba(9,7,20,.35),rgba(9,7
 </div>
 
 <script src="peerjs.min.js"></script>
-<script src="icons.js?v=1793534366"></script>
-<script src="title.js?v=1793534366"></script>
-<script src="game.js?v=1793534366"></script>
+<script src="icons.js?v=1793534667"></script>
+<script src="title.js?v=1793534667"></script>
+<script src="game.js?v=1793534667"></script>
 </body>
 </html>
