@@ -1346,6 +1346,8 @@ function hueCv(src,deg){const w=src.width,h=src.height,c=mk(w,h),g=c.getContext(
   for(let i=0;i<a.length;i+=4){if(!a[i+3])continue;const r=a[i]/255,gg=a[i+1]/255,b=a[i+2]/255,mx=Math.max(r,gg,b),mn=Math.min(r,gg,b),dl=mx-mn;if(dl<.08)continue;let hh=mx===r?((gg-b)/dl)%6:mx===gg?(b-r)/dl+2:(r-gg)/dl+4;hh*=60;if(hh<0)hh+=360;
     if(hh<230||hh>335)continue;hh=(hh+deg+360)%360;const C2=dl,X=C2*(1-Math.abs((hh/60)%2-1)),m=mn;let rr,g2,bb;const k=(hh/60)|0;[rr,g2,bb]=[[C2,X,0],[X,C2,0],[0,C2,X],[0,X,C2],[X,0,C2],[C2,0,X]][k%6];a[i]=(rr+m)*255;a[i+1]=(g2+m)*255;a[i+2]=(bb+m)*255}
   g.putImageData(d,0,0);return c}
+ENAMES.forEach((n,k)=>{const im=new Image();im.onload=()=>{const cw0=im.width/8,ch0=im.height,sc=EH[k]/128,cw=Math.max(1,Math.round(cw0*sc)),ch=Math.max(1,Math.round(ch0*sc)),c=mk(im.width,ch0);c.getContext('2d').drawImage(im,0,0);const st=boxDown(c,im.width,ch0,cw*8,ch);
+  const A={s:st,wh:tintCv(st,'#ffffff'),rd:tintCv(st,'#ff4a3a'),cw,ch,hue:k===0?[0,-100,115,45,-45].map(d=>d?hueCv(st,d):st):null};const go=()=>{if(ESPR[k])ESPR[k].an=A;else setTimeout(go,200)};go()};im.onerror=()=>{};im.src='enemies/anim/'+n+'.png?v=1'});
 ENAMES.forEach((n,k)=>{const im=new Image();im.onload=()=>{const c=mk(im.width,im.height);c.getContext('2d').drawImage(im,0,0);const h=EH[k],w=Math.max(1,Math.round(im.width*h/im.height)),sc=boxDown(c,im.width,im.height,w,h);
   ESPR[k]={s:sc,wh:tintCv(sc,'#ffffff'),rd:tintCv(sc,'#ff4a3a'),w,h,st:k===0?[0,-100,115,45,-45].map(d=>d?hueCv(sc,d):sc):null}};im.src='enemies/'+n+'.png?v=1'});
 // Enemy motion: painted sprites are single poses, so movement is sold with a per-kind gait driven by distance walked
@@ -1366,13 +1368,26 @@ function drawESpr(e,x,yb,sq,hitc,kind){const S=ESPR[kind],G=GAIT[kind];let img=S
   // state poses: gunman braces while aiming, bomber swells when lit, everyone leans back then lunges on attack wind-up
   if(kind===2&&e.st===1){const k=e.stt<=.25?1:.5;rot=(e.f<0?1:-1)*.1*k+(Math.random()-.5)*.03;hop=0}
   if(kind===3&&e.st===2){const k=1+.12*Math.abs(Math.sin(now*18));sx*=k;sy*=k}
-  if(kind<=1&&e.atkT>0){const L=kind?1.4:.9,a=Math.max(0,(e.atkT-(L-.28))/.28);if(a>0){rot+=(e.f<0?-1:1)*.28*Math.sin(a*Math.PI);sx*=1+.15*a;sy*=1-.1*a}}
+  if(kind<=1&&e.atkT>0&&!S.an){const L=kind?1.4:.9,a=Math.max(0,(e.atkT-(L-.28))/.28);if(a>0){rot+=(e.f<0?-1:1)*.28*Math.sin(a*Math.PI);sx*=1+.15*a;sy*=1-.1*a}}
   // pop in after the spawn portal, knock squash on hit
   const pa=e._age<.28?(e._age<.16?.55+e._age/.16*.6:1.15-(e._age-.16)/.12*.15):1;sx*=pa;sy*=pa;
   sx*=1+sq*.4;sy*=1-sq*.3;
+  let fi=-1,A=S.an;if(A){hop*=.3;if(G.ty!==2)rot*=.35;
+    if(e._pst!==e.st){if((e._pst===6||e._pst===3||e._pst===1||e._pst===5)&&e.st===0)e._rel=now;e._pst=e.st}const rel=e._rel!=null?now-e._rel:9;
+    if(kind===3&&e.st===2)fi=4+Math.min(3,Math.floor((1-e.stt/.9)*4));
+    else if((kind===1&&e.st===6)||(kind>=4&&e.st===3))fi=e.stt>.4?4:5;
+    else if(kind>=4&&e.st===4)fi=5;else if(kind>=4&&e.st===5)fi=6;
+    else if(kind===2&&e.st===1)fi=e.stt>.25?4:5;
+    else if(rel<.22)fi=6;else if(rel<.48)fi=7;
+    else if(kind===0&&chars.some(c=>c.state==='ok'&&len(c.x-e.x,(c.y-e.y)*1.4)<16))fi=4+Math.floor(now*8+e.id)%4;
+    else fi=moving||G.ty===2?Math.floor(e._ph*4)%4:0}
   const bx=x,by=yb-Math.round(hop);
+  if(A){const src=hitc?A.wh:(kind===3&&e.st===2&&Math.sin(tAll*30)>0)?A.rd:A.hue?A.hue[Math.min(A.hue.length-1,Math.floor(T/150))]:A.s,cw=A.cw,ch=A.ch;
+    if(kind===0&&!hitc){lg.globalAlpha=.25;lg.save();lg.translate(bx-(e._fs<0?-4:4),by+2);lg.scale(fs*sx*.95,sy*.95);lg.drawImage(src,fi*cw,0,cw,ch,-(cw>>1),-ch+1,cw,ch);lg.restore();lg.globalAlpha=1}
+    lg.save();lg.translate(bx,by);lg.rotate(rot);lg.scale(fs*sx,sy);lg.drawImage(src,fi*cw,0,cw,ch,-(cw>>1),-ch+1,cw,ch);lg.restore()}
+  else{
   if(kind===0&&!hitc){lg.globalAlpha=.25;lg.save();lg.translate(bx-(e._fs<0?-4:4),by+2);lg.rotate(rot*.6);lg.scale(fs*sx*.95,sy*.95);lg.drawImage(img,-(S.w>>1),-S.h+1);lg.restore();lg.globalAlpha=1}
-  lg.save();lg.translate(bx,by);lg.rotate(rot);lg.scale(fs*sx,sy);lg.drawImage(img,-(S.w>>1),-S.h+1);lg.restore();
+  lg.save();lg.translate(bx,by);lg.rotate(rot);lg.scale(fs*sx,sy);lg.drawImage(img,-(S.w>>1),-S.h+1);lg.restore()}
   const eyeH=S.h*(kind===5?.62:kind===1?.72:kind===3?.42:.6)*sy;
   if(kind===0||kind===1||kind===3||kind===5){eg.globalAlpha=.55+.25*Math.sin(now*6+e.id);const ex=bx+Math.sin(rot)*eyeH,ey=Math.round(by-eyeH);eg.fillStyle=kind===5?'#ff7a1a':'#ffd23a';eg.fillRect(Math.round(ex)-2,ey,4,2);eg.globalAlpha=1}
   if(kind===3){const spc=e.st===2?'#ffffff':'#ff9a3a',fx=bx+(e.f<0?1:-1)*Math.round(S.w*.22*sx),fy=by-Math.round(S.h*sy)+2;eg.fillStyle=spc;const z2=rnd()<.5?3:2;eg.fillRect(fx-1,fy-1,z2,z2);if(rnd()<.3&&parts.length<490)parts.push({x:fx-ox,y:fy-oy,vx:(rnd()-.5)*30,vy:-20-rnd()*20,life:.25,max:.25,col:spc,em:true,sz:1})}
