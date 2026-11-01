@@ -1184,6 +1184,7 @@ function staticWorld(){
     lg.fillStyle=C.sky1;for(let i=6;i<b.w-8;i+=18){lg.fillRect(x+i,y+b.h+7,12,9);lg.fillRect(x+i+1,y+b.h+6,10,1)}lg.fillStyle=C.lip;lg.fillRect(x,y,b.w,1);lg.fillRect(x,y+b.h-1,b.w,1);
     for(let i=4;i<b.w;i+=8){lg.fillStyle=C.goldD;lg.fillRect(x+i,y+13,3,1);lg.fillRect(x+i+1,y+12,1,1);lg.fillRect(x+i+1,y+14,1,1)}}
   for(const r of ROOFS){const x=r.x+ox,y=r.y+oy,RR=rng((r.x*7+r.y*13)|0);lg.fillStyle=C.roof;lg.fillRect(x,y,r.w,r.h);
+    if(FLOOR.complete&&FLOOR.naturalWidth){lg.save();lg.fillStyle=lg.createPattern(FLOOR,'repeat');lg.translate(x,y);lg.fillRect(0,0,r.w,r.h);lg.restore()}else
     for(let j=0,tj=0;j<r.h;j+=12,tj++)for(let i=0,ti=0;i<r.w;i+=16,ti++){const v=RR();lg.fillStyle=(ti+tj)%2?'#4c4966':'#423f5b';if(v<.12)lg.fillStyle='#3b3852';lg.fillRect(x+i,y+j,16,12);lg.fillStyle='rgba(255,255,255,.06)';lg.fillRect(x+i,y+j,16,1);lg.fillStyle='#2c2942';lg.fillRect(x+i+15,y+j,1,12);lg.fillRect(x+i,y+j+11,16,1);
       if(v>.93){lg.fillStyle='rgba(20,16,36,.35)';lg.fillRect(x+i+3+((v*97)|0)%8,y+j+3+((v*53)|0)%5,3,2)}
       if(ti%4===0&&tj%3===0&&ti>0&&tj>0){const cx=x+i,cy=y+j;lg.fillStyle=C.goldD;lg.fillRect(cx-2,cy,5,1);lg.fillRect(cx,cy-2,1,5);lg.fillRect(cx-1,cy-1,3,3);lg.fillStyle=C.gold;lg.fillRect(cx,cy,1,1)}}
@@ -1193,6 +1194,8 @@ function staticWorld(){
       for(let i=0;i<24;i++){const a=i/24*TAU,ra=34,rb=i%2?48:60;line(lg,cx+Math.cos(a)*ra,cy+Math.sin(a)*ra*.5,cx+Math.cos(a)*rb,cy+Math.sin(a)*rb*.5,'rgba(125,98,50,.55)')}lg.fillStyle='rgba(214,168,78,.35)';lg.fillRect(cx-2,cy-1,5,3)}
     lg.fillStyle='#2a2846';lg.fillRect(x,y-8,r.w,8);lg.fillStyle=C.gold;lg.fillRect(x,y-9,r.w,1);lg.fillStyle='#1f1d36';for(let i=3;i<r.w;i+=10)lg.fillRect(x+i,y-6,6,4);lg.fillStyle=C.lip;lg.fillRect(x,y-8,1,r.h+8);lg.fillRect(x+r.w-1,y-8,1,r.h+8)}
   {const r=ROOFS[0],x=r.x+ox,y=r.y+r.h+oy,sx=x+r.w-36,sy=y+14;lg.fillStyle='#0b0a18';lg.fillRect(sx-2,sy-2,7,46)}}
+// painted roof floor (sheet H), squashed to the 3/4 camera; the static world is rebuilt once it loads
+const FLOOR=new Image();FLOOR.onload=()=>{STW=null};FLOOR.src='floor/roof.png?v=1';
 function buildStatic(){STW=mk(820,660);STE=mk(820,660);const sl=lg,se=eg,a=ox,b=oy;lg=STW.getContext('2d');eg=STE.getContext('2d');ox=STX;oy=STY;staticWorld();lg=sl;eg=se;ox=a;oy=b}
 function world(){
   if(!STW)buildStatic();lg.drawImage(STW,ox-STX,oy-STY);eg.drawImage(STE,ox-STX,oy-STY);
