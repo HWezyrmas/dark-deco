@@ -420,8 +420,8 @@ You may delete `assets/drafts/`, `assets/spell-objects/` and `assets/ability-ico
 | A | 10 Warden ability icons | **Done:** approved and live in the game |
 | B | 10 Lamplighter ability icons | **Done:** approved and live in the game |
 | C | 6 Warden spell objects | **Done:** approved and live in the game |
-| D | 6 Lamplighter spell objects | **Next** |
-| E | 6 impact animations | To do |
+| D | 6 Lamplighter spell objects | **Done:** approved and live in the game |
+| E | 6 impact animations | **Next** |
 | F | 6 enemy characters | To do |
 | G | 12 rooftop props | To do |
 | H | Rooftop floor texture | To do |
