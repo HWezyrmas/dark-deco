@@ -466,9 +466,16 @@ A sprite sheet of 12 separate rooftop props for a top-down 3/4 view mobile game,
 A single seamless tileable square texture of an art deco rooftop floor seen from directly above, filling the whole image edge to edge. Slate-violet stone tiles in two alternating subtle shades around #47445f and #4c4966, thin dark grout lines, small brass inlay studs at some tile corners, light wear and a few hairline cracks. Painterly pixel art, mid-tone and low contrast so characters and effects stand out on top of it. No objects, no shadows, no lighting gradient, no text, no border. The left edge must continue seamlessly into the right edge and the top into the bottom.
 ```
 
-**Sheet I: night skyline, 2 layers**
+**Sheet I: night skyline, 2 layers** (two separate images, one message each)
+
+I-1, far layer:
 ```
-Two separate wide panoramic images stacked vertically, each a horizontally seamless art deco city skyline at night for a parallax game background. The style is painterly pixel art, dark noir with cyan and pink neon. Top image: the far layer, distant hazy skyscraper silhouettes in deep violet with a few tiny lit windows and a purple fog glow, against a dark night sky with faint stars. Bottom image: the near layer, closer and taller art deco towers with stepped crowns, antenna spires, neon signs and lit windows in cyan, pink and gold, darker silhouettes, on the same dark night sky. No text, no characters, no frames. Each image's left edge must continue seamlessly into its right edge.
+A wide panoramic image, about 3 times wider than tall, of a distant art deco city skyline at night for a parallax game background, horizontally seamless so the left edge continues into the right edge. Painterly pixel art, dark noir. Hazy skyscraper silhouettes in deep violet with a few tiny lit windows in cyan, pink and gold, purple fog glowing along the bottom, a dark indigo night sky with faint stars filling the top. No text, no characters, no frames.
+```
+
+I-2, near layer:
+```
+A wide panoramic image, about 3 times wider than tall, of closer, taller art deco skyscrapers at night for the front parallax layer of a game background, horizontally seamless so the left edge continues into the right edge. The buildings fill the bottom two thirds and the sky above and between them is solid flat pure magenta #FF00FF with no gradient, so it can be cut out. Painterly pixel art, dark noir. Dark near-black violet silhouettes with stepped crowns, antenna spires with red lights, small neon signs and lit windows in cyan, pink and gold. No magenta on the buildings, no text, no characters, no frames.
 ```
 
 ### 12.4 Order and turnaround
