@@ -589,6 +589,12 @@ body.intitle #sLobby{background:linear-gradient(180deg,rgba(9,7,20,.35),rgba(9,7
 #rowRage.spark .hp b{background:linear-gradient(90deg,#ffb84a,#fff3b0)!important}
 #rowRage.spark.full .hp b{background:linear-gradient(90deg,#ffe08a,#ffffff,#ffe08a)!important;box-shadow:0 0 10px #ffe08a}
 #rowRage.spark .rgn{color:#ffd27a}
+
+/* rhythm: the ability firing now glows and bounces on the beat; the next one is outlined */
+#kit .kw{transition:transform .12s}
+#kit .kw.now{transform:translateY(-3px) scale(calc(1.08 + var(--bp,0)*.08));filter:drop-shadow(0 0 6px var(--wc)) brightness(1.25);z-index:2}
+#kit .kw.nxt{outline:2px solid var(--wc);outline-offset:1px;animation:nxtp .5s ease-in-out infinite alternate}
+@keyframes nxtp{to{outline-color:transparent}}
 </style>
 </head>
 <body>
@@ -775,6 +781,7 @@ body.intitle #sLobby{background:linear-gradient(180deg,rgba(9,7,20,.35),rgba(9,7
         <span class="kick">Breaking news</span>
         <h2 class="hed">The roofs fight back</h2>
         <div class="qa"><p class="q">Red on the floor means move.</p><p class="a">Brutes, bombers, Gatekeepers and the Foreman now warn before they hit: a red circle or a lane of arrows fills up, then lands. It hits hard. From 0:45 falling stone also targets wherever you are heading. Standing still is how heroes die.</p></div>
+        <div class="qa"><p class="q">Fight to the beat.</p><p class="a">The rooftops run on a 120 bpm beat you can hear in the music. Your big abilities fire one after another in a fixed loop, one every two beats, in the order you learned them. The glowing icon in your skill bar is firing now, the outlined one is next, and the dots under your hero show the whole loop. A ring closes in on your hero just before the next one fires: that is your moment to step into the crowd. Her loop sits half a step behind his, so together you alternate.</p></div>
         <div class="qa"><p class="q">You aim the big spells.</p><p class="a">The chevrons in front of your hero show where you are facing. Big abilities only fire at enemies in that direction, so turn toward the crowd. When the chevrons pulse, a spell is waiting for a target.</p></div>
         <div class="qa"><p class="q">Chase the light.</p><p class="a">Gems fade if you leave them. Hearts are the only pickup that heals. Gold altars appear on the map: stand inside to charge them for healing, power and XP. Twin altars only charge while you hold both at once. Guarded chests sit behind brutes.</p></div>
         <div class="qa"><p class="q">Stay close.</p><p class="a">Her healing barely reaches him outside the dashed ring. Enemies go for whoever is weaker, so the Warden has to stand in their way. Every time you go down, getting back up takes longer.</p></div>
@@ -815,8 +822,8 @@ body.intitle #sLobby{background:linear-gradient(180deg,rgba(9,7,20,.35),rgba(9,7
 </div>
 
 <script src="peerjs.min.js"></script>
-<script src="icons.js?v=1793535708"></script>
-<script src="title.js?v=1793535708"></script>
-<script src="game.js?v=1793535708"></script>
+<script src="icons.js?v=1793536177"></script>
+<script src="title.js?v=1793536177"></script>
+<script src="game.js?v=1793536177"></script>
 </body>
 </html>
