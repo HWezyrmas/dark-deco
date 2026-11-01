@@ -586,3 +586,8 @@ A wide horizontal strip, 3:1 aspect ratio, of soft wispy drifting night fog in v
 ```
 A set of 3 game art pieces in one row on a pure solid black background, with clear space between them. 1) and 2) are square ability icons, each on its own dark navy rounded tile with a thin gold art deco frame; 3) is a simple glowing button symbol with no tile. Epic painted fantasy style with neon glow, crimson and bone-white, bold readable silhouettes. No text. 1) an armoured warrior blurring forward in a crimson dash streak, greataxe trailing, shadows cut apart behind him (Reaper's Stride); 2) the same dash streak twice as long, splitting through a line of shadows (Long Stride); 3) a single crimson forward-dash glyph: a greataxe head with three speed lines behind it, glowing.
 ```
+
+**Sheet L2: Lamplighter active kit** (one image, black background)
+```
+A set of 6 game art pieces in one row on a pure solid black background, with clear space between them. 1) to 3) are square ability icons, each on its own dark navy rounded tile with a thin gold art deco frame; 4) to 6) are simple glowing button symbols with no tile. Epic painted fantasy style with warm neon glow, gold, amber and soft white, bold readable silhouettes. No text. 1) a golden hexagonal light shield snapping over an armoured warrior, a red blow shattering against it (Guardian Ward); 2) a small girl raising her lantern as a huge golden sunburst explodes outward with healing light (Sunburst); 3) a flaming meteor crashing down onto a rooftop in a ring of fire (Meteor); 4) a glowing gold hexagon shield glyph; 5) a radiant sun glyph with long rays; 6) a falling meteor glyph with a fire trail.
+```
