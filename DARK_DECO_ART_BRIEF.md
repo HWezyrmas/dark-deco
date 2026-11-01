@@ -424,8 +424,8 @@ You may delete `assets/drafts/`, `assets/spell-objects/` and `assets/ability-ico
 | E | 6 impact animations | **Done:** approved and live in the game |
 | F | 6 enemy characters | **Done:** approved and live in the game |
 | G | 12 rooftop props | **Done:** approved and live in the game |
-| H | Rooftop floor texture | **Next** |
-| I | Night skyline (2 layers) | To do |
+| H | Rooftop floor texture | **Done:** approved and live in the game |
+| I | Night skyline (2 layers) | **Next** |
 
 Hero animations are **not** on this list. They must match the existing PixelLab hero sprites exactly, so Hamza makes them in PixelLab.
 
