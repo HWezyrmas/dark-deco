@@ -1241,13 +1241,27 @@ function blob2(x,yb,sc,sq,P,rows,hit){const n=rows.length,hh=sc*(1-sq*.3);if(!hi
   rows.forEach(([rw,dy],i)=>{const ww=Math.round(rw*sc*(1+sq*.4)),k=i/n;lg.fillStyle=hit?'#ffffff':k<.3?P.h:k<.75?P.m:P.d;lg.fillRect(x-(ww>>1),yb+Math.round(dy*hh),ww,Math.max(1,Math.ceil(hh)));if(!hit&&k<.75&&ww>3){lg.fillStyle=P.h;lg.fillRect(x-(ww>>1),yb+Math.round(dy*hh),Math.max(1,Math.round(sc)),Math.max(1,Math.ceil(hh)))}})}
 function blob(x,yb,sc,sq,body,rows){for(const [rw,dy] of rows){const ww=Math.round(rw*sc*(1+sq*.4)),hh=sc*(1-sq*.3);lg.fillStyle=body;lg.fillRect(x-(ww>>1),yb+Math.round(dy*hh),ww,Math.max(1,Math.ceil(hh)))}}
 const ROWS={shadow:[[4,-11],[8,-10],[10,-9],[10,-8],[10,-7],[10,-6],[10,-5],[8,-4],[10,-3],[10,-2]],gun:[[3,-17],[5,-16],[5,-15],[4,-14],[6,-13],[6,-12],[6,-11],[6,-10],[6,-9],[6,-8],[6,-7],[7,-6],[7,-5],[8,-4],[8,-3],[8,-2]],bomb:[[4,-11],[8,-10],[10,-9],[12,-8],[12,-7],[12,-6],[12,-5],[12,-4],[10,-3],[8,-2]]};
+// painted enemies (sheet F). Pre-scaled once per kind; shadow imps get a hue-shifted copy per stage colour
+const ENAMES=['shadow','brute','gunman','bomber','elite','boss'],EH=[21,31,27,22,40,58],ESPR=[];
+function tintCv(src,col,keepHue){const w=src.width,h=src.height,c=mk(w,h),g=c.getContext('2d');g.drawImage(src,0,0);g.globalCompositeOperation='source-in';g.fillStyle=col;g.fillRect(0,0,w,h);return c}
+function hueCv(src,deg){const w=src.width,h=src.height,c=mk(w,h),g=c.getContext('2d');g.drawImage(src,0,0);const d=g.getImageData(0,0,w,h),a=d.data;
+  for(let i=0;i<a.length;i+=4){if(!a[i+3])continue;const r=a[i]/255,gg=a[i+1]/255,b=a[i+2]/255,mx=Math.max(r,gg,b),mn=Math.min(r,gg,b),dl=mx-mn;if(dl<.08)continue;let hh=mx===r?((gg-b)/dl)%6:mx===gg?(b-r)/dl+2:(r-gg)/dl+4;hh*=60;if(hh<0)hh+=360;
+    if(hh<230||hh>335)continue;hh=(hh+deg+360)%360;const C2=dl,X=C2*(1-Math.abs((hh/60)%2-1)),m=mn;let rr,g2,bb;const k=(hh/60)|0;[rr,g2,bb]=[[C2,X,0],[X,C2,0],[0,C2,X],[0,X,C2],[X,0,C2],[C2,0,X]][k%6];a[i]=(rr+m)*255;a[i+1]=(g2+m)*255;a[i+2]=(bb+m)*255}
+  g.putImageData(d,0,0);return c}
+ENAMES.forEach((n,k)=>{const im=new Image();im.onload=()=>{const c=mk(im.width,im.height);c.getContext('2d').drawImage(im,0,0);const h=EH[k],w=Math.max(1,Math.round(im.width*h/im.height)),sc=boxDown(c,im.width,im.height,w,h);
+  ESPR[k]={s:sc,wh:tintCv(sc,'#ffffff'),rd:tintCv(sc,'#ff4a3a'),w,h,st:k===0?[0,-100,115,45,-45].map(d=>d?hueCv(sc,d):sc):null}};im.src='enemies/'+n+'.png?v=1'});
+function drawESpr(e,x,yb,sq,hitc,kind){const S=ESPR[kind];let img=S.s;if(hitc)img=S.wh;else if(kind===3&&e.st===2&&Math.sin(tAll*30)>0)img=S.rd;else if(S.st)img=S.st[Math.min(S.st.length-1,Math.floor(T/150))];
+  const fl=kind===0?Math.round(Math.sin(e.t*4+e.x)*1.5)-2:0;lg.save();lg.translate(x,yb+fl);lg.scale((e.f<0?-1:1)*(1+sq*.4),1-sq*.3);lg.drawImage(img,-(S.w>>1),-S.h+1);lg.restore();
+  if(kind===0||kind===1||kind===3||kind===5){eg.globalAlpha=.6;const ey=yb+fl-Math.round(S.h*(kind===5?.62:kind===1?.72:kind===3?.42:.6));eg.fillStyle=kind===5?'#ff7a1a':'#ffd23a';eg.fillRect(x-2,ey,4,2);eg.globalAlpha=1}
+  if(kind===3){const sp=e.st===2?'#ffffff':'#ff9a3a';const fx=x+(e.f<0?1:-1)*Math.round(S.w*.22),fy=yb-S.h+2;eg.fillStyle=sp;eg.fillRect(fx-1,fy-1,3,3)}}
 function drawEnemy(e){const x=Math.round(e.x+ox)+(e.hit>0.04?(Math.floor(tAll*60)%2?1:-1):0),y=Math.round(e.y+oy),z=Math.round(e.z);const kind=e.kind,big=kind===1||kind>=4;
   if(e.spawn>0){const k=clamp(1-e.spawn/(big?1.2:.7),0,1),s=kind===5?3:kind===4?2.2:big?2:1;lg.fillStyle='rgba(8,6,15,'+(.4+.5*k)+')';lg.beginPath();lg.ellipse(x,y,(3+6*k)*s,(1+2*k)*s,0,0,TAU);lg.fill();for(let i=0;i<3*s;i++)lg.fillRect(x-3*s+i*3,y-Math.round(k*7*s*Math.abs(Math.sin(tAll*9+i))),1,Math.round(k*7*s));if(rnd()<.3){eg.fillStyle=C.red;eg.fillRect(x+(rnd()*6|0)-3,y-2,1,1)}return}
   const w=Math.sin(e.t*10)>0?1:0,sq=e.sq||0,hitc=e.hit>0,EP=kind===0?STAGEPAL[Math.min(STAGEPAL.length-1,Math.floor(T/150))]:EPAL[kind];const body=hitc?'#ffffff':EP.m,edge=hitc?'#ffffff':EP.o;const sc=kind===5?3.2:kind===4?2.4:kind===1?2:1;
-  lg.fillStyle='rgba(0,0,0,.45)';lg.fillRect(x-5*sc,y,11*sc,2);
+  const ES=ESPR[kind];if(ES){lg.fillStyle='rgba(0,0,0,.4)';lg.beginPath();lg.ellipse(x,y+1,Math.round(ES.w*.38),2+(kind>=4?1:0),0,0,TAU);lg.fill()}else{lg.fillStyle='rgba(0,0,0,.45)';lg.fillRect(x-5*sc,y,11*sc,2)}
   const yb=y-z-w;
   if(kind===4||kind===5){eg.globalAlpha=.35+.15*Math.sin(tAll*4);eg.strokeStyle=kind===5?C.red:'#9a5cff';eg.beginPath();eg.ellipse(x,y,14*sc*.7,5*sc*.7,0,0,TAU);eg.stroke();eg.globalAlpha=1}
-  if(kind===2){blob2(x,yb,1,sq,EP,ROWS.gun,hitc);lg.fillStyle=edge;lg.fillRect(x-5,yb-17,10,1);lg.fillStyle=body;lg.fillRect(x-3,yb-20,6,3);// fedora
+  if(ES)drawESpr(e,x,yb,sq,hitc,kind);
+  else if(kind===2){blob2(x,yb,1,sq,EP,ROWS.gun,hitc);lg.fillStyle=edge;lg.fillRect(x-5,yb-17,10,1);lg.fillStyle=body;lg.fillRect(x-3,yb-20,6,3);// fedora
     const gx=e.st===1?e.ax:e.f,gy=e.st===1?e.ay:0;line(lg,x,yb-9,x+gx*8,yb-9+gy*5,hitc?'#fff':'#5b616d');const ex=x+(e.f>0?0:-2);lg.fillStyle=C.red;lg.fillRect(ex,yb-14,1,1);lg.fillRect(ex+2,yb-14,1,1);eg.fillStyle=C.red;eg.fillRect(ex,yb-14,1,1);eg.fillRect(ex+2,yb-14,1,1)}
   else if(kind===3){const fl=e.st===2&&Math.sin(tAll*30)>0;blob2(x,yb,1,sq,fl?EPAL[1]:EP,ROWS.bomb,hitc);lg.fillStyle=edge;lg.fillRect(x-2,yb-12,4,1);lg.fillStyle='#8a6a3a';lg.fillRect(x,yb-15,1,3);const sp=e.st===2?'#ffffff':'#ff7a3a';lg.fillStyle=sp;lg.fillRect(x,yb-16,1,1);eg.fillStyle=sp;eg.fillRect(x-1,yb-17,3,3);
     lg.fillStyle=C.red;lg.fillRect(x-2,yb-7,1,2);lg.fillRect(x+2,yb-7,1,2);eg.fillStyle=C.red;eg.fillRect(x-2,yb-7,1,2);eg.fillRect(x+2,yb-7,1,2)}
