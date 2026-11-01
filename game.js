@@ -1421,10 +1421,11 @@ function strokeE(g,x,y,rx,ry,col,w,al){g.globalAlpha=al;g.strokeStyle=col;g.line
 function fillE(g,x,y,rx,ry,col,al){g.globalAlpha=al;g.fillStyle=col;g.beginPath();g.ellipse(x,y,Math.max(.1,rx),Math.max(.1,ry),0,0,TAU);g.fill();g.globalAlpha=1}
 function sparkle(g,x,y,s,col){x=Math.round(x);y=Math.round(y);R(g,x-s,y,s*2+1,1,col);R(g,x,y-s,1,s*2+1,col);if(s>2){R(g,x-1,y-1,3,3,col)}}
 // painted spell objects (fx/*.png, from art sheets). drawFX returns false until loaded so the code-drawn fallback runs
-const FXI={},FXC={};for(const n of ['axe','fist_open','fist_shut','obelisk','dragon','moon']){const im=new Image();im.onload=()=>{FXI[n]=im};im.src='fx/'+n+'.png?v=1'}
+const FXI={},FXC={};for(const n of ['axe','fist_open','fist_shut','obelisk','dragon','moon','phx_up','phx_down','fox','rose','clock','crane']){const im=new Image();im.onload=()=>{FXI[n]=im};im.src='fx/'+n+'.png?v=1'}
 function fxImg(n,h){const im=FXI[n];if(!im)return null;h=Math.max(4,Math.round(h));const key=n+'|'+h;let c=FXC[key];if(!c){const w=Math.max(1,Math.round(im.width*h/im.height));c=mk(w,h);const g=c.getContext('2d');g.imageSmoothingEnabled=true;g.imageSmoothingQuality='high';g.drawImage(im,0,0,w,h);FXC[key]=c}return c}
+function fxRot(ang,F,lim){const r=F>0?ang:(ang>0?Math.PI-ang:-Math.PI-ang);return Math.max(-lim,Math.min(lim,r))}
 function drawFX(n,cx,by,h,al,o={}){const c=fxImg(n,h);if(!c||al<=0)return !!c;const w=c.width,show=o.rise==null?1:Math.max(0,Math.min(1,o.rise)),sh=Math.max(1,Math.round(c.height*show));
-  for(const [g,a] of [[lg,al],[eg,al*(o.glow??.35)]]){if(a<=0)continue;g.save();g.globalAlpha=Math.min(1,a);g.translate(Math.round(cx),Math.round(by));if(o.flip)g.scale(-1,1);if(o.rot)g.rotate(o.rot);
+  for(const [g,a] of [[lg,al],[eg,al*(o.glow??.35)]]){if(a<=0)continue;g.save();g.globalAlpha=Math.min(1,a);g.translate(Math.round(cx),Math.round(by));if(o.flip)g.scale(-1,1);if(o.rot)g.rotate(o.rot);if(o.sy)g.scale(1,o.sy);
     g.drawImage(c,0,0,w,sh,-Math.round(w/2),-sh+Math.round(o.oy||0),w,sh);g.restore()}return true}
 function bigAxe(x,y,k,al,glow){if(drawFX('axe',x,y+4*k,62*k,al,{glow:.4}))return;// deco axe head pointing down, handle up; x,y = blade edge centre
   const hw=16*k,hh=20*k;eg.globalAlpha=al*.55;eg.fillStyle=glow;eg.fillRect(Math.round(x-1),Math.round(y-hh-34*k),3,Math.round(34*k));
@@ -1482,9 +1483,9 @@ function drawSpx(){
       if(fade>0&&t<total){lg.globalAlpha=.9;lg.fillStyle='#ffffff';lg.fillRect(Math.round(front),y-80,1,84);eg.globalAlpha=.8;eg.fillStyle='#bfffe0';eg.fillRect(Math.round(front)-1,y-82,3,88);if(rnd()<.9&&parts.length<480)parts.push({x:front-ox,y:s.y-rnd()*70,vx:(pass?-1:1)*20,vy:-10,life:.5,max:.5,col:AURC[(rnd()*4)|0],em:true,star:2})}
       eg.globalAlpha=lg.globalAlpha=1}
     else if(s.k==='rose'){const n=s.n,cy=y-38;if(t<.5){const g=Math.min(1,t/.3),rr=Math.round(28*(g<1?1-Math.pow(1-g,3):1)*(s.evo?1.15:1)),rot=s.rot+t*5;if(rr<2)continue;
-        fillE(eg,x,cy,rr+6,rr+6,'rgba(255,200,240,.12)',1);for(let i=0;i<n;i++){const a0=rot+i*TAU/n,a1=a0+TAU/n;polyF(lg,[x,cy,x+Math.cos(a0)*rr,cy+Math.sin(a0)*rr,x+Math.cos((a0+a1)/2)*rr*1.04,cy+Math.sin((a0+a1)/2)*rr*1.04,x+Math.cos(a1)*rr,cy+Math.sin(a1)*rr],JEWEL[i%6],.95);polyF(eg,[x,cy,x+Math.cos(a0)*rr,cy+Math.sin(a0)*rr,x+Math.cos(a1)*rr,cy+Math.sin(a1)*rr],JEWEL[i%6],.2)}
+        fillE(eg,x,cy,rr+6,rr+6,'rgba(255,200,240,.12)',1);if(FXI.rose){const hh=Math.round(rr*2.15);drawFX('rose',x,cy,hh,1,{rot:rot*.4,oy:hh/2,glow:.45})}else{for(let i=0;i<n;i++){const a0=rot+i*TAU/n,a1=a0+TAU/n;polyF(lg,[x,cy,x+Math.cos(a0)*rr,cy+Math.sin(a0)*rr,x+Math.cos((a0+a1)/2)*rr*1.04,cy+Math.sin((a0+a1)/2)*rr*1.04,x+Math.cos(a1)*rr,cy+Math.sin(a1)*rr],JEWEL[i%6],.95);polyF(eg,[x,cy,x+Math.cos(a0)*rr,cy+Math.sin(a0)*rr,x+Math.cos(a1)*rr,cy+Math.sin(a1)*rr],JEWEL[i%6],.2)}
         lg.strokeStyle='#2a1a08';for(let i=0;i<n;i++){const a=rot+i*TAU/n;lg.beginPath();lg.moveTo(x,cy);lg.lineTo(x+Math.cos(a)*rr,cy+Math.sin(a)*rr);lg.stroke()}
-        strokeE(lg,x,cy,rr,rr,C.gold,2,1);strokeE(lg,x,cy,rr*.55,rr*.55,'#2a1a08',1,1);strokeE(eg,x,cy,rr+1,rr+1,'#fff1c4',1,.8);fillE(lg,x,cy,4,4,C.gold,1);fillE(eg,x,cy,2,2,'#ffffff',1);
+        strokeE(lg,x,cy,rr,rr,C.gold,2,1);strokeE(lg,x,cy,rr*.55,rr*.55,'#2a1a08',1,1);strokeE(eg,x,cy,rr+1,rr+1,'#fff1c4',1,.8);fillE(lg,x,cy,4,4,C.gold,1);fillE(eg,x,cy,2,2,'#ffffff',1)}
         if(t>.44){strokeE(eg,x,cy,rr*1.2,rr*1.2,'#ffffff',3,(t-.44)/.06)}}
       else{const a=t-.5,d=Math.min(1,a/.55),f=Math.max(0,1-Math.max(0,a-.4)/.25);if(!s.boom){s.boom=1;waves.push({x:s.x,y:s.y-34,t:0,dur:.3,r:40,col:'#ff8fd0',w:4})}
         for(let i=0;i<n;i++){const an=s.rot+i*TAU/n,ca=Math.cos(an),sa=Math.sin(an),dist=95*(1-Math.pow(1-d,2)),sx=x+ca*dist,sy=cy+sa*dist*.7+34*Math.min(1,a/.25),col=JEWEL[i%6],sp=tAll*14+i;
@@ -1493,7 +1494,7 @@ function drawSpx(){
       const done=t>(n-1)*hop,fade=done?Math.max(0,1-(t-(n-1)*hop)/.45):1,[fx0,fy0,dir]=pos(t),fx=Math.round(fx0+ox),fy=Math.round(fy0+oy),F=dir>=0?1:-1,big=s.evo?1.6:1.25;
       for(let q=1;q<=14;q++){const [ax,ay]=pos(Math.max(0,t-q*.03)),[bx,by]=pos(Math.max(0,t-(q-1)*.03));eg.globalAlpha=fade*(1-q/14)*.85;eg.strokeStyle=q<5?'#ffe7b0':(q%2?'#ffb05a':'#ff6fb4');eg.lineWidth=Math.max(1,6*big*(1-q/14));eg.beginPath();eg.moveTo(ax+ox,ay+oy);eg.lineTo(bx+ox,by+oy);eg.stroke()}eg.lineWidth=1;
       const kk=Math.min(n-1,Math.floor(t/hop));if(kk>(s.lk??0)){s.lk=kk;for(let i=0;i<10&&parts.length<490;i++){const an=rnd()*TAU;parts.push({x:P2[kk*2],y:P2[kk*2+1],vx:Math.cos(an)*70,vy:Math.sin(an)*40-20,life:.35,max:.35,col:i%2?'#ffb05a':'#fff1c4',em:true,star:i%3?0:3})}}
-      if(!done){lg.globalAlpha=eg.globalAlpha=1;fillE(eg,fx,fy-2,10*big,7*big,'rgba(255,176,90,.28)',1);x2(fx,fy,()=>{const b=F;R(lg,fx-3*b-(b<0?1:0),fy-1,6,3,'#ffd08a');R(lg,fx+2*b-(b<0?1:0),fy-3,3,3,'#ffe7b0');R(lg,fx+2*b,fy-4,1,1,'#ffffff');R(lg,fx+3*b-(b<0?0:0),fy-4,1,1,'#ff9a3a');R(lg,fx+4*b,fy-2,1,1,'#3a1a10');
+      if(!done){lg.globalAlpha=eg.globalAlpha=1;fillE(eg,fx,fy-2,10*big,7*big,'rgba(255,176,90,.28)',1);if(!drawFX('fox',fx-F*2,fy+3,Math.round(11*big),1,{flip:F<0,glow:.5}))x2(fx,fy,()=>{const b=F;R(lg,fx-3*b-(b<0?1:0),fy-1,6,3,'#ffd08a');R(lg,fx+2*b-(b<0?1:0),fy-3,3,3,'#ffe7b0');R(lg,fx+2*b,fy-4,1,1,'#ffffff');R(lg,fx+3*b-(b<0?0:0),fy-4,1,1,'#ff9a3a');R(lg,fx+4*b,fy-2,1,1,'#3a1a10');
           const tails=s.evo?5:1;for(let q=0;q<tails;q++){const spread=(q-(tails-1)/2)*1.2;for(let i=1;i<=4;i++)R(lg,fx-3*b-i*b-(b<0?1:0),fy-1-Math.round(i*.8+spread*i*.4+Math.sin(tAll*16+i+q)*.6),1,1,i===4?'#ffffff':'#ffb05a')}R(eg,fx-1,fy-2,2,1,'#ffb05a')},3)}
       eg.globalAlpha=lg.globalAlpha=1}}
 }
@@ -1535,8 +1536,8 @@ function drawSpx2(){
         if(rnd()<.5*al&&parts.length<490)parts.push({x:gx,y:gy-4,vx:-Math.cos(s.a)*40,vy:-6,life:.3,max:.3,col:WCOL.legion,em:true,streak:1})}}
     else if(s.k==='phx'){const c=chars.find(q=>q.idx===s.ci);if(!c)continue;const [px0,py0]=phxPos(c,t,s.S),[qx,qy]=phxPos(c,t+.03,s.S),x=Math.round(px0+ox),y=Math.round(py0+oy),dir=Math.atan2(qy-py0,qx-px0),F=qx>=px0?1:-1,al=Math.min(1,t/.2)*f,big=s.evo?2.3:1.9,flap=Math.sin(tAll*22);
       for(let q=1;q<=16;q++){const [ax,ay]=phxPos(c,Math.max(0,t-q*.025),s.S);eg.globalAlpha=al*(1-q/16)*.7;eg.fillStyle=q<6?'#ffe0a0':q%2?'#ff7a1a':'#ff3a5c';const sz=Math.max(1,Math.round((5-q*.28)*big));eg.fillRect(Math.round(ax+ox)-(sz>>1),Math.round(ay+oy)-(sz>>1),sz,sz)}eg.globalAlpha=1;
-      fillE(eg,x,y,12*big,9*big,'rgba(255,140,40,.3)',al);const wy=flap*7*big;polyF(eg,[x-F*2,y-1,x-F*8*big,y-8*big-wy,x+F*2,y-3],'#ffb84a',al);polyF(eg,[x-F*1,y,x-F*10*big,y-2*big-wy*.6,x+F*3,y+1],'#ff7a1a',al*.9);
-      polyF(lg,[x-F*5*big,y,x+F*5*big,y-2,x+F*7*big,y-1,x+F*5*big,y+2],'#ffd27a',al);R(lg,x+F*6*big,y-2,2,1,'#ffffff');polyF(lg,[x-F*5*big,y,x-F*13*big,y+4*big,x-F*11*big,y+1],'#ff3a5c',al);
+      fillE(eg,x,y,12*big,9*big,'rgba(255,140,40,.3)',al);if(FXI.phx_up&&FXI.phx_down){const up=flap>0,hh=Math.round((up?20:17)*big);drawFX(up?'phx_up':'phx_down',x,y,hh,al,{flip:F<0,rot:fxRot(dir,F,.5),oy:hh/2,glow:.5})}else{const wy=flap*7*big;polyF(eg,[x-F*2,y-1,x-F*8*big,y-8*big-wy,x+F*2,y-3],'#ffb84a',al);polyF(eg,[x-F*1,y,x-F*10*big,y-2*big-wy*.6,x+F*3,y+1],'#ff7a1a',al*.9);
+      polyF(lg,[x-F*5*big,y,x+F*5*big,y-2,x+F*7*big,y-1,x+F*5*big,y+2],'#ffd27a',al);R(lg,x+F*6*big,y-2,2,1,'#ffffff');polyF(lg,[x-F*5*big,y,x-F*13*big,y+4*big,x-F*11*big,y+1],'#ff3a5c',al)}
       if(rnd()<.6&&parts.length<490)parts.push({x:px0,y:py0,vx:(rnd()-.5)*20,vy:10+rnd()*20,life:.45,max:.45,col:rnd()<.5?'#ffb84a':'#ff3a5c',em:true,sz:1})}
     else if(s.k==='hvn'){const P2=s.pts;for(let i=0;i<P2.length/2;i++){const tt=t-(.15+i*.15),x=Math.round(P2[i*2]+ox),y=Math.round(P2[i*2+1]+oy),Rr=s.R;if(tt<-.15)continue;
         if(tt<0){strokeE(eg,x,y,Rr,Rr*.45,WCOL.heaven,1,.7);eg.globalAlpha=.4;R(eg,x-1,0,2,y,'#fff3b0');eg.globalAlpha=1;continue}const life=s.lf,a=tt<.06?tt/.06:tt<life?1:Math.max(0,1-(tt-life)/.25);if(a<=0)continue;const ww=Math.round(Rr*(tt<.08?1.6-tt*7:1));
@@ -1546,7 +1547,7 @@ function drawSpx2(){
     else if(s.k==='crn'){const T2=s.tg,n=T2.length/2;for(let i=0;i<n;i++){const tt=t-i*.04,dur=.72;if(tt<0)continue;const tx=T2[i*2],ty=T2[i*2+1];
         if(tt<dur){const k=tt/dur,spread=(i-(n-1)/2)*14,ax=s.x+spread,ay=s.y-55-Math.abs(spread)*.3,bx=(1-k)*(1-k)*s.x+2*(1-k)*k*ax+k*k*tx,by=(1-k)*(1-k)*s.y+2*(1-k)*k*ay+k*k*(ty-6),k2=Math.min(1,k+.04),cx2=(1-k2)*(1-k2)*s.x+2*(1-k2)*k2*ax+k2*k2*tx,cy2=(1-k2)*(1-k2)*s.y+2*(1-k2)*k2*ay+k2*k2*(ty-6),an=Math.atan2(cy2-by,cx2-bx),x=bx+ox,y=by+oy,ca=Math.cos(an),sa=Math.sin(an),fl=Math.sin(tAll*30+i)*3;
           eg.globalAlpha=.4;R(eg,x-ca*6,y-sa*6,1,1,WCOL.cranes);R(eg,x-ca*10,y-sa*10,1,1,WCOL.cranes);eg.globalAlpha=1;
-          fillE(eg,x,y,7,5,'rgba(255,192,220,.3)',1);polyF(lg,[x+ca*9,y+sa*9,x-ca*6-sa*3,y-sa*6+ca*3,x-ca*6+sa*3,y-sa*6-ca*3],'#fffaf2',1);polyF(lg,[x,y,x-sa*11-ca*3,y+ca*11-sa*3-fl,x-ca*4,y-sa*4],'#ffc0dc',1);polyF(lg,[x,y,x+sa*11-ca*3,y-ca*11-sa*3+fl,x-ca*4,y-sa*4],'#ffffff',1);R(lg,x+ca*6,y+sa*6,1,1,'#ff6fa8');R(eg,x,y,1,1,'#ffffff')}
+          fillE(eg,x,y,7,5,'rgba(255,192,220,.3)',1);const CF=ca>=0?1:-1;if(drawFX('crane',x,y,18,1,{flip:CF<0,rot:fxRot(an,CF,.9),oy:9,glow:.35}));else{polyF(lg,[x+ca*9,y+sa*9,x-ca*6-sa*3,y-sa*6+ca*3,x-ca*6+sa*3,y-sa*6-ca*3],'#fffaf2',1);polyF(lg,[x,y,x-sa*11-ca*3,y+ca*11-sa*3-fl,x-ca*4,y-sa*4],'#ffc0dc',1);polyF(lg,[x,y,x+sa*11-ca*3,y-ca*11-sa*3+fl,x-ca*4,y-sa*4],'#ffffff',1);R(lg,x+ca*6,y+sa*6,1,1,'#ff6fa8');R(eg,x,y,1,1,'#ffffff')}}
         else if(tt<dur+.5){const b=(tt-dur)/.5;if(!s['c'+i]){s['c'+i]=1;for(let q=0;q<16&&parts.length<500;q++){const an=rnd()*TAU,sp=40+rnd()*90;parts.push({x:tx,y:ty-6,vx:Math.cos(an)*sp,vy:Math.sin(an)*sp*.6-50,life:.7,max:.7,col:FWC[(rnd()*FWC.length)|0],sz:2,grav:1})}}
           fillE(eg,tx+ox,ty+oy-6,10*(1-b),6*(1-b),'#ffffff',(1-b)*.7)}}}
     else if(s.k==='swl'){const x=s.x+ox,y=s.y+oy,R0=s.R,form=Math.min(1,t/.3),col=t<1.6,b=t>=1.6?(t-1.6)/.6:0;
@@ -1556,7 +1557,9 @@ function drawSpx2(){
       else if(b<1){fillE(eg,x,y-4,R0*1.5*b+4,(R0*1.5*b+4)*.6,'#ffffff',(1-b)*.85);strokeE(eg,x,y,R0*2*b,R0*.9*b,WCOL.starwell,4,1-b);strokeE(eg,x,y,R0*2.6*b,R0*1.15*b,'#ff6fd8',2,1-b);
         if(!s.boom){s.boom=1;for(let i=0;i<30&&parts.length<500;i++){const an=rnd()*TAU,sp=60+rnd()*160;parts.push({x:s.x,y:s.y-4,vx:Math.cos(an)*sp,vy:Math.sin(an)*sp*.55,life:.6,max:.6,col:rnd()<.4?'#ffffff':rnd()<.5?WCOL.starwell:'#ff6fd8',em:true,star:i%3?0:4})}}}}
     else if(s.k==='clk'){const x=Math.round(s.x+ox),y=Math.round(s.y+oy),R0=s.R,form=Math.min(1,t/.2),strike=t>=1.6,b=strike?(t-1.6)/.4:0;
-      if(!strike){fillE(eg,x,y,R0*form,R0*.48*form,'rgba(143,230,255,.12)',1);strokeE(lg,x,y,R0*form,R0*.48*form,C.gold,2,form);strokeE(lg,x,y,R0*.85*form,R0*.41*form,C.goldD,1,form);
+      if(!strike&&FXI.clock){fillE(eg,x,y,R0*form,R0*.48*form,'rgba(143,230,255,.12)',1);const im=FXI.clock,hh=Math.round(2.3*R0*form*im.height/im.width);drawFX('clock',x,y,hh,form,{sy:.48,oy:hh/2,glow:.3});
+        const mh=-Math.PI/2+(t/1.6)*TAU;line(lg,x,y,x+Math.cos(mh)*R0*.75*form,y+Math.sin(mh)*R0*.36*form,'#ffffff');line(eg,x,y,x+Math.cos(mh)*R0*.75*form,y+Math.sin(mh)*R0*.36*form,WCOL.clock);for(let i=0;i<4;i++){const an=i/4*TAU+tAll;R(eg,x+Math.cos(an)*R0*1.05,y+Math.sin(an)*R0*.5,2,2,WCOL.clock)}}
+      else if(!strike){fillE(eg,x,y,R0*form,R0*.48*form,'rgba(143,230,255,.12)',1);strokeE(lg,x,y,R0*form,R0*.48*form,C.gold,2,form);strokeE(lg,x,y,R0*.85*form,R0*.41*form,C.goldD,1,form);
         for(let i=0;i<12;i++){const an=i/12*TAU,ca=Math.cos(an),sa=Math.sin(an)*.48,l=i%3===0?.18:.1;line(lg,x+ca*R0*.88*form,y+sa*R0*.88*form,x+ca*R0*(.88-l)*form,y+sa*R0*(.88-l)*form,i%3===0?'#fff1c4':C.gold)}
         const mh=-Math.PI/2+(t/1.6)*TAU,hh=-Math.PI/2+(t/1.6)*TAU/12;line(lg,x,y,x+Math.cos(mh)*R0*.75*form,y+Math.sin(mh)*R0*.36*form,'#ffffff');line(eg,x,y,x+Math.cos(mh)*R0*.75*form,y+Math.sin(mh)*R0*.36*form,WCOL.clock);line(lg,x,y,x+Math.cos(hh)*R0*.5*form,y+Math.sin(hh)*R0*.24*form,C.gold);
         fillE(lg,x,y,2,2,C.gold,1);for(let i=0;i<4;i++){const an=i/4*TAU+tAll;R(eg,x+Math.cos(an)*R0*1.05,y+Math.sin(an)*R0*.5,2,2,WCOL.clock)}}
