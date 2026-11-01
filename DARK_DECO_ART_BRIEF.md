@@ -483,3 +483,41 @@ A wide panoramic image, about 3 times wider than tall, of closer, taller art dec
 2. Then F (enemies), then G, H and I (environment).
 3. One sheet per message. If Hamza asks for changes, change only that sheet.
 4. When a sheet is approved, just reply "Approved: sheet X". Don't commit to GitHub. Claude handles the repository.
+
+---
+
+## 13. Enemy animations (sheets J1 to J6)
+
+**To ChatGPT:** one enemy per image. **Attach that enemy's existing painted sprite (the file in brackets, from the repo) as the reference** so the animation matches it exactly. Same rules as before: image generator only, show Hamza, wait for approval, no commits. Start with J2 (the brute) as a test.
+
+Character consistency between frames is the hard part. Reject a sheet if the character changes design, colour or size between frames, if frames touch, or if a row doesn't have exactly 4 frames.
+
+**J1 Shadow imp (enemies/src/shadow.png)**
+```
+A pixel art animation sprite sheet of ONE character, matching the attached reference image exactly: same design, colours, proportions, outline and painterly pixel-art style. 2 rows of 4 frames on a solid flat pure magenta #FF00FF background, every frame the same size, the character the same size in every frame, facing right in a 3/4 top-down game view, feet on the same baseline in every frame, evenly spaced with clear gaps between frames. No ground, no shadow, no text, no frames or borders, no magenta inside the character. Row 1: a 4-frame floating loop, the wispy tail and tendrils swaying, body bobbing gently. Row 2: a 4-frame lunge-bite: rear back, stretch forward with claws out and jaws open, snap, settle back.
+```
+
+**J2 Brute (enemies/src/brute.png)**
+```
+A pixel art animation sprite sheet of ONE character, matching the attached reference image exactly: same design, colours, proportions, outline and painterly pixel-art style. 2 rows of 4 frames on a solid flat pure magenta #FF00FF background, every frame the same size, the character the same size in every frame, facing right in a 3/4 top-down game view, feet on the same baseline in every frame, evenly spaced with clear gaps between frames. No ground, no shadow, no text, no frames or borders, no magenta inside the character. Row 1: a 4-frame heavy walk cycle, stomping, shoulders rolling (left foot down, passing, right foot down, passing). Row 2: a 4-frame ground slam: raise both fists overhead, peak of the wind-up, smash down onto the ground, recover.
+```
+
+**J3 Gunman (enemies/src/gunman.png)**
+```
+A pixel art animation sprite sheet of ONE character, matching the attached reference image exactly: same design, colours, proportions, outline and painterly pixel-art style. 2 rows of 4 frames on a solid flat pure magenta #FF00FF background, every frame the same size, the character the same size in every frame, facing right in a 3/4 top-down game view, feet on the same baseline in every frame, evenly spaced with clear gaps between frames. No ground, no shadow, no text, no frames or borders, no magenta inside the character. Row 1: a 4-frame walk cycle holding the tommy gun, coat swinging. Row 2: a 4-frame shooting sequence: raise and aim, fire with a bright muzzle flash, second shot with recoil, lower the gun.
+```
+
+**J4 Bomber (enemies/src/bomber.png)**
+```
+A pixel art animation sprite sheet of ONE character, matching the attached reference image exactly: same design, colours, proportions, outline and painterly pixel-art style. 2 rows of 4 frames on a solid flat pure magenta #FF00FF background, every frame the same size, the character the same size in every frame, facing right in a 3/4 top-down game view, feet on the same baseline in every frame, evenly spaced with clear gaps between frames. No ground, no shadow, no text, no frames or borders, no magenta inside the character. Row 1: a 4-frame bouncy hopping walk on its little legs, fuse spark flickering. Row 2: a 4-frame about-to-explode sequence: fuse burns down, body swells and glows brighter, cracks of light, maximum swell with a white-hot glow. No explosion.
+```
+
+**J5 Elite knight (enemies/src/elite.png)**
+```
+A pixel art animation sprite sheet of ONE character, matching the attached reference image exactly: same design, colours, proportions, outline and painterly pixel-art style. 2 rows of 4 frames on a solid flat pure magenta #FF00FF background, every frame the same size, the character the same size in every frame, facing right in a 3/4 top-down game view, feet on the same baseline in every frame, evenly spaced with clear gaps between frames. No ground, no shadow, no text, no frames or borders, no magenta inside the character. Row 1: a 4-frame armoured walk cycle, cape flowing. Row 2: a 4-frame overhead sword slam: raise the blade, peak of the wind-up, strike down into the ground, recover.
+```
+
+**J6 The Foreman (enemies/src/boss.png)**
+```
+A pixel art animation sprite sheet of ONE character, matching the attached reference image exactly: same design, colours, proportions, outline and painterly pixel-art style. 2 rows of 4 frames on a solid flat pure magenta #FF00FF background, every frame the same size, the character the same size in every frame, facing right in a 3/4 top-down game view, feet on the same baseline in every frame, evenly spaced with clear gaps between frames. No ground, no shadow, no text, no frames or borders, no magenta inside the character. Row 1: a 4-frame slow, heavy walk cycle, furnace glow pulsing, chimneys puffing. Row 2: a 4-frame double-fist slam: raise both fists, peak with the furnace blazing, smash down, recover.
+```
