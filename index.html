@@ -482,10 +482,71 @@ em.r{font-style:normal;font-weight:700;color:#d81b50}
 .swipe{margin:6px 0 0;font:600 10px var(--ui);letter-spacing:.2em;text-transform:uppercase;color:#8b84ad;animation:bob 1.6s ease-in-out infinite}
 .paper .stage .tapme{color:#f2cf7a}
 .covart .stage{width:170px;height:190px}.covart .stage .spr{width:176px;height:176px;background-size:auto 176px;--fw:176px}.cover{justify-content:space-evenly}
+
+/* ===== title screen ===== */
+#title{position:fixed;inset:0;z-index:1;display:none;background:#0d0a1e url(title/sky.jpg) center/cover;overflow:hidden}
+#title::before{content:"";position:absolute;inset:-40px;background:inherit;filter:blur(24px) brightness(.55)}
+body.intitle #title{display:block}
+#tStage{position:absolute;top:0;bottom:0;left:50%;width:min(100vw,calc(100vh * .6667));transform:translateX(-50%);overflow:hidden}
+.tl{position:absolute;inset:0;will-change:transform;transform-origin:50% 80%}
+#tSky{background:url(title/sky.jpg) center/cover}
+#tTowers{background:url(title/towers.webp) center top/cover}
+#tHeroes{top:auto;height:150%;max-height:none;background:url(title/heroes.webp) center bottom/100% auto no-repeat;transform-origin:50% 100%}
+.fog{background:url(title/fog.webp) 0 50%/auto 100% repeat-x;mix-blend-mode:screen;pointer-events:none}
+#tFogB{top:52%;height:22%;opacity:.55;animation:fogx 70s linear infinite}
+#tFogF{top:auto;bottom:-4%;height:26%;opacity:.7;animation:fogx 38s linear infinite reverse}
+@keyframes fogx{to{background-position:-200vh 50%}}
+#tBack,#tFront{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+#tFlash{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 20%,#e8dcff,#7a5cff 60%,transparent);opacity:0;pointer-events:none;mix-blend-mode:screen}
+#tBlack{position:absolute;inset:0;background:#05040b;pointer-events:none;animation:tblack 1.6s ease-out forwards}
+@keyframes tblack{0%{opacity:1}100%{opacity:0}}
+#tLogo{position:absolute;left:5%;right:5%;top:14%;transform-origin:50% 0;opacity:0;animation:tlogo 1.8s cubic-bezier(.2,.8,.2,1) 2.9s forwards;transition:top .9s cubic-bezier(.2,.8,.2,1),transform .9s cubic-bezier(.2,.8,.2,1);filter:drop-shadow(0 6px 18px rgba(0,0,0,.7))}
+#tLogo img{width:100%;display:block}
+@keyframes tlogo{0%{opacity:0;transform:scale(1.35);filter:blur(12px) brightness(3)}60%{opacity:1;filter:blur(0) brightness(1.4)}100%{opacity:1;transform:scale(1);filter:blur(0) brightness(1) drop-shadow(0 6px 18px rgba(0,0,0,.7))}}
+#tLogo .sweep{position:absolute;inset:0;-webkit-mask:url(title/logo.webp) center/100% 100% no-repeat;mask:url(title/logo.webp) center/100% 100% no-repeat;background:linear-gradient(105deg,transparent 35%,rgba(255,250,225,.95) 50%,transparent 65%) -150% 0/250% 100% no-repeat;mix-blend-mode:screen;animation:sweep 6s ease-in-out 3.9s infinite}
+@keyframes sweep{0%{background-position:-150% 0}25%,100%{background-position:150% 0}}
+#tTap{position:absolute;left:0;right:0;bottom:9%;text-align:center;font:600 13px var(--ui);letter-spacing:.42em;text-transform:uppercase;color:#ffe7b0;text-shadow:0 0 12px rgba(255,190,90,.9),0 2px 4px #000;opacity:0;animation:tapin 1s ease 4.4s forwards,tappulse 2.2s ease-in-out 5.4s infinite}
+@keyframes tapin{to{opacity:1}}@keyframes tappulse{50%{opacity:.35}}
+body.titled #tTap{display:none}
+body.titled #tLogo{top:3.5%;transform:scale(.72)}
+body.titled #tBlack{display:none}
+/* menu over the scene: compact card at the bottom, staggered entrance, shimmer buttons */
+body.intitle #sMenu,body.intitle #sLobby{background:linear-gradient(180deg,rgba(13,11,28,0) 30%,rgba(13,11,28,.55) 70%,rgba(13,11,28,.8));z-index:3}
+body.intitle #sLobby{background:rgba(13,11,28,.62)}
+body.intitle #sMenu{align-items:end;padding-bottom:max(18px,env(safe-area-inset-bottom))}
+body.intitle #sMenu .eyebrow,body.intitle #sMenu h1,body.intitle #sMenu .rule,body.intitle #sMenu .card>p{display:none}
+body.intitle:not(.titled) #sMenu{opacity:0;pointer-events:none}
+body.titled #sMenu .card{animation:cardin .9s cubic-bezier(.2,.8,.2,1) both}
+@keyframes cardin{from{opacity:0;transform:translateY(60px) scale(.96)}}
+body.titled #sMenu .btns>*{animation:btnin .6s cubic-bezier(.2,.9,.3,1.3) both}
+body.titled #sMenu .btns>*:nth-child(1){animation-delay:.25s}body.titled #sMenu .btns>*:nth-child(2){animation-delay:.33s}body.titled #sMenu .btns>*:nth-child(3){animation-delay:.41s}body.titled #sMenu .btns>*:nth-child(4){animation-delay:.49s}
+@keyframes btnin{from{opacity:0;transform:translateX(-40px)}}
+.btn{overflow:hidden;transition:transform .12s,filter .15s}
+.btn:active{transform:scale(.95);filter:brightness(1.25)}
+@media (hover:hover){.btn:hover{filter:brightness(1.15) drop-shadow(0 0 8px rgba(255,200,110,.55))}}
+.btn::after{content:"";position:absolute;top:-12px;bottom:-12px;left:-12px;width:40%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.45),transparent);transform:translateX(-160%) skewX(-18deg);animation:shim 4.5s ease-in-out infinite;pointer-events:none}
+.btns>*:nth-child(2) .btn::after,.btns>:nth-child(2)::after{animation-delay:.4s}.btns>:nth-child(3)::after{animation-delay:.8s}.btns>:nth-child(4)::after{animation-delay:1.2s}
+@keyframes shim{0%,70%{transform:translateX(-160%) skewX(-18deg)}100%{transform:translateX(420%) skewX(-18deg)}}
+@media (prefers-reduced-motion:reduce){#tBlack,#tLogo,#tTap,.btn::after{animation:none!important;opacity:1}}
 </style>
 </head>
 <body>
 <canvas id="c" aria-label="Dark deco co-op game"></canvas>
+<div id="title" aria-hidden="true">
+  <div id="tStage">
+    <div class="tl" id="tSky"></div>
+    <div class="tl fog" id="tFogB"></div>
+    <canvas id="tBack"></canvas>
+    <div class="tl" id="tTowers"></div>
+    <div class="tl" id="tHeroes"></div>
+    <div class="tl fog" id="tFogF"></div>
+    <canvas id="tFront"></canvas>
+    <div id="tFlash"></div>
+    <div id="tLogo"><img src="title/logo.webp" alt=""><i class="sweep"></i></div>
+    <div id="tTap">Tap to begin</div>
+    <div id="tBlack"></div>
+  </div>
+</div>
 
 <div id="hud" hidden>
   <div>
@@ -684,7 +745,8 @@ em.r{font-style:normal;font-weight:700;color:#d81b50}
 </div>
 
 <script src="peerjs.min.js"></script>
-<script src="icons.js?v=1793531321"></script>
-<script src="game.js?v=1793531321"></script>
+<script src="icons.js?v=1793533384"></script>
+<script src="title.js?v=1793533384"></script>
+<script src="game.js?v=1793533384"></script>
 </body>
 </html>

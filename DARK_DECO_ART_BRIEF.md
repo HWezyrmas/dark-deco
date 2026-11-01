@@ -551,6 +551,8 @@ Four separate simple glowing game button symbols in a row, each centred with cle
 
 ## 15. Title screen (sheets S1 to S5)
 
+**Status: S1 to S5 are done and live.**
+
 Hamza wants a cinematic, animated title screen like a World of Warcraft expansion launch. Claude builds the animation in code: the camera slowly pushes in through the layers, the towers and heroes shift with the phone's tilt or a finger drag, fog drifts, neon flickers, rain and embers fall, lightning flashes, and the logo reveals with a light sweep before the menu buttons slide in.
 
 The title screen is the one place the art is NOT pixel art: it should look like epic painted key art. For that, the picture has to come in separate layers that line up. Use the same tall portrait framing (2:3) for S1 to S3. Attach `sprites/hero_reference.png` for S3. Same rules as before: image generator only, one image per message, show Hamza, no commits.
