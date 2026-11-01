@@ -1168,7 +1168,16 @@ function buildSky(){SKY=[0,1].map(L=>{const c=mk(2300,470),g=c.getContext('2d'),
     const Rr=rng(t.seed);for(let wy=top+4;wy<470;wy+=L?6:5)for(let wx=x+2;wx<x+t.w-2;wx+=L?4:3)if(Rr()<(L?.06:.04)){g.fillStyle=Rr()<.55?'rgba(255,214,140,.45)':(Rr()<.5?'rgba(79,240,255,.5)':'rgba(255,79,216,.5)');g.fillRect(wx,wy,1,L?2:1)}
     if(L&&t.seed%3===0){const hh=Math.min(26,t.h/3)|0;g.fillStyle=t.neon;g.fillRect(x+2,top+8,1,hh);ge.globalAlpha=.7;ge.fillStyle=t.neon;ge.fillRect(x+2,top+8,1,hh);ge.globalAlpha=1}}
   return{c,ce}})}
-function bg(){if(!SKY)buildSky();const gr=lg.createLinearGradient(0,0,0,lh);gr.addColorStop(0,C.sky0);gr.addColorStop(.7,'#1d1438');gr.addColorStop(1,C.sky1);lg.fillStyle=gr;lg.fillRect(0,0,lw,lh);
+// painted parallax skyline (sheet I): far layer has its own sky, near layer is cut out; lit windows feed the bloom
+const SKYI=[];['far','near'].forEach((n,L)=>{const im=new Image();im.onload=()=>{const w=im.width,h=im.height,c=mk(w,h);c.getContext('2d').drawImage(im,0,0);const em=mk(w,h),g=em.getContext('2d');g.drawImage(im,0,0);const d=g.getImageData(0,0,w,h),a=d.data;
+  for(let i=0;i<a.length;i+=4){const l=.3*a[i]+.59*a[i+1]+.11*a[i+2];if(l<(L?150:120))a[i+3]=0}g.putImageData(d,0,0);SKYI[L]={c,em,w,h}};im.src='sky/'+n+'.png?v=1'});
+function bgPainted(){lg.fillStyle='#1a1430';lg.fillRect(0,0,lw,lh);
+  for(let L=0;L<2;L++){const S=SKYI[L],par=L?.45:.22,bot=Math.round((L?lh*.98+30:lh*.86)-cam.y*par*.3),y=bot-S.h;let x=-Math.round(cam.x*par)%S.w;if(x>0)x-=S.w;
+    if(!L&&y>0){lg.fillStyle='#120c26';lg.fillRect(0,0,lw,y+1)}
+    for(;x<lw;x+=S.w){lg.drawImage(S.c,x,y);eg.globalAlpha=L?.55:.35;eg.drawImage(S.em,x,y);eg.globalAlpha=1}
+    if(L){lg.fillStyle='rgba(10,6,22,.28)';lg.fillRect(0,y,lw,S.h)}
+    const fg=lg.createLinearGradient(0,lh*.35,0,lh);fg.addColorStop(0,'rgba(90,63,143,0)');fg.addColorStop(1,L?'rgba(90,63,143,.3)':'rgba(90,63,143,.35)');lg.fillStyle=fg;lg.fillRect(0,0,lw,lh)}}
+function bg(){if(SKYI[0]&&SKYI[1])return bgPainted();if(!SKY)buildSky();const gr=lg.createLinearGradient(0,0,0,lh);gr.addColorStop(0,C.sky0);gr.addColorStop(.7,'#1d1438');gr.addColorStop(1,C.sky1);lg.fillStyle=gr;lg.fillRect(0,0,lw,lh);
   for(let L=0;L<2;L++){const par=L?.45:.22,base=lh+(L?20:-10)-(cam.y*par*.3),sx=Math.round(-700-cam.x*par),sy=Math.round(base-300);
     lg.drawImage(SKY[L].c,sx,sy);eg.drawImage(SKY[L].ce,sx,sy);
     for(const t of TOW[L]){if(!t.ant||Math.sin(tAll*2+t.seed)<=0)continue;const x=Math.round(t.x-cam.x*par);if(x<-4||x>lw+4)continue;eg.fillStyle=t.neon;eg.fillRect(x+((t.w/2)|0),Math.round(base-t.h)-t.steps*5-10,1,1)}
@@ -1198,7 +1207,7 @@ function staticWorld(){
 const FLOOR=new Image();FLOOR.onload=()=>{STW=null};FLOOR.src='floor/roof.png?v=1';
 function buildStatic(){STW=mk(820,660);STE=mk(820,660);const sl=lg,se=eg,a=ox,b=oy;lg=STW.getContext('2d');eg=STE.getContext('2d');ox=STX;oy=STY;staticWorld();lg=sl;eg=se;ox=a;oy=b}
 function world(){
-  if(!STW)buildStatic();lg.drawImage(STW,ox-STX,oy-STY);eg.drawImage(STE,ox-STX,oy-STY);
+  if(!STW)buildStatic();for(const r of ROOFS)eg.clearRect(Math.round(r.x+ox),Math.round(r.y+oy-9),r.w,r.h+9+FACE);for(const r of [BRIDGE,BRIDGE2])eg.clearRect(Math.round(r.x+ox),Math.round(r.y+oy),r.w,r.h+16);lg.drawImage(STW,ox-STX,oy-STY);eg.drawImage(STE,ox-STX,oy-STY);
   {const r=ROOFS[0],x=r.x+ox,y=r.y+r.h+oy,sx=x+r.w-36,sy=y+14;const on=Math.sin(tAll*3)>-.85;for(let i=0;i<6;i++){lg.fillStyle=on?C.pink:'#5a2a50';lg.fillRect(sx,sy+i*7,3,5);if(on){eg.fillStyle=C.pink;eg.fillRect(sx,sy+i*7,3,5)}}}
   for(const d of decals){const a=Math.min(1,d.life/1.5);if(d.ink){lg.globalAlpha=a*.85;lg.fillStyle='#08060f';for(const p of d.pts)lg.fillRect(d.x+p[0]+ox,d.y+p[1]+oy,2,1);lg.fillStyle='rgba(255,42,92,.6)';lg.fillRect(d.x+ox,d.y+oy,1,1)}
     else{for(const seg of d.lines){let px=d.x+ox,py=d.y+oy;for(const [sx,sy] of seg){lg.globalAlpha=a*.9;line(lg,px,py,d.x+ox+sx,d.y+oy+sy,'#0a0916');eg.globalAlpha=a*.5;line(eg,px,py,d.x+ox+sx,d.y+oy+sy,d.col);px=d.x+ox+sx;py=d.y+oy+sy}}}}lg.globalAlpha=eg.globalAlpha=1;
