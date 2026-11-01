@@ -596,3 +596,62 @@ A set of 6 game art pieces in one row on a pure solid black background, with cle
 ```
 A set of 4 square game ability icons in one image, in 2 rows of 2, each icon on its own dark navy rounded tile with a thin gold art deco frame and clear space between tiles, on a plain flat dark background. Epic painted fantasy style with neon glow, bold readable silhouettes that read at 48 pixels. No text, no letters, no numbers. 1) Last Rites: a crimson executioner's sigil on the ground with wounded shadows collapsing into red smoke around an armoured figure; 2) Death Knell: a giant tarnished brass bell tolling in the night sky, pale shockwave rings rolling out from it; 3) Firewall: a tall wall of orange flame rising across a rooftop between a girl with a lantern and a crowd of shadows; 4) Pyre: several burning shadows erupting into fireballs one after another in a chain.
 ```
+
+---
+
+## 16. Intro cinematic (sheets I1 to I6)
+
+A short story intro that plays before the title screen the first time, and from a "Watch the intro" button. Claude animates it in code: slow camera pushes, parallax between plate and cutout, fog, embers, lightning, captions and music. Same painted, NOT pixel art style as the title screen. Plates are full images; cutouts go on magenta. Attach `title/src/heroes.png` for the hero cutouts and `enemies/src/boss.png` / `enemies/src/shadow.png` for the Foreman and the imps.
+
+Story captions: 1) "Once, the city of Lumen never slept." 2) "Then the Foreman came, and his furnaces swallowed the sky." 3) "One by one, the lights went out." 4) "All but one." 5) "And the one who would not let it fall." 6) "Twelve minutes to dawn. Hold the roof."
+
+**I1 · plate: The city before**
+```
+A tall portrait image, 2:3 aspect ratio, of a vast art deco city at night seen from high above the rooftops: hundreds of glowing windows, neon signs in cyan and pink, golden street lamps lining the avenues, stepped skyscrapers with gold crowns, searchlights in a clear starry sky, a peaceful, glittering city. No characters, no text. Epic cinematic fantasy key art like a AAA MMO expansion cinematic: a richly detailed digital painting, smooth and high resolution, NOT pixel art, dramatic volumetric lighting, dark art deco noir city at night, deep violet and indigo palette with cyan, pink and gold neon.
+```
+
+**I2 · plate: The Foreman's furnace**
+```
+A tall portrait image, 2:3 aspect ratio, of a colossal black-iron art deco furnace factory rising over the edge of the city at night, giant smokestacks pouring thick black smoke and violet fog that rolls down over the skyline, furnace glow in red and orange from its windows, the sky turning dark and starless. Leave the top third of the image open for a giant figure to be placed in front. No characters, no text. Epic cinematic fantasy key art like a AAA MMO expansion cinematic: a richly detailed digital painting, smooth and high resolution, NOT pixel art, dramatic volumetric lighting, dark art deco noir city at night, deep violet and indigo palette with cyan, pink and gold neon.
+```
+
+**I2 · cutout: The Foreman, giant**
+```
+A tall portrait image, 2:3 aspect ratio, of the Foreman from the attached reference painted as a towering giant seen from below: a walking furnace of red and black iron with a gold art deco crown, three burning eyes, smokestacks on his back pouring smoke, one huge fist raised over the city. Paint him as a fully rendered illustrated villain, NOT pixel art, keeping his design and colours from the reference. Upper body and raised fist fill most of the image. Everything that is not the subject is solid flat pure magenta #FF00FF with no gradient, so it can be cut out. No magenta on the subject, no ground shadow, no text. Epic cinematic fantasy key art like a AAA MMO expansion cinematic: a richly detailed digital painting, smooth and high resolution, NOT pixel art, dramatic volumetric lighting, dark art deco noir city at night, deep violet and indigo palette with cyan, pink and gold neon.
+```
+
+**I3 · plate: The lights go out**
+```
+A tall portrait image, 2:3 aspect ratio, of a narrow art deco city street at night seen from street level, a row of ornate golden street lamps going dark one after another into the distance, the nearest lamps already out and smoking, violet fog creeping along the ground, neon signs flickering off. No characters, no text. Epic cinematic fantasy key art like a AAA MMO expansion cinematic: a richly detailed digital painting, smooth and high resolution, NOT pixel art, dramatic volumetric lighting, dark art deco noir city at night, deep violet and indigo palette with cyan, pink and gold neon.
+```
+
+**I3 · cutout: Shadow imps on a lamp**
+```
+A tall portrait image, 2:3 aspect ratio, of a single ornate golden art deco street lamp post with a swarm of the shadow imps from the attached reference crawling up it and smothering the lamp, plum-purple ghostly bodies with wispy tails and glowing yellow eyes, the lamp glass cracking as its light dies. Paint them as fully rendered illustrated creatures, NOT pixel art, matching their design from the reference. Everything that is not the subject is solid flat pure magenta #FF00FF with no gradient, so it can be cut out. No magenta on the subject, no ground shadow, no text. Epic cinematic fantasy key art like a AAA MMO expansion cinematic: a richly detailed digital painting, smooth and high resolution, NOT pixel art, dramatic volumetric lighting, dark art deco noir city at night, deep violet and indigo palette with cyan, pink and gold neon.
+```
+
+**I4 · plate: The last light**
+```
+A tall portrait image, 2:3 aspect ratio, of a dark art deco rooftop at night high above a city that has gone almost completely black, only fog and a few dying embers below, the moon hidden behind black smoke, a single small pool of warm golden light in the centre of the rooftop where someone will stand. No characters, no text. Epic cinematic fantasy key art like a AAA MMO expansion cinematic: a richly detailed digital painting, smooth and high resolution, NOT pixel art, dramatic volumetric lighting, dark art deco noir city at night, deep violet and indigo palette with cyan, pink and gold neon.
+```
+
+**I4 · cutout: The Lamplighter**
+```
+A tall portrait image, 2:3 aspect ratio, of the small brown-haired Lamplighter girl from the attached reference, full body, standing alone and holding her glowing lantern staff high above her head with both hands, wind whipping her long brown hair and purple dress with pink bow, the lantern casting warm golden light down on her determined face. Paint her as a fully rendered illustrated character, NOT pixel art, keeping her design, gold star hair clip, colours and outfit from the reference. Everything that is not the subject is solid flat pure magenta #FF00FF with no gradient, so it can be cut out. No magenta on the subject, no ground shadow, no text. Epic cinematic fantasy key art like a AAA MMO expansion cinematic: a richly detailed digital painting, smooth and high resolution, NOT pixel art, dramatic volumetric lighting, dark art deco noir city at night, deep violet and indigo palette with cyan, pink and gold neon.
+```
+
+**I5 · cutout: The Warden lands**
+```
+A tall portrait image, 2:3 aspect ratio, of the bearded armoured Warden from the attached reference crashing down from above in a heroic landing, one knee and one fist striking the ground, a two-handed axe in his other hand, cape flaring up behind him, cracks and dust bursting out under him. Paint him as a fully rendered illustrated hero, NOT pixel art, keeping his black hair and beard, dark gold-trimmed armour with teal glow and axes from the reference. Everything that is not the subject is solid flat pure magenta #FF00FF with no gradient, so it can be cut out. No magenta on the subject, no ground shadow, no text. Epic cinematic fantasy key art like a AAA MMO expansion cinematic: a richly detailed digital painting, smooth and high resolution, NOT pixel art, dramatic volumetric lighting, dark art deco noir city at night, deep violet and indigo palette with cyan, pink and gold neon.
+```
+
+**I6 · plate: Surrounded**
+```
+A tall portrait image, 2:3 aspect ratio, of the same dark art deco rooftop at night now ringed by hundreds of glowing yellow eyes in the fog all around its edges, shadow creatures crowding at the ledges, a red glow from the Foreman's furnace on the horizon, a gap of clear rooftop in the centre. No main characters, no text. Epic cinematic fantasy key art like a AAA MMO expansion cinematic: a richly detailed digital painting, smooth and high resolution, NOT pixel art, dramatic volumetric lighting, dark art deco noir city at night, deep violet and indigo palette with cyan, pink and gold neon.
+```
+
+**I6 · cutout: Back to back**
+```
+A tall portrait image, 2:3 aspect ratio, of the Warden and the Lamplighter from the attached reference standing back to back in the centre, full bodies, ready to fight: he holds his two axes low and braced, she raises her glowing lantern staff, her light and his teal armour glow lighting each other. Paint them as fully rendered illustrated characters, NOT pixel art, keeping their designs, colours and outfits from the reference. Everything that is not the subject is solid flat pure magenta #FF00FF with no gradient, so it can be cut out. No magenta on the subject, no ground shadow, no text. Epic cinematic fantasy key art like a AAA MMO expansion cinematic: a richly detailed digital painting, smooth and high resolution, NOT pixel art, dramatic volumetric lighting, dark art deco noir city at night, deep violet and indigo palette with cyan, pink and gold neon.
+```
+
