@@ -655,3 +655,49 @@ A tall portrait image, 2:3 aspect ratio, of the same dark art deco rooftop at ni
 A tall portrait image, 2:3 aspect ratio, of the Warden and the Lamplighter from the attached reference standing back to back in the centre, full bodies, ready to fight: he holds his two axes low and braced, she raises her glowing lantern staff, her light and his teal armour glow lighting each other. Paint them as fully rendered illustrated characters, NOT pixel art, keeping their designs, colours and outfits from the reference. Everything that is not the subject is solid flat pure magenta #FF00FF with no gradient, so it can be cut out. No magenta on the subject, no ground shadow, no text. Epic cinematic fantasy key art like a AAA MMO expansion cinematic: a richly detailed digital painting, smooth and high resolution, NOT pixel art, dramatic volumetric lighting, dark art deco noir city at night, deep violet and indigo palette with cyan, pink and gold neon.
 ```
 
+---
+
+## 17. Story and dialogue art (D1 to D3, S1 to S5)
+
+The game now has a story: a short intro, a playable prologue that teaches the game one step at a time through dialogue between the Warden, the Lamplighter and the Foreman, and story moments during the run (Gatekeepers, the boss, victory and defeat). Dialogue uses character portraits with expressions, and the key story moments use full painted frames with the characters painted into the scene (not cut out and pasted). Painted style, NOT pixel art. Attach `title/src/heroes.png` for the heroes and `enemies/src/boss.png` for the Foreman. Portrait sheets go on magenta; story frames are full images.
+
+**D1: Lamplighter portraits** (becomes `portraits/lamp_*.webp`)
+```
+A character portrait sheet of the small brown-haired Lamplighter girl from the attached reference, 2 rows of 2, the same girl in four expressions: 1) worried, eyebrows raised, lips pressed; 2) happy, bright smile, eyes shining; 3) surprised, wide eyes, mouth slightly open; 4) shouting with determination, mouth open. Keep her long brown hair, gold star hair clip, purple dress with pink bow and warm lantern light on her face exactly as in the reference. Each portrait is a head-and-shoulders bust, facing the viewer slightly turned, centred in its own square cell with space between cells, on a solid flat pure magenta #FF00FF background with no gradient. No magenta on the character, no text, no frames. Epic painted fantasy character art like AAA MMO dialogue portraits: a richly detailed digital painting, smooth and high resolution, NOT pixel art, dramatic rim lighting.
+```
+
+**D2: Warden portraits** (becomes `portraits/warden_*.webp`)
+```
+A character portrait sheet of the bearded armoured Warden from the attached reference, 2 rows of 2, the same man in four expressions: 1) stern and calm; 2) confident grin; 3) shouting a battle cry; 4) hurt, gritting his teeth. Keep his black hair with the teal streak, black beard, dark gold-trimmed armour with teal glow exactly as in the reference. Each portrait is a head-and-shoulders bust, facing the viewer slightly turned, centred in its own square cell with space between cells, on a solid flat pure magenta #FF00FF background with no gradient. No magenta on the character, no text, no frames. Epic painted fantasy character art like AAA MMO dialogue portraits: a richly detailed digital painting, smooth and high resolution, NOT pixel art, dramatic rim lighting.
+```
+
+**D3: Foreman portraits** (becomes `portraits/foreman_*.webp`)
+```
+A character portrait sheet of the Foreman from the attached reference, 1 row of 2, the same giant iron furnace head with gold art deco crown and three burning eyes in two moods: 1) menacing, eyes narrowed and glowing; 2) roaring with laughter, furnace mouth blazing open with fire. Each portrait is a head-and-shoulders bust, facing the viewer slightly turned, centred in its own square cell with space between cells, on a solid flat pure magenta #FF00FF background with no gradient. No magenta on the character, no text, no frames. Epic painted fantasy character art like AAA MMO dialogue portraits: a richly detailed digital painting, smooth and high resolution, NOT pixel art, dramatic rim lighting.
+```
+
+**S1: The last lamp** (becomes `story/s1.jpg`)
+```
+A tall portrait image, 2:3 aspect ratio, cinematic key art: the small brown-haired Lamplighter girl from the attached reference stands alone on a dark art deco rooftop at night, reaching up to light a tall ornate golden lamp post with her lantern staff, the lamp flaring to life, while behind her the whole city skyline has gone dark under black smoke and violet fog. Warm gold light on her face, cold darkness everywhere else. Keep her design from the reference. Epic cinematic fantasy key art like a AAA MMO expansion cinematic: a richly detailed digital painting, NOT pixel art, dramatic volumetric lighting, deep violet and indigo palette with gold.
+```
+
+**S2: The meeting** (becomes `story/s2.jpg`)
+```
+A tall portrait image, 2:3 aspect ratio, cinematic key art: the bearded armoured Warden from the attached reference has just landed on the rooftop between the small Lamplighter girl and a wave of shadow imps with glowing yellow eyes pouring over the ledge; dust and cracked stone around his boots, both axes drawn, cape flaring; she stands behind him holding her lantern up, looking up at him in surprise. Keep both designs from the reference. Epic cinematic fantasy key art like a AAA MMO expansion cinematic: a richly detailed digital painting, NOT pixel art, dramatic volumetric lighting, teal and gold light against violet darkness.
+```
+
+**S3: The Foreman watches** (becomes `story/s3.jpg`)
+```
+A tall portrait image, 2:3 aspect ratio, cinematic key art: a colossal silhouette of the Foreman from the attached reference looms in the black smoke over the dark city, three burning eyes and a gold crown glowing through the smoke, staring down at one tiny point of golden light on a distant rooftop. Epic cinematic fantasy key art like a AAA MMO expansion cinematic: a richly detailed digital painting, NOT pixel art, dramatic volumetric lighting, red furnace glow and violet smoke.
+```
+
+**S4: Dawn (victory)** (becomes `story/s4.jpg`)
+```
+A tall portrait image, 2:3 aspect ratio, cinematic key art: sunrise over the art deco city of Lumen, golden light spilling across the rooftops and the city lamps lighting up again street by street, the tired Warden and the Lamplighter from the attached reference sitting side by side on the rooftop ledge, seen from behind, watching the sun come up, her lantern resting beside them. Keep both designs from the reference. Epic cinematic fantasy key art: a richly detailed digital painting, NOT pixel art, warm dawn palette of gold, rose and soft blue.
+```
+
+**S5: Darkness (defeat)** (becomes `story/s5.jpg`)
+```
+A tall portrait image, 2:3 aspect ratio, cinematic key art: an empty dark art deco rooftop at night, a fallen golden lantern on the wet stone with its flame guttering out, shadow imps with glowing yellow eyes closing in from the fog, the Foreman's red furnace glow on the horizon. No main characters. Epic cinematic fantasy key art: a richly detailed digital painting, NOT pixel art, cold violet palette with one dying point of gold.
+```
+

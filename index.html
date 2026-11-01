@@ -634,6 +634,33 @@ body:not(.playing) #tut{display:none}
 #iGo:focus-visible{outline:2px solid #ffd27a;outline-offset:4px}
 #iStart small{color:#8a80a8;letter-spacing:.2em;text-transform:uppercase;font-size:10px}
 #iSkip{all:unset;cursor:pointer;position:absolute;top:calc(14px + env(safe-area-inset-top,0px));right:calc(14px + env(safe-area-inset-right,0px));z-index:5;font:600 10px var(--ui);letter-spacing:.24em;text-transform:uppercase;color:#cfc4e2;padding:7px 12px;border:1px solid rgba(207,196,226,.35);border-radius:14px;background:rgba(5,4,11,.4)}
+
+/* ===== dialogue ===== */
+#dlg{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 24px);transform:translateX(-50%);width:min(460px,calc(100vw - 20px));z-index:70;display:flex;gap:12px;align-items:flex-end;pointer-events:none}
+#dlg.in{animation:dlgin .35s cubic-bezier(.2,.9,.3,1.2)}@keyframes dlgin{from{opacity:0;transform:translate(-50%,16px)}}
+#dlg.outro{transition:opacity .25s;opacity:0}
+#dlg .dpf{flex:0 0 auto;width:86px;height:86px;border-radius:10px;overflow:hidden;border:2px solid var(--wc);box-shadow:0 0 0 3px rgba(10,7,20,.9),0 0 18px color-mix(in srgb,var(--wc) 50%,transparent),0 8px 22px rgba(0,0,0,.6);background:#140e26;margin-bottom:6px}
+#dlg .dpf img{width:100%;height:100%;object-fit:cover;display:block}
+#dlg.in .dpf{animation:pin .45s cubic-bezier(.2,.9,.3,1.3)}@keyframes pin{from{transform:translateX(-30px) scale(.8);opacity:0}}
+#dlg.right{flex-direction:row-reverse}#dlg.right.in .dpf{animation-name:pinr}@keyframes pinr{from{transform:translateX(30px) scale(.8);opacity:0}}
+#dlg .dtx{position:relative;flex:1;min-width:0;background:linear-gradient(180deg,rgba(28,20,52,.96),rgba(12,9,26,.96));border:1px solid color-mix(in srgb,var(--wc) 60%,#3a3158);border-radius:10px;padding:10px 14px 14px;box-shadow:0 10px 28px rgba(0,0,0,.6)}
+#dlg .dtx b{display:block;font:400 16px var(--display,Georgia),serif;letter-spacing:.05em;color:var(--wc);margin-bottom:3px}
+#dlg .dtx p{margin:0;font:400 15px/1.42 var(--ui);color:#f1e8d6;min-height:2.84em;text-wrap:pretty}
+#dlg .dnx{position:absolute;right:10px;bottom:6px;width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:7px solid var(--wc);opacity:0}
+#dlg.ready:not(.bark) .dnx{opacity:1;animation:dnx .8s ease-in-out infinite}@keyframes dnx{50%{transform:translateY(3px)}}
+#dlg.narr .dpf{display:none}#dlg.narr .dtx{text-align:center;border-color:rgba(242,207,122,.5)}#dlg.narr .dtx b{display:none}#dlg.narr .dtx p{font-style:italic;color:#e8dcc4;min-height:0}
+#dlg.bark{bottom:auto;top:calc(env(safe-area-inset-top,0px) + 176px);width:min(400px,calc(100vw - 24px))}#dlg.bark .dpf{width:56px;height:56px;margin:0}#dlg.bark .dtx p{font-size:13.5px;min-height:0}#dlg.bark .dtx b{font-size:13px}
+body.playing #dlg:not(.bark)~#tc{opacity:.25}
+#obj{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 150px);transform:translateX(-50%);z-index:26;font:600 12px var(--ui);letter-spacing:.1em;color:#ffe7b0;background:rgba(12,9,26,.82);border:1px solid rgba(242,207,122,.55);border-radius:14px;padding:6px 14px;white-space:nowrap;pointer-events:none;text-shadow:0 0 8px rgba(255,190,90,.5)}
+#obj::before{content:"\25C6  ";color:#ffd27a}#obj.pop{animation:objp .5s cubic-bezier(.2,.9,.3,1.4)}@keyframes objp{from{transform:translateX(-50%) scale(.85);opacity:0}}
+body:not(.playing) #obj{display:none}
+
+#intro .lb{position:absolute;left:0;right:0;height:11%;background:#000;z-index:3;transition:height 1.2s ease}#intro .lb.t{top:0}#intro .lb.b{bottom:0}
+#intro:not(.playing) .lb{height:50%}
+#iGrain{display:none;position:absolute;inset:-50%;z-index:2;pointer-events:none;opacity:.07;background-image:radial-gradient(rgba(255,255,255,.9) .6px,transparent .7px);background-size:3px 3px;animation:grain .5s steps(4) infinite}
+@keyframes grain{25%{transform:translate(1px,-2px)}50%{transform:translate(-2px,1px)}75%{transform:translate(2px,2px)}}
+#iCap{bottom:calc(2.5% + env(safe-area-inset-bottom,0px));z-index:4;font-size:clamp(17px,4.6vw,24px);font-style:italic;letter-spacing:.06em}
+body.inintro #dlg.bark{top:auto;bottom:calc(14% + env(safe-area-inset-bottom,0px))}
 </style>
 </head>
 <body>
@@ -656,6 +683,7 @@ body:not(.playing) #tut{display:none}
 </div>
 
 <div id="tut" hidden></div>
+<div id="obj" hidden></div>
 <div id="hud" hidden>
   <div>
     <div id="xpbar"><div id="xpfill"></div></div>
@@ -721,7 +749,7 @@ body:not(.playing) #tut{display:none}
       </div>
     </div>
     <div class="picks"><span id="pickMe">You: ·</span><span class="m" id="pickMate"></span></div>
-    <label class="tutopt"><input type="checkbox" id="tutChk"> <span>Show the guide this run</span></label>
+    <label class="tutopt"><input type="checkbox" id="tutChk"> <span>Play the prologue (story and tutorial)</span></label>
     <div class="btns"><button class="btn" id="bStart" disabled>Start</button><button class="btn ghost" id="bLeave">Leave</button></div>
     <details class="howto"><summary>Controls and tips</summary>
       <div class="keys kb"><b>WASD</b><span>Move</span><b>Q or Space</b><span>Leap · Verdict · Step · Flashfire</span><b>E</b><span>Dome · Stride · Lance · Kindle</span><b>R</b><span>Ward (Lamplighter)</span></div>
@@ -867,9 +895,10 @@ body:not(.playing) #tut{display:none}
 </div>
 
 <script src="peerjs.min.js"></script>
-<script src="icons.js?v=1793542913"></script>
-<script src="intro.js?v=1793542913"></script>
-<script src="title.js?v=1793542913"></script>
-<script src="game.js?v=1793542913"></script>
+<script src="icons.js?v=1793543882"></script>
+<script src="dlg.js?v=1793543882"></script>
+<script src="intro.js?v=1793543882"></script>
+<script src="title.js?v=1793543882"></script>
+<script src="game.js?v=1793543882"></script>
 </body>
 </html>
