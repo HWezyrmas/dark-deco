@@ -578,10 +578,10 @@ function healP(c,amt,show=true){if(c.state!=='ok')return;if(HEALER&&HEALER.spec=
 
 /* ================= host: damage ================= */
 const QUIETW=new Set(['wyrm','bloodmoon','phoenix','starwell','vortex','aurora','carnage','ravager','halo','starfall','earth','lanterns','kite','garden','banner','shout','flies','candle','lighthouse']);
-const ROLE_DMG={warden:1.1,lamp:.62};
+const ROLE_DMG={warden:1.1,lamp:.5};
 function hitE(e,base,src,o={}){if(!alive(e))return false;if(o.w&&QUIETW.has(o.w)&&!o.exec)o.quiet=1;
   if(o.exec&&teamMods.has('witness')){const L=chars.find(q=>q.cls==='lamp'&&q.state==='ok');if(L){healP(L,2,false);addSpark(L,2)}}
-  const crit=o.crit??(rnd()<.15);if(src)e.ls=src;if(!o.det&&src){if(src.cls==='lamp'){if(!(e.detT>T))e.mark=4}else if(src.cls==='warden'&&e.mark>0){e.mark=0;e.detT=T+1.5;later.push({t:0,f:()=>detonate(e,src)})}}if(src&&src.kd>0)base*=1.3;e.lw=o.w||null;let a=Math.round(base*(src?src.st.dmg:1)*(src&&src.shoutT>0?1.2:1)*(src&&src.pow>0?1.5:1)*(src&&chars.length>1?1+.25*bond:1)*(src?ROLE_DMG[src.cls]||1:1)*(.85+rnd()*.3));if(crit)a*=2;
+  const crit=o.crit??(rnd()<.15);if(src)e.ls=src;if(!o.det&&src){if(src.cls==='lamp'){if(!(e.detT>T))e.mark=4}else if(src.cls==='warden'&&e.mark>0&&!((src.detCd||0)>T)){src.detCd=T+.5;e.mark=0;e.detT=T+1.5;later.push({t:0,f:()=>detonate(e,src)})}}if(src&&src.kd>0)base*=1.3;e.lw=o.w||null;let a=Math.round(base*(src?src.st.dmg:1)*(src&&src.shoutT>0?1.2:1)*(src&&src.pow>0?1.5:1)*(src&&chars.length>1?1+.25*bond:1)*(src?ROLE_DMG[src.cls]||1:1)*(.85+rnd()*.3));if(crit)a*=2;
   if(window.__DLOG&&src)__DLOG[(src.cls==='lamp'?'L:':'W:')+(o.w||'other')]=(__DLOG[(src.cls==='lamp'?'L:':'W:')+(o.w||'other')]||0)+a;
   e.hp-=a;e.hit=.1;e.sq=.4;if(o.frz)e.frz=Math.max(e.frz||0,o.frz);const kr=e.kind>=4?0:e.kind===1?.35:1;e.kx+=(o.kx||0)*kr;e.ky+=(o.ky||0)*kr;if(o.up&&e.kind!==1&&e.kind<4)e.vz=Math.max(e.vz,o.up);if(o.stun)e.stun=Math.max(e.stun||0,o.stun);
   if(src&&src.cls==='warden'&&((src.pow>0&&teamMods.has('litsteel'))||src.lit>0))e.burn=Math.max(e.burn||0,2);
@@ -623,7 +623,7 @@ function addSpark(c,v){if(!c||c.cls!=='lamp')return;const was=c.spark||0;c.spark
 function skill3(c){if(c.cls!=='lamp'||c.state!=='ok'||(c.cd3||0)>0)return;c.used3=1;c.cd3=WARD_CD;if(!isHost){evQ.push(['ward']);SFX.charge();return}hostWard(c)}
 function hostWard(c){const p=partnerOf(c),t=p&&p.state==='ok'?p:c;t.ward=.9;t.wardBy=c.idx;emit('wardfx',t.idx);emit('sfx','charge')}
 function parry(t,sx,sy){const L=chars.find(q=>q.idx===t.wardBy)||t;t.ward=0;t.inv=Math.max(t.inv||0,.5);emit('parry',t.idx);emit('imp',L.spec==='fire'?'fire':'holy',r1(t.x),r1(t.y),70,.45);emit('wave',t.x,t.y,.4,70,'#ffe08a',4,0);emit('big',.12,1.03,.03,4);
-  for(const e of en){if(!alive(e))continue;const dx=e.x-t.x,dy=e.y-t.y,d=len(dx,dy*1.4)||1;if(d<64){hitE(e,35*(1+level/30),L,{det:1,kx:dx/d*260,ky:dy/d*180,up:80,col:'#ffe08a',crit:false});if(L.spec==='fire')e.burn=Math.max(e.burn||0,3)}}
+  for(const e of en){if(!alive(e))continue;const dx=e.x-t.x,dy=e.y-t.y,d=len(dx,dy*1.4)||1;if(d<64){hitE(e,22*(1+level/30),L,{w:'ward',det:1,kx:dx/d*260,ky:dy/d*180,up:80,col:'#ffe08a',crit:false});if(L.spec==='fire')e.burn=Math.max(e.burn||0,3)}}
   for(const b of eb)if(len(b.x-t.x,b.y-t.y)<70){b.vx*=-1.4;b.vy*=-1.4;b.life=Math.min(b.life,.8);b.ref=1}
   if(L.spec!=='fire')healP(t,12);addSpark(L,30);emit('wardok',L.idx)}
 function lampUlt(c){if((c.spark||0)<95)return;c.spark=0;
@@ -648,7 +648,7 @@ function bigShot(c,k){if(TUT&&TUT.c===c)tutEv('charge');c.chg=0;c.stillT=-.25;AI
   emit('recoil',c.idx,dx,dy,4)}
 // detonation: her hits mark enemies, his hits blow the mark
 function detonate(e,w){if(STORY.on)STORY.dets++;const L=chars.find(q=>q.cls==='lamp');const fire=L&&L.spec==='fire',x=e.x,y=e.y;emit('imp',fire?'fire':'holy',r1(x),r1(y),48,.4);emit('sfx','hit',1);
-  for(const o of en){if(!alive(o))continue;if(len(o.x-x,(o.y-y)*1.4)<34+rad(o)*.4){hitE(o,26*(1+level/25),w,{det:1,col:fire?'#ff8a2a':'#ffe08a',kx:(o.x-x)*5,ky:(o.y-y)*5,crit:false});if(fire)o.burn=Math.max(o.burn||0,2.5)}}
+  for(const o of en){if(!alive(o))continue;if(len(o.x-x,(o.y-y)*1.4)<30+rad(o)*.4){hitE(o,16*(1+level/30),w,{w:'detonate',det:1,col:fire?'#ff8a2a':'#ffe08a',kx:(o.x-x)*5,ky:(o.y-y)*5,crit:false});if(fire)o.burn=Math.max(o.burn||0,2.5)}}
   addSpark(L,3)}
 function startVerdict(c,grand){if(c.cast)return;if(grand)c.rage=0;c.cast={k:'verdict',t:0,dur:.42,grand,a:Math.atan2(c.amy??0,c.amx??c.f)};emit('sfx','charge');if(grand)emit('msgP',c.idx,'GRAND VERDICT','GRAND VERDICT')}
 function execW(c){return c.weapons.find(w=>w.id==='reaper')||{lv:1}}
@@ -765,7 +765,7 @@ function beamWeapons(c,dt){c.beams=[];const rate=cdRate(c);
     if(c.bT){const t=c.bT,[sx,sy]=lanternPos(c);c.heat=Math.min(1,(c.heat||0)+dt*rate*.45);c.f=t.x>=c.x?1:-1;
       c.shotCd=(c.shotCd||0)-dt*rate*(1+c.heat*.8)*(evo?1.3:1)*1.25;
       if(c.shotCd<=0&&!c.charging){c.shotCd=.32;const tx=t.x,ty=t.y-8-t.z,dx=tx-sx,dy=ty-sy,d=len(dx,dy)||1,sp=270;
-        proj.push({k:'lbolt',x:sx,y:sy,vx:dx/d*sp,vy:dy/d*sp,a:Math.atan2(dy,dx),life:.75,tgt:t,dmg:5.5*L.d*(1+c.heat*.4),src:c,heat:c.heat,pierce:evo?3:bw.lv>=3?1:0,hit:new Set(),lv:bw.lv,healed:false});
+        proj.push({k:'lbolt',x:sx,y:sy,vx:dx/d*sp,vy:dy/d*sp,a:Math.atan2(dy,dx),life:.75,tgt:t,dmg:4*L.d*(1+c.heat*.35),src:c,heat:c.heat,pierce:evo?3:bw.lv>=3?1:0,hit:new Set(),lv:bw.lv,healed:false});
         emit('shot',c.idx)}}
     else c.heat=Math.max(0,(c.heat||0)-dt*1.5)}
   const lh=c.weapons.find(w=>w.id==='lighthouse');
@@ -893,7 +893,7 @@ const AB={
     later.push({t:.18,f:()=>{if(c.state==='ok')reapHit(c,w,ad,(full?54:60)*P.a,26*P.d,P.evo?.35:.22,full,'#ff5a6a')}})},
   cinder(c,w,dt,rate){const P=AP(c,w);w.cd-=dt*rate*1.2;if(w.cd>0||c.charging)return;const t=nearestEnemy(c,160);if(!t)return;w.cd=.8*P.c;fired(c,w);const n=1+(P.m3?1:0)+P.n,[lx,ly]=lanternPos(c);
     for(let i=0;i<n;i++){const tg=i?randEnemy(c,160)||t:t,tx=tg.x+(i?(rnd()-.5)*10:0),ty=tg.y+(i?(rnd()-.5)*8:0),fl=.32+i*.06;emit('cin',r1(lx),r1(ly),r1(tx),r1(ty),r2(fl));
-      later.push({t:fl,f:()=>{emit('puff',tx,ty-4,6,'#ff8a2a',60,.35,true,10,1);for(const e of en){if(!alive(e))continue;if(len(e.x-tx,(e.y-ty)*1.4)<16*P.a+rad(e)*.4){hitE(e,8*P.d,c,{w:'cinder',col:WCOL.cinder,kx:(e.x-tx)*3,ky:(e.y-ty)*3});e.burn=Math.max(e.burn||0,1.8)}}
+      later.push({t:fl,f:()=>{emit('puff',tx,ty-4,6,'#ff8a2a',60,.35,true,10,1);for(const e of en){if(!alive(e))continue;if(len(e.x-tx,(e.y-ty)*1.4)<16*P.a+rad(e)*.4){hitE(e,6*P.d,c,{w:'cinder',col:WCOL.cinder,kx:(e.x-tx)*3,ky:(e.y-ty)*3});e.burn=Math.max(e.burn||0,1.2)}}
         if(P.evo)zones.push({x:tx,y:ty,r:14,life:2.2,tick:0,dmg:5,src:c,col:'#ff7a3a'})}})}},
   rites(c,w,dt,rate){const P=AP(c,w);w.cd-=dt*rate;if(w.cd>0)return;const R=(P.m3?78:64)*P.a,thr=P.evo?.3:P.m3?.25:.2;let n=0;
     for(const e of en){if(!alive(e)||e.kind===5)continue;if(len(e.x-c.x,(e.y-c.y)*1.4)<R&&e.hp<e.max*thr){hitE(e,e.hp*3+10,c,{w:'rites',exec:true,col:WCOL.rites,kx:(e.x-c.x)*3,ky:(e.y-c.y)*3});n++}}
@@ -1033,7 +1033,7 @@ function rekindle(a,b){const mx=(a.x+b.x)/2,my=(a.y+b.y)/2;emit('rekindle',mx,my
 
 /* ================= host: enemies ================= */
 const EK=['shadow','brute','gunman','bomber','elite','boss'];
-function newE(kind,x,y,delay=0){const hp=[34,260,40,30,1650,7600][kind]*(kind>=4?1+T/200:hpMul())*(kind>=4&&chars.length>1?1.4:1);
+function newE(kind,x,y,delay=0){const hp=[34,260,40,30,1650,7000][kind]*(kind>=4?1+T/200:hpMul())*(kind>=4&&chars.length>1?1.4:1);
   return{id:++eid,kind,x,y,rx:x,ry:y,z:0,vz:0,kx:0,ky:0,hp,max:hp,hit:0,sq:0,spawn:(kind===1||kind>=4?1.2:.7)+delay,t:rnd()*5,f:1,dead:false,atkT:0,st:0,stt:0,ax:0,ay:1,cd:1.5+rnd()*1.5,strafe:rnd()<.5?1:-1,stun:0,burn:0,burnT:0,flyT:0,phase:0}}
 function spawnPack(){const tgt=chars.filter(c=>c.state==='ok')[0]||chars[0];let px,py,tries=0;do{const a=rnd()*TAU,r=80+rnd()*50;px=tgt.x+Math.cos(a)*r;py=tgt.y+Math.sin(a)*r*.7;tries++}while(!walkable(px,py)&&tries<30);if(!walkable(px,py))return;
   const n=Math.min(16,5+Math.floor(T/75)+(rnd()*3|0));let guns=en.filter(e=>e.kind===2).length;const gunCap=3+Math.floor(T/120);for(let i=0;i<n;i++){const x=px+(rnd()-.5)*34,y=py+(rnd()-.5)*22;if(!walkable(x,y))continue;let k=0;const r=rnd();
