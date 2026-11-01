@@ -530,6 +530,58 @@ body.titled #sMenu .btns>*:nth-child(1){animation-delay:.25s}body.titled #sMenu 
 .btns>*:nth-child(2) .btn::after,.btns>:nth-child(2)::after{animation-delay:.4s}.btns>:nth-child(3)::after{animation-delay:.8s}.btns>:nth-child(4)::after{animation-delay:1.2s}
 @keyframes shim{0%,70%{transform:translateX(-160%) skewX(-18deg)}100%{transform:translateX(420%) skewX(-18deg)}}
 @media (prefers-reduced-motion:reduce){#tBlack,#tLogo,#tTap,.btn::after{animation:none!important;opacity:1}}
+
+/* ===== lobby: hero select over the title scene ===== */
+body.inlobby #tLogo{opacity:0!important;transition:opacity .4s}body.inlobby #tTowers,body.inlobby #tHeroes{filter:blur(3px) brightness(.6)!important}
+body.intitle #sLobby{background:linear-gradient(180deg,rgba(9,7,20,.35),rgba(9,7,20,.82) 30%,rgba(9,7,20,.9));align-items:start;padding:max(14px,env(safe-area-inset-top)) 12px 18px}
+.lob{width:100%;max-width:460px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
+#sLobby:not([hidden]) .lob>*{animation:lobin .6s cubic-bezier(.2,.8,.2,1) both}
+#sLobby .lob>*:nth-child(2){animation-delay:.08s}#sLobby .lob>*:nth-child(3){animation-delay:.16s}#sLobby .lob>*:nth-child(4){animation-delay:.3s}#sLobby .lob>*:nth-child(5){animation-delay:.38s}#sLobby .lob>*:nth-child(6){animation-delay:.46s}
+@keyframes lobin{from{opacity:0;transform:translateY(24px)}}
+.lobtop{display:flex;flex-direction:column;align-items:center;gap:4px}
+#roomCode{font:700 44px/1 var(--display,Georgia),serif;letter-spacing:.32em;padding-left:.32em;color:#ffe7b0;text-shadow:0 0 18px rgba(255,190,90,.7),0 2px 0 #6a4510;background:linear-gradient(180deg,#fff3c8,#d6a84e 60%,#8a5a18);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 10px rgba(255,190,90,.45))}
+.lobh{margin:2px 0 0;font:400 26px var(--display,Georgia),serif;letter-spacing:.14em;color:#f4ead8;text-shadow:0 0 14px rgba(180,140,255,.5)}
+#sLobby .classes{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%}
+.hcol{display:flex;flex-direction:column;gap:7px;min-width:0}
+#sLobby .cls{all:unset;position:relative;display:block;height:min(46vh,330px);border-radius:12px;overflow:hidden;cursor:pointer;background:radial-gradient(ellipse at 50% 85%,#3a2a5e,#120c24 70%);box-shadow:0 0 0 1px rgba(214,168,78,.45) inset,0 10px 26px rgba(0,0,0,.5);transition:transform .35s cubic-bezier(.2,.8,.2,1.2),filter .35s,box-shadow .35s}
+#sLobby .cls::before{content:none}
+#sLobby .cls[data-c="lamp"]{background:radial-gradient(ellipse at 50% 85%,#5e3a2a,#1c0e18 70%)}
+#sLobby .cls .por{position:absolute;left:50%;bottom:0;height:100%;transform:translateX(-50%) scale(1.02);transform-origin:50% 100%;transition:transform .5s cubic-bezier(.2,.8,.2,1);-webkit-mask:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);mask:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);filter:saturate(.75) brightness(.7)}
+#sLobby .cls .nm{position:absolute;left:0;right:0;bottom:0;padding:28px 6px 8px;background:linear-gradient(transparent,rgba(8,6,18,.92) 55%);display:flex;flex-direction:column;align-items:center;gap:2px}
+#sLobby .cls .nm b{font:400 19px var(--display,Georgia),serif;letter-spacing:.06em;color:#fff6e0}
+#sLobby .cls .nm .role{font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;color:#d8c49a}
+#sLobby .cls .halo{position:absolute;inset:-2px;border-radius:13px;padding:2px;background:conic-gradient(from var(--a,0deg),#ffd27a,#ff6fd8,#7ab8ff,#6fffb0,#ffd27a);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0);opacity:0;transition:opacity .3s;animation:spinA 3s linear infinite;z-index:3;pointer-events:none}
+@property --a{syntax:'<angle>';inherits:false;initial-value:0deg}
+@keyframes spinA{to{--a:360deg}}
+#sLobby .cls .rays{position:absolute;left:50%;top:38%;width:220%;aspect-ratio:1;transform:translate(-50%,-50%);background:repeating-conic-gradient(rgba(255,220,150,.16) 0 6deg,transparent 6deg 18deg);border-radius:50%;opacity:0;transition:opacity .4s;animation:rays 18s linear infinite;-webkit-mask:radial-gradient(circle,#000 10%,transparent 60%);mask:radial-gradient(circle,#000 10%,transparent 60%)}
+#sLobby .cls[data-c="warden"] .rays{background:repeating-conic-gradient(rgba(127,215,255,.18) 0 6deg,transparent 6deg 18deg)}
+@keyframes rays{to{transform:translate(-50%,-50%) rotate(360deg)}}
+#sLobby .cls[aria-pressed="true"]{transform:translateY(-4px);box-shadow:0 0 0 1px rgba(255,220,150,.9) inset,0 0 28px rgba(255,190,110,.35),0 14px 30px rgba(0,0,0,.55)}
+#sLobby .cls[aria-pressed="true"] .halo,#sLobby .cls[aria-pressed="true"] .rays{opacity:1}
+#sLobby .cls[aria-pressed="true"] .por{transform:translateX(-50%) scale(1.09);filter:none;animation:breathe 3.2s ease-in-out infinite}
+@keyframes breathe{50%{transform:translateX(-50%) scale(1.11) translateY(-1.5%)}}
+#sLobby .cls.mate .por{filter:saturate(.9) brightness(.85)}
+#sLobby .cls .tag{position:absolute;top:8px;font-size:9px;letter-spacing:.24em;text-transform:uppercase;padding:3px 7px 2px;border-radius:3px;z-index:4;opacity:0;transform:translateY(-6px);transition:.3s}
+#sLobby .cls .tag.me{left:8px;background:#ffd27a;color:#2a1405}
+#sLobby .cls .tag.mate{right:8px;background:#ff6fd8;color:#2a0520}
+#sLobby .cls[aria-pressed="true"] .tag.me,#sLobby .cls.mate .tag.mate{opacity:1;transform:none}
+#sLobby .cls:active{transform:scale(.97)}
+#sLobby .specrow{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:0;background:rgba(10,8,22,.75);border:1px solid rgba(214,168,78,.4);border-radius:16px;padding:3px;transition:opacity .3s}
+#sLobby .specrow .slide{position:absolute;top:3px;bottom:3px;left:3px;width:calc(50% - 3px);border-radius:13px;background:linear-gradient(180deg,#ffe3a0,#d6a84e);box-shadow:0 0 14px rgba(255,200,110,.55);transition:transform .35s cubic-bezier(.3,1.4,.4,1);z-index:0}
+#sLobby .specrow:has(.spec[data-s="exec"][aria-pressed="true"]) .slide,#sLobby .specrow:has(.spec[data-s="fire"][aria-pressed="true"]) .slide{transform:translateX(100%)}
+#sLobby .specrow[data-c="warden"]:has(.spec[data-s="exec"][aria-pressed="true"]) .slide{background:linear-gradient(180deg,#ff9aa5,#c2263c);box-shadow:0 0 14px rgba(255,80,100,.6)}
+#sLobby .specrow[data-c="lamp"]:has(.spec[data-s="fire"][aria-pressed="true"]) .slide{background:linear-gradient(180deg,#ffc27a,#e0601a);box-shadow:0 0 14px rgba(255,130,40,.6)}
+#sLobby .spec{all:unset;position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:5px 2px 4px;cursor:pointer;border-radius:13px;color:#d8cfe8;font:600 10.5px var(--ui);letter-spacing:.04em;transition:color .25s;min-width:0}
+#sLobby .spec img{width:22px;height:22px;border-radius:5px;flex:0 0 auto}
+#sLobby .spec b{white-space:nowrap;font-size:10px;letter-spacing:.02em}
+#sLobby .spec[aria-pressed="true"]{color:#1c0c04}
+#sLobby .specrow.locked{opacity:.4;pointer-events:none}
+#sLobby .sdesc{margin:0;min-height:3.9em;font-size:11px;line-height:1.35;color:#cfc4e2;text-wrap:pretty}
+#sLobby .sdesc.fl{animation:sdin .35s ease both}@keyframes sdin{from{opacity:0;transform:translateY(5px)}}
+#sLobby .btns{width:100%;max-width:340px}
+#sLobby #bStart:not([disabled]){animation:pulseS 1.8s ease-in-out infinite}
+@keyframes pulseS{50%{filter:brightness(1.2) drop-shadow(0 0 12px rgba(255,200,110,.75))}}
+#sLobby .howto{width:100%;font-size:12px;color:#bdb2d4}#sLobby .howto summary{cursor:pointer;letter-spacing:.2em;text-transform:uppercase;font-size:10px;color:#d8c49a;padding:6px}
 </style>
 </head>
 <body>
@@ -595,25 +647,32 @@ body.titled #sMenu .btns>*:nth-child(1){animation-delay:.25s}body.titled #sMenu 
 </div>
 
 <div class="scr" id="sLobby" hidden>
-  <div class="card">
-    <div class="eyebrow" id="lobEyebrow">Room code</div>
-    <div id="roomCode">----</div>
-    <div class="status" id="lobStatus">Waiting for your partner to join</div>
-    <div class="rule"></div>
-    <h2>Choose a class</h2>
-    <div class="classes">
-      <button class="cls" data-c="warden" aria-pressed="false"><span class="role">Protector · 140 health</span><b>Warden</b><span>A fury of blades: fast combos build Rage, Whirlwind spends it, and at full Rage he unleashes Bladestorm. Heroic Leap crashes into crowds. Dome shields you both and blasts the swarm back.</span></button>
-      <button class="cls" data-c="lamp" aria-pressed="false"><span class="role">Healer · 90 health</span><b>Lamplighter</b><span>Shoots homing light bolts that heal the Warden when they fly through him. Step blinks and leaves a healing pool; Solar Lance heals and powers him up.</span></button>
+  <div class="lob">
+    <div class="lobtop">
+      <div class="eyebrow" id="lobEyebrow">Room code</div>
+      <div id="roomCode">----</div>
+      <div class="status" id="lobStatus">Waiting for your partner to join</div>
     </div>
-    <div class="specs">
-      <div class="specrow" data-c="warden"><span class="sl">Warden spec</span><button class="spec" data-s="berserk" aria-pressed="true"><b>Berserker</b><small>Two axes, Rage, Leap, Dome</small></button><button class="spec" data-s="exec" aria-pressed="false"><b>Executioner</b><small>Greataxe, Verdict, Condemn</small></button></div>
-      <div class="specrow" data-c="lamp"><span class="sl">Lamplighter spec</span><button class="spec" data-s="heal" aria-pressed="true"><b>Healer</b><small>Light bolts, Step, Lance</small></button><button class="spec" data-s="fire" aria-pressed="false"><b>Firebrand</b><small>Cinders, Flashfire, Kindle</small></button></div>
+    <h2 class="lobh">Choose your hero</h2>
+    <div class="classes">
+      <div class="hcol" data-c="warden">
+        <button class="cls" data-c="warden" aria-pressed="false"><span class="halo"></span><span class="rays"></span><img class="por" src="title/por_warden.webp" alt=""><span class="tag me">You</span><span class="tag mate">Partner</span><span class="nm"><b>Warden</b><span class="role">Damage · 140 health</span></span></button>
+        <div class="specrow" data-c="warden"><button class="spec" data-s="berserk" aria-pressed="true"><img src="icons/cleave.png" alt=""><b>Berserker</b></button><button class="spec" data-s="exec" aria-pressed="false"><img src="icons/reaper.png" alt=""><b>Executioner</b></button><i class="slide"></i></div>
+        <p class="sdesc" data-c="warden"></p>
+      </div>
+      <div class="hcol" data-c="lamp">
+        <button class="cls" data-c="lamp" aria-pressed="false"><span class="halo"></span><span class="rays"></span><img class="por" src="title/por_lamp.webp" alt=""><span class="tag me">You</span><span class="tag mate">Partner</span><span class="nm"><b>Lamplighter</b><span class="role">Support · 90 health</span></span></button>
+        <div class="specrow" data-c="lamp"><button class="spec" data-s="heal" aria-pressed="true"><img src="icons/beam.png" alt=""><b>Healer</b></button><button class="spec" data-s="fire" aria-pressed="false"><img src="icons/cinder.png" alt=""><b>Firebrand</b></button><i class="slide"></i></div>
+        <p class="sdesc" data-c="lamp"></p>
+      </div>
     </div>
     <div class="picks"><span id="pickMe">You: ·</span><span class="m" id="pickMate"></span></div>
-    <div class="keys kb"><b>WASD</b><span>Move</span><b>Q or Space</b><span>Leap · Verdict · Step · Flashfire</span><b>E</b><span>Dome · Condemn · Lance · Kindle</span></div>
-    <div class="keys tch"><b>Left thumb</b><span>Move</span><b>Small button</b><span>Leap · Verdict · Step · Flashfire</span><b>Big button</b><span>Dome · Condemn · Lance · Kindle</span></div>
-    <p class="small">Stay close and your Bond fills: you heal each other and hit harder. Apart, it fades; reunite to rekindle it. Fire the Lance into the Dome and it splits into six beams.</p>
     <div class="btns"><button class="btn" id="bStart" disabled>Start</button><button class="btn ghost" id="bLeave">Leave</button></div>
+    <details class="howto"><summary>Controls and tips</summary>
+      <div class="keys kb"><b>WASD</b><span>Move</span><b>Q or Space</b><span>Leap · Verdict · Step · Flashfire</span><b>E</b><span>Dome · Condemn · Lance · Kindle</span></div>
+      <div class="keys tch"><b>Left thumb</b><span>Move</span><b>Small button</b><span>Leap · Verdict · Step · Flashfire</span><b>Big button</b><span>Dome · Condemn · Lance · Kindle</span></div>
+      <p class="small">Stay close and your Bond fills: you heal each other and hit harder. Red on the floor means move. Big spells fire where you are heading.</p>
+    </details>
   </div>
 </div>
 
@@ -748,8 +807,8 @@ body.titled #sMenu .btns>*:nth-child(1){animation-delay:.25s}body.titled #sMenu 
 </div>
 
 <script src="peerjs.min.js"></script>
-<script src="icons.js?v=1793533951"></script>
-<script src="title.js?v=1793533951"></script>
-<script src="game.js?v=1793533951"></script>
+<script src="icons.js?v=1793534366"></script>
+<script src="title.js?v=1793534366"></script>
+<script src="game.js?v=1793534366"></script>
 </body>
 </html>
