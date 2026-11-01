@@ -726,7 +726,7 @@ function autoAim(c){const p=partnerOf(c),[sx,sy]=lanternPos(c);let best=null,bs=
 function skill2(c,remote,aim){if(c.state!=='ok')return;if(!remote){if(c.cd2>0||c.cast)return;c.cd2=cd2Max(c)}
   if(c.cls==='lamp'){let A=aim&&len(aim[0],aim[1])>.1?aim:null;if(!A)A=autoAim(c);const l=len(A[0],A[1])||1;c.aim=[A[0]/l,A[1]/l];if(A[0])c.f=A[0]>0?1:-1}
   if(c.spec==='berserk'){if(!remote)startStride(c);return}
-  const CK=c.spec==='exec'?'condemn':c.spec==='fire'?'kindle':c.cls==='warden'?'dome':'lance',CD=CK==='condemn'?.22:CK==='kindle'?.3:c.cls==='warden'?.32:.35;
+  const CK=c.spec==='fire'?'kindle':c.cls==='warden'?'dome':'lance',CD=CK==='condemn'?.22:CK==='kindle'?.3:c.cls==='warden'?.32:.35;
   if(!isHost){evQ.push(['s2',...(c.aim?c.aim.map(r2):[])]);c.cast={k:CK,t:0,dur:CD};SFX.charge();return}
   if(c.cast)return;c.cast={k:CK,t:0,dur:CD};if(remote)local('sfx','charge');else emit('sfx','charge')}
 function release(c){
