@@ -238,7 +238,7 @@ let fiss=[],hooks=[],krays=[];let tAll=0,hitstop=0,eid=0,T=0,kills=0,level=1,xp=
 let shk={x:0,y:0},zoom=1,flashA=0,combo=0,comboT=0,tintA=0,tintC='255,200,97',banners=[],learnQ=null,learnT=0;
 let myCls='warden',mateCls=null,mateJoined=false;
 // specs: each hero has two. berserk/exec for the Warden, heal/fire for the Lamplighter
-let SPEC={warden:'berserk',lamp:'heal'};
+let SPEC={warden:'berserk',lamp:'heal'},TUTFORCE=true;
 const SPECN={berserk:'Berserker',exec:'Executioner',heal:'Healer',fire:'Firebrand'};
 const cam={x:210,y:130};
 const meC=()=>chars.find(c=>c.idx===ME),mateC=()=>chars.find(c=>c.idx!==ME);
@@ -408,10 +408,12 @@ function enterLobby(){go('lobby');$('lobEyebrow').textContent=isHost?(solo?'Prac
 function updLobby(){document.querySelectorAll('.cls').forEach(b=>{b.setAttribute('aria-pressed',b.dataset.c===myCls);b.classList.toggle('mate',b.dataset.c===mateCls)});
   const SPD={berserk:'Two axes and Rage. Leap into crowds, Dome to shield you both, Bladestorm at full Rage.',exec:'One greataxe. Slow crushing swings that Execute the weak. Verdict cleaves; Reaper\'s Stride dashes through them, and every Execute resets it.',heal:'Ward him from big hits, charge piercing beams by standing still, mark enemies for him to blow up. Full Spark: Sunburst.',fire:'Ward him, charge cinder bombs, mark enemies for him to blow up. Kindle sets his weapons ablaze. Full Spark: Meteor.'};
   document.querySelectorAll('.sdesc').forEach(d=>{const t=SPD[SPEC[d.dataset.c]];if(d.textContent!==t){d.textContent=t;d.classList.remove('fl');void d.offsetWidth;d.classList.add('fl')}});
+  {const ch=$('tutChk');if(ch){let seen=false;try{seen=localStorage.getItem('dd_tut_'+myCls+'_'+SPEC[myCls])==='1'}catch(_){}if(ch.dataset.k!==myCls+SPEC[myCls]){ch.dataset.k=myCls+SPEC[myCls];ch.checked=!seen}TUTFORCE=ch.checked}}
   document.querySelectorAll('.specrow').forEach(r=>{const c=r.dataset.c,mine=solo||c===myCls;r.classList.toggle('locked',!mine);r.querySelectorAll('.spec').forEach(b=>b.setAttribute('aria-pressed',SPEC[c]===b.dataset.s))});
   $('pickMe').textContent='You: '+CL[myCls].name+' · '+SPECN[SPEC[myCls]];$('pickMate').textContent=solo?'Bot: '+CL[myCls==='warden'?'lamp':'warden'].name:((isHost&&!mateJoined)?'':'Partner: '+(mateCls?CL[mateCls].name:'choosing…'));
   $('bStart').hidden=!isHost;$('bStart').disabled=!(solo||(mateJoined&&mateCls))}
 document.querySelectorAll('.cls').forEach(b=>b.addEventListener('click',()=>{audioInit();myCls=b.dataset.c;if(isHost)sendLobby();else send({t:'pick',c:myCls,s:SPEC[myCls]});updLobby()}));
+{const ch=$('tutChk');if(ch)ch.addEventListener('change',()=>{TUTFORCE=ch.checked})}
 document.querySelectorAll('.spec').forEach(b=>b.addEventListener('click',()=>{audioInit();const c=b.closest('.specrow').dataset.c;if(!solo&&c!==myCls)return;SPEC[c]=b.dataset.s;if(isHost)sendLobby();else send({t:'pick',c:myCls,s:SPEC[myCls]});updLobby()}));
 $('bHost').addEventListener('click',()=>{audioInit();netClose();myCls='warden';hostNet()});
 $('bJoin').addEventListener('click',()=>{audioInit();const c=$('code').value.trim().toUpperCase();if(c.length!==4){menuStatus('Enter the 4-letter code from the host.','err');return}netClose();myCls='lamp';joinNet(c)});
@@ -423,15 +425,52 @@ $('bAgain').addEventListener('click',()=>{if(isHost)startHost()});
 $('bEndLeave').addEventListener('click',()=>{netClose();go('menu');menuStatus('')});
 
 let wakeLock=null;async function wake(){try{wakeLock=await navigator.wakeLock.request('screen')}catch(_){}}
-function resetWorld(){alt=[];altT=35;chestT=75;altN=0;tele=[];ehz=[];puds=[];debT=45;fiss=[];hooks=[];krays=[];en=[];parts=[];slashes=[];ghosts=[];decals=[];waves=[];pools=[];proj=[];rays=[];dn=[];bolts=[];eb=[];gems=[];zones=[];later=[];dome=null;eid=0;packT=1.5;bruteT=60;combo=0;fxQ=[];
+function resetWorld(){if(typeof TUT!=='undefined'&&TUT){TUT=null;tutShow()}tutCalm=0;alt=[];altT=35;chestT=75;altN=0;tele=[];ehz=[];puds=[];debT=45;fiss=[];hooks=[];krays=[];en=[];parts=[];slashes=[];ghosts=[];decals=[];waves=[];pools=[];proj=[];rays=[];dn=[];bolts=[];eb=[];gems=[];zones=[];later=[];dome=null;eid=0;packT=1.5;bruteT=60;combo=0;fxQ=[];
   T=0;kills=0;level=1;xp=0;eliteDone=[];evDone=[];dangerDone=[];bossSpawned=false;boss=null;LV=null;endState=null;teamMods=new Set();$('boss').hidden=true}
 // heroes arrive on a Bifrost beam (local on both peers)
 function arriveFx(){chars.forEach((c,i)=>spx.push({k:'bif',ci:c.idx,t:-.15-i*.35,life:1.9}));later.push({t:.2,f:()=>{}});try{taBif()}catch(_){}}
+// ===== First-run coach: a short guided tour for your hero and spec, played live in the first minute of the run =====
+let TUT=null,tutCalm=0;
+function tutKey(c){return 'dd_tut_'+c.cls+'_'+c.spec}
+function tutSeen(c){try{return localStorage.getItem(tutKey(c))==='1'}catch(_){return false}}
+function tutSteps(c){const t=document.body.classList.contains('touch'),k=(key,btn)=>t?btn:key,f=c.spec==='fire',ex=c.spec==='exec',W=c.cls==='warden';
+  const S=[{h:'Move',p:t?'Drag your left thumb anywhere to move. Your hero attacks on their own.':'Move with WASD or the arrow keys. Your hero attacks on their own.',hi:[],done:'move'},
+    {h:'Fight to the beat',p:'Your big abilities fire one after another in a loop, two beats each. The glowing icon in your skill bar fires now; the outlined one is next. When a ring closes in on you, step into the crowd.',hi:['kit'],secs:7}];
+  if(W){S.push(ex?{h:'Verdict',p:`${k('Press Q','Tap the small button')}: plant your feet and cleave a wide arc in front of you. Anything under 35% health is Executed.`,hi:['b1','cd1'],done:'s1'}
+              :{h:'Heroic Leap',p:`${k('Press Q','Tap the small button')} to leap where you are moving and slam down into the crowd.`,hi:['b1','cd1'],done:'s1'});
+    S.push(ex?{h:"Reaper's Stride",p:`${k('Press E','Tap the big button')} to dash through enemies. You can't be hurt mid-dash, and every Execute resets it. Chain it!`,hi:['b2','cd2'],done:'s2'}
+              :{h:'Dome',p:`${k('Press E','Tap the big button')} to drop a shield over you both and blast enemies back. Stand in it together when it gets busy.`,hi:['b2','cd2'],done:'s2'});
+    S.push({h:'Rage',p:ex?'Hits fill your Rage bar. When it is full, Q becomes the Grand Verdict: a full circle that Executes anything under half health.':'Hits fill your Rage bar. When it is full, the small button becomes Bladestorm: spin through everything.',hi:['rowRage'],secs:6});
+    S.push({h:'Her marks',p:'Enemies she hits get a small lantern mark. Hit a marked enemy and it explodes. Stay near her, too: her healing barely reaches you outside her ring.',hi:[],secs:7})}
+  else{S.push({h:'Charge your lantern',p:'Stand still and your lantern charges. A full charge fires '+(f?'a big cinder bomb.':'a piercing beam, and it heals him if it passes through him.')+' Moving fires quick, small shots.',hi:[],done:'charge'});
+    S.push({h:'Guardian Ward',p:`${k('Press R','Tap the shield button')} to throw a shield over him. If he gets hit while it's up, the hit is blocked and blasted back. Time it when red is under him.`,hi:['b3'],done:'s3'});
+    S.push({h:f?'Flashfire':'Step',p:`${k('Press Q','Tap the small button')} to blink where you are moving${f?', leaving a line of fire':', leaving healing light'}. Blink through danger for a Close call: it fills your Spark fast.`,hi:['b1','cd1'],done:'s1'});
+    S.push(f?{h:'Kindle',p:`${k('Press E','Tap the big button')} to set his weapons on fire for 8 seconds. Stay close, or it bursts around you instead.`,hi:['b2','cd2'],done:'s2'}
+            :{h:'Solar Lance',p:`${k('Press E','Hold the big button and drag to aim, then let go')} to fire the Lance. It heals him and powers him up if it hits him.`,hi:['b2','cd2'],done:'s2'});
+    S.push({h:'Spark',p:'Everything you do fills your Spark bar. When it is full, the small button becomes '+(f?'Meteor: a huge burning impact where you are heading.':'Sunburst: heal you both, revive him, and blast everything around you.'),hi:['rowRage'],secs:7});
+    S.push({h:'Marks',p:'Every enemy you hit gets a lantern mark. When he hits a marked enemy, it explodes. Set them up for him.',hi:[],secs:6})}
+  S.push({h:'Red means move',p:'Red circles and arrow lanes on the floor are attacks about to land. Get out before they fill. Gold altars: stand in them for a big reward. Good luck!',hi:[],secs:7});
+  return S}
+function tutStart(c,force){if(!force)return;TUT={c,S:tutSteps(c),i:0,t:0,mv:0,ev:{},hold:0};tutCalm=50;if(!isHost)evQ.push(['tut']);tutShow()}
+function tutShow(){const el=$('tut');if(!TUT){el.hidden=true;document.querySelectorAll('.tutHi').forEach(e=>e.classList.remove('tutHi'));return}const s=TUT.S[TUT.i];el.hidden=false;
+  el.innerHTML=`<div class="tth"><span class="ttn">${TUT.i+1} / ${TUT.S.length}</span><b>${s.h}</b><button class="ttx" id="tutSkip">Skip guide</button></div><p>${s.p}</p><div class="ttb"><i style="width:0%"></i></div>${s.done?'<span class="ttd">Try it</span>':'<button class="ttnext" id="tutNext">Got it</button>'}`;
+  el.classList.remove('in');void el.offsetWidth;el.classList.add('in');
+  document.querySelectorAll('.tutHi').forEach(e=>e.classList.remove('tutHi'));for(const id of s.hi){const e=$(id);if(e)e.classList.add('tutHi')}
+  $('tutSkip').onclick=()=>tutEnd(true);const n=$('tutNext');if(n)n.onclick=()=>tutNext()}
+function tutNext(){if(!TUT)return;SFX.gem&&SFX.gem();TUT.i++;TUT.t=0;TUT.ev={};if(TUT.i>=TUT.S.length)tutEnd(false);else tutShow()}
+function tutEnd(skip){if(TUT){try{localStorage.setItem(tutKey(TUT.c),'1')}catch(_){}}TUT=null;tutShow();if(!skip)say('You are ready',1.6)}
+function tutEv(k){if(TUT)TUT.ev[k]=1}
+function tutTick(dt,ix,iy){if(!TUT||mode!=='play'||LV)return;const s=TUT.S[TUT.i];TUT.t+=dt;TUT.mv+=len(ix,iy)*dt;const c=TUT.c;
+  let p=0;if(s.done==='move')p=Math.min(1,TUT.mv/1.2);else if(s.done==='charge')p=Math.min(1,(c.chg||0)/.95+(TUT.ev.charge?1:0));else if(s.done)p=TUT.ev[s.done]?1:0;else p=Math.min(1,TUT.t/s.secs);
+  const b=document.querySelector('#tut .ttb i');if(b)b.style.width=(p*100).toFixed(0)+'%';
+  if(p>=1){TUT.hold+=dt;if(TUT.hold>(s.done?.5:0)){TUT.hold=0;tutNext()}}
+  // make sure the button the step needs is ready
+  if(s.done==='s1')c.cd1=Math.min(c.cd1,0);if(s.done==='s2')c.cd2=Math.min(c.cd2,0);if(s.done==='s3')c.cd3=0}
 function startHost(){ME=0;resetWorld();const other=myCls==='warden'?'lamp':'warden';
   chars=[mkChar(0,myCls,220,240)];if(solo)chars.push(mkChar(1,other,196,248));else if(mateJoined&&mateCls)chars.push(mkChar(1,mateCls,196,248));
   for(let i=0;i<6;i++)en.push(newE(0,140+rnd()*160,80+rnd()*110,i*.05));
-  cam.x=chars[0].x;cam.y=chars[0].y;go('play');setHud();wake();arriveFx();if(!solo&&chars.length>1)send({t:'start',h:myCls,g:mateCls,sp:SPEC})}
-function startGuest(m){ME=1;resetWorld();myCls=m.g;mateCls=m.h;if(m.sp)SPEC=Object.assign({},m.sp);chars=[mkChar(0,m.h,220,240),mkChar(1,m.g,196,248)];cam.x=chars[1].x;cam.y=chars[1].y;go('play');setHud();wake();arriveFx()}
+  cam.x=chars[0].x;cam.y=chars[0].y;go('play');setHud();wake();arriveFx();setTimeout(()=>{const m=meC();if(m&&mode==='play')tutStart(m,TUTFORCE)},1600);if(!solo&&chars.length>1)send({t:'start',h:myCls,g:mateCls,sp:SPEC})}
+function startGuest(m){ME=1;resetWorld();myCls=m.g;mateCls=m.h;if(m.sp)SPEC=Object.assign({},m.sp);chars=[mkChar(0,m.h,220,240),mkChar(1,m.g,196,248)];cam.x=chars[1].x;cam.y=chars[1].y;go('play');setHud();wake();arriveFx();setTimeout(()=>{const m=meC();if(m&&mode==='play')tutStart(m,TUTFORCE)},1600)}
 function openSkills(){const c=meC();if(!c)return;const I=window.DD_ICONS||{};
   $('skW').innerHTML=c.weapons.map(w=>{const d=WDEF[w.id];const ev=w.lv>=5;return`<div class="ski" style="--wc:${ev?C.gold:WCOL[w.id]}"><img src="${I[w.id]||''}" alt=""><div class="t"><b>${ev?'★ '+d.evo:d.name}</b><span>Level ${w.lv}${ev?' · evolved':''}. ${ev?d.evoD:d.desc}${!ev&&w.lv>=3?' '+d.up3:''}${!ev?' Evolves at level 5 with '+PAS[d.need].name+'.':''}</span></div></div>`}).join('')+Object.entries(c.pv||{}).map(([p,l])=>`<div class="ski" style="--wc:${PCOL[p]}"><img src="${I['p_'+p]||''}" alt=""><div class="t"><b>${PAS[p].name} · ${l}</b><span>${PAS[p].desc}</span></div></div>`).join('');
   const rows=[...c.mods].map(k=>`<div class="ski" style="--wc:${C.cyan}"><img src="${I[k]||''}" alt=""><div class="t"><b>${MODS[k].name}</b><span>${MODS[k].desc}</span></div></div>`);
@@ -542,7 +581,7 @@ function lampUlt(c){if((c.spark||0)<95)return;c.spark=0;
 function lampCharge(c,dt){if(c.cls!=='lamp'||c.state!=='ok'||c.cast||c.ch>0){c.chg=0;return}
   if((c.stillT||0)>.3){c.chg=Math.min(1,(c.chg||0)+dt/1.1);c.charging=true;if(c.chg>=1)bigShot(c,1)}
   else{if((c.chg||0)>.45)bigShot(c,c.chg);c.chg=0;c.charging=false}}
-function bigShot(c,k){c.chg=0;c.stillT=-.25;AIMC=c;const t=nearestEnemy(c,200)||strongest(c,200);AIMC=null;const [sx,sy]=lanternPos(c);let dx=t?t.x-sx:(c.amx??c.f),dy=t?t.y-8-sy:(c.amy??0);const l=len(dx,dy)||1;dx/=l;dy/=l;const lv=(c.weapons[0]&&c.weapons[0].lv)||1,D=(1+.25*(lv-1))*k;
+function bigShot(c,k){if(TUT&&TUT.c===c)tutEv('charge');c.chg=0;c.stillT=-.25;AIMC=c;const t=nearestEnemy(c,200)||strongest(c,200);AIMC=null;const [sx,sy]=lanternPos(c);let dx=t?t.x-sx:(c.amx??c.f),dy=t?t.y-8-sy:(c.amy??0);const l=len(dx,dy)||1;dx/=l;dy/=l;const lv=(c.weapons[0]&&c.weapons[0].lv)||1,D=(1+.25*(lv-1))*k;
   if(c.spec==='fire'){const tx=t?t.x:c.x+dx*110,ty=t?t.y:c.y+dy*80;emit('cin',r1(sx),r1(sy),r1(tx),r1(ty),.38);emit('sfx','flare');
     later.push({t:.38,f:()=>{emit('imp','fire',r1(tx),r1(ty),70,.45);let n=0;for(const e of en){if(!alive(e))continue;if(len(e.x-tx,(e.y-ty)*1.5)<40+rad(e)*.4){hitE(e,30*D,c,{w:'cinder',kx:(e.x-tx)*5,ky:(e.y-ty)*5,col:WCOL.cinder});e.burn=Math.max(e.burn||0,3);n++}}addSpark(c,Math.min(6,n))}})}
   else{const L2=240,x2=sx+dx*L2,y2=sy+dy*L2;emit('kray',r1(sx),r1(sy),r1(x2),r1(y2));emit('imp','holy',r1(x2),r1(y2+8),60,.4);emit('sfx','flare');let n=0;
@@ -941,7 +980,7 @@ function strike(k,x,y,a,b,w,delay,dmg,col,fx){const q={k,x,y,a,b,w};emit('tele',
 function puddle(x,y,r,life,dmg){ehz.push({x,y,r,life,dmg,tick:.5});emit('pud',r1(x),r1(y),r1(r),r2(life))}
 function updHaz(dt){for(const h of ehz){h.life-=dt;h.tick-=dt;if(h.tick<=0){h.tick=.45;for(const c of chars)if(c.state==='ok'&&len(c.x-h.x,(c.y-h.y)*1.6)<h.r)hurtP(c,h.dmg,h.x,h.y,false)}}ehz=ehz.filter(h=>h.life>0);
   // falling masonry: from 1:30 the city sheds stone onto wherever you are heading
-  if(T>45&&!bossSpawned||T>BOSS_T+20){debT-=dt;if(debT<=0){debT=Math.max(3,6.5-T/130);for(const c of chars){if(c.state!=='ok')continue;const n=T>420?2:1;for(let i=0;i<n;i++){const lx=c.x+(c.vx||0)*.6+(rnd()-.5)*36,ly=c.y+(c.vy||0)*.6+(rnd()-.5)*22;if(!walkable(lx,ly))continue;
+  if((T>45&&tutCalm<=0)&&!bossSpawned||T>BOSS_T+20){debT-=dt;if(debT<=0){debT=Math.max(3,6.5-T/130);for(const c of chars){if(c.state!=='ok')continue;const n=T>420?2:1;for(let i=0;i<n;i++){const lx=c.x+(c.vx||0)*.6+(rnd()-.5)*36,ly=c.y+(c.vy||0)*.6+(rnd()-.5)*22;if(!walkable(lx,ly))continue;
     strike('c',lx,ly,24,0,0,1.05+i*.25,17,'#ff5a2a',()=>{emit('imp','shock',r1(lx),r1(ly),40,.4);emit('crack',lx,ly,'#ff5a2a');emit('sfx','slam');emit('shake',0,1,3);for(const e of en)if(alive(e)&&len(e.x-lx,(e.y-ly)*1.6)<24)hitE(e,40,null,{col:'#ff5a2a',crit:false})})}}}}}
 // ===== reasons to roam: lamp altars (stand in them) and guarded chests =====
 function farSpot(dmin,dmax){const ok=chars.filter(c=>c.state==='ok');const cx=ok.reduce((a,c)=>a+c.x,0)/(ok.length||1),cy=ok.reduce((a,c)=>a+c.y,0)/(ok.length||1);for(let i=0;i<60;i++){const a=rnd()*TAU,r=dmin+rnd()*(dmax-dmin),x=cx+Math.cos(a)*r,y=cy+Math.sin(a)*r*.75;if(walkable(x,y)&&walkable(x+20,y)&&walkable(x-20,y)&&walkable(x,y+12)&&walkable(x,y-12))return[x,y]}return null}
@@ -1020,7 +1059,7 @@ function hostStep(dt){
     if(c.fireT>0&&c.dash>0){c.fireT-=dt;if(rnd()<.5)zones.push({x:c.x,y:c.y,r:12,life:2.5,tick:0,dmg:6,src:c,col:'#ff7a3a'})}}
   updPlayers(dt);for(const c of chars){aimTrack(c,dt);c.ward=Math.max(0,(c.ward||0)-dt);if(c.cls==='lamp'){lampCharge(c,dt);c.spark=Math.min(100,(c.spark||0)+dt*.35)}}
   // spawns
-  const busy=en.length;packT-=dt;if(packT<=0&&busy<90){packT=Math.max(.85,2.3-T/320)*(bossSpawned?1.6:1);spawnPack()}
+  if(tutCalm>0)tutCalm-=dt;const busy=en.length;packT-=dt;if(packT<=0&&busy<(tutCalm>0?18:90)){packT=Math.max(.85,2.3-T/320)*(bossSpawned?1.6:1)*(tutCalm>0?2:1);spawnPack()}
   if(T>60){bruteT-=dt;if(bruteT<=0){bruteT=Math.max(6,18-T/50);spawnAt(1,chars[0])}}
   for(let i=0;i<EVENTS.length;i++){const ev=EVENTS[i];if(T>=ev.t&&!evDone[i]&&!LV&&!endState){evDone[i]=1;startLevel(ev.k);return}}
   for(let i=0;i<ELITE_T.length;i++)if(T>=ELITE_T[i]-3&&!dangerDone[i]){dangerDone[i]=1;emit('danger','DANGER','A Gatekeeper is coming')}
@@ -1037,7 +1076,7 @@ function hostStep(dt){
   updAltars(dt);
   if(!LV&&chestQ>0&&!endState){chestQ--;startLevel('chest');return}
   if(!LV&&xp>=need(level)&&!endState)startLevel()}
-function endRun(win){if(endState)return;endState={win,T:Math.floor(T),level,kills};showEnd()}
+function endRun(win){if(TUT){TUT=null;tutShow()}if(endState)return;endState={win,T:Math.floor(T),level,kills};showEnd()}
 function showEnd(){const s=endState;go('end');$('endEye').textContent=s.win?'The city breathes again':'The fog wins tonight';$('endTitle').textContent=s.win?'Rooftops cleared':'Lost to the fog';$('endBan').className=s.win?'win':'';
   const tt=s.T;$('endStats').innerHTML=`<span>Time</span><b>${String(Math.floor(tt/60)).padStart(2,'0')}:${String(tt%60).padStart(2,'0')}</b><span>Level</span><b>${s.level}</b><span>Shadows cleared</span><b>${s.kills}</b>`;
   $('bAgain').hidden=!isHost;$('endNote').textContent=isHost?'':'Waiting for the host to start another run.';if(s.win)SFX.win()}
@@ -1159,7 +1198,7 @@ function snapshot(){
     LV:LV?{id:LV.id,k:LV.kind,o:LV.offers[1],p:LV.picked,n:LV.names}:0,TM:[...teamMods],END:endState||0,fx:fxQ});fxQ=[]}
 function onGuestInput(m){const c=chars.find(q=>q.idx===1);if(!c)return;
   if(!c.cast&&c.state==='ok'){c.tx=m.x;c.ty=m.y;pushHist(c,m.x,m.y)}if(c.atk<=0)c.f=m.f;c.moving=!!m.mv;c.mx=m.mx;c.my=m.my;c.dash=m.da?.1:0;c.z=m.z||0;
-  for(const ev of m.ev){if(c.state!=='ok')break;if(ev[0]==='leap'){local('sfx','dash');hostLeap(c,ev[1],ev[2])}else if(ev[0]==='bs'){if(c.rage>=95)startStorm(c);else c.bs=0}else if(ev[0]==='ward'){hostWard(c)}else if(ev[0]==='ult'){lampUlt(c)}else if(ev[0]==='stride'){c.dx=ev[1];c.dy=ev[2];c.hitSet=new Set();c.strideT=ev[3];c.strideReset=0;local('sfx','dash')}else if(ev[0]==='verd'){startVerdict(c,c.rage>=95)}else if(ev[0]==='step'){local('star',ev[1],ev[2]-14,C.amber);local('star',ev[3],ev[4]-14,C.amber);local('starburst',ev[3],ev[4]-14);local('sfx','step');stepEffect(c,ev[1],ev[2])}else if(ev[0]==='s2'){skill2(c,true,ev.length>2?[ev[1],ev[2]]:null)}}}
+  for(const ev of m.ev){if(c.state!=='ok')break;if(ev[0]==='leap'){local('sfx','dash');hostLeap(c,ev[1],ev[2])}else if(ev[0]==='bs'){if(c.rage>=95)startStorm(c);else c.bs=0}else if(ev[0]==='tut'){tutCalm=50}else if(ev[0]==='ward'){hostWard(c)}else if(ev[0]==='ult'){lampUlt(c)}else if(ev[0]==='stride'){c.dx=ev[1];c.dy=ev[2];c.hitSet=new Set();c.strideT=ev[3];c.strideReset=0;local('sfx','dash')}else if(ev[0]==='verd'){startVerdict(c,c.rage>=95)}else if(ev[0]==='step'){local('star',ev[1],ev[2]-14,C.amber);local('star',ev[3],ev[4]-14,C.amber);local('starburst',ev[3],ev[4]-14);local('sfx','step');stepEffect(c,ev[1],ev[2])}else if(ev[0]==='s2'){skill2(c,true,ev.length>2?[ev[1],ev[2]]:null)}}}
 let PRg=[],flyG=[],ravG=[],kiteG=[],beamsG=[],lancesG=[];
 function onSnap(s){T=s.T;level=s.lv;xp=s.xp;kills=s.k;tether=s.tth;bond=s.bd??bond;beamsG=s.BM||[];lancesG=(s.LA||[]).map(a=>({sx:a[0],sy:a[1],dx:a[2],dy:a[3],t:a[4],dur:a[5],refr:a[6],wide:a[7]}));
   for(const q of s.C){const [ch,amx,amy,idx,x,y,f,atk,atkDur,heavy,adir,pow,ck,ct,cd,da,hit,hp,max,state,rev,down,tp,rage,enr,ww,bs,cz,dns,kd,wd,spk,chg]=q;const c=chars.find(z=>z.idx===idx);if(!c)continue;c.downs=dns||0;c.kd=kd||0;c.ward=wd||0;c.spark=spk||0;c.chg=chg||0;
@@ -1205,9 +1244,9 @@ function update(dt){tAll+=dt;beatTick(dt);if(msgT>0){msgT-=dt;if(msgT<=0)$('msg'
   const me=meC();if(!me)return;
   if(hitstop>0&&!paused){hitstop-=dt;const [hx,hy]=readMove();moveChar(me,hx,hy,dt);cam.x=me.x;cam.y=me.y-16;render();return}
   if(edge.swap&&solo&&!paused){ME=1-ME;setHud()}
-  if(!paused){if(edge.s3)skill3(me);if(edge.s1)skill1(me);if(edge.s2){if(solo&&me.cls==='lamp'){const m2=mateC();if(m2&&m2.cd2<=0&&!dome&&!m2.cast&&m2.state==='ok'&&len(m2.x-me.x,m2.y-me.y)<70)skill2(m2)}skill2(me,false,me.cls==='lamp'?(edge.aim||mouseAim(me)):null)}}edge.aim=null;
+  if(!paused){if(edge.s3){skill3(me);tutEv('s3')}if(edge.s1){skill1(me);tutEv('s1')}if(edge.s2)tutEv('s2');if(edge.s2){if(solo&&me.cls==='lamp'){const m2=mateC();if(m2&&m2.cd2<=0&&!dome&&!m2.cast&&m2.state==='ok'&&len(m2.x-me.x,m2.y-me.y)<70)skill2(m2)}skill2(me,false,me.cls==='lamp'?(edge.aim||mouseAim(me)):null)}}edge.aim=null;
   edge.s1=edge.s2=edge.s3=edge.swap=false;
-  if(!paused){const [ix,iy]=readMove();moveChar(me,ix,iy,dt);me.cd1=Math.max(0,me.cd1-dt);me.cd2=Math.max(0,me.cd2-dt);me.cd3=Math.max(0,(me.cd3||0)-dt);me.hit-=dt;me.pose-=dt;if(isHost)me.pow-=dt;
+  if(!paused){const [ix,iy]=readMove();moveChar(me,ix,iy,dt);tutTick(dt,ix,iy);me.cd1=Math.max(0,me.cd1-dt);me.cd2=Math.max(0,me.cd2-dt);me.cd3=Math.max(0,(me.cd3||0)-dt);me.hit-=dt;me.pose-=dt;if(isHost)me.pow-=dt;
     if(solo){const b=mateC();if(b)bot(b,dt)}
     if(isHost)hostStep(FAST?dt*1:dt);else guestStep(dt)}
   else if(isHost&&LV){for(const l of later)l.t-=dt;const due=later.filter(l=>l.t<=0);later=later.filter(l=>l.t>0);for(const l of due)l.f()}
