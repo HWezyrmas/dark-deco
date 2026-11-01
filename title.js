@@ -40,7 +40,7 @@ function drawBifrost(g,t){if(!bif)return;bif.t+=1/60;const T2=bif.t,[gx,gy,sc]=h
   g.globalCompositeOperation='source-over'}
 let shards=[];
 function mkBolt(){const x=W*(.25+Math.random()*.5);let y=0,px=x;const pts=[[px,0]];while(y<H*.55){y+=H*.04+Math.random()*H*.04;px+=(Math.random()-.5)*W*.12;pts.push([px,y])}return{pts,t:0}}
-function frame(now){requestAnimationFrame(frame);if(!document.body.classList.contains('intitle')){run=false;return}run=true;
+function frame(now){requestAnimationFrame(frame);if(!document.body.classList.contains('intitle')||document.body.classList.contains('inintro')){run=false;return}run=true;
   {const r=stage.getBoundingClientRect();if(Math.abs(r.width-W)>1||Math.abs(r.height-H)>1)size()}
   const t=(now-t0)/1000,dt=1/30;
   par.x+=(parT.x-par.x)*.06;par.y+=(parT.y-par.y)*.06;
@@ -90,9 +90,10 @@ function pt(e){const r=stage.getBoundingClientRect();return[(e.clientX-r.left)/r
 addEventListener('pointermove',e=>{if(!run)return;const [x,y]=pt(e);parT.x=Math.max(-1,Math.min(1,x));parT.y=Math.max(-1,Math.min(1,y))},{passive:true});
 function tilt(e){if(!run||e.gamma==null)return;parT.x=Math.max(-1,Math.min(1,e.gamma/25));parT.y=Math.max(-1,Math.min(1,(e.beta-45)/25))}
 function burst(x,y,c){for(let i=0;i<26;i++){const a=Math.random()*7,s=40+Math.random()*120;sparks.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-30,g:140,l:.5+Math.random()*.6,m:0,r:1.3+Math.random()*1.4,c})}}
-root.addEventListener('pointerdown',e=>{const r=stage.getBoundingClientRect();if(tapped&&window.__ddTitleSfx)window.__ddTitleSfx('spark');burst(e.clientX-r.left,e.clientY-r.top,Math.random()<.5?'255,200,120':'140,230,255');
-  if(!tapped){tapped=true;document.body.classList.add('titled');if(window.__ddTitleSfx)window.__ddTitleSfx('open');if(!REDUCE){document.body.classList.add('bifo');setTimeout(bifrost,150);setTimeout(()=>document.body.classList.remove('bifo'),4000)}
-    try{if(window.DeviceOrientationEvent&&DeviceOrientationEvent.requestPermission)DeviceOrientationEvent.requestPermission().then(s=>{if(s==='granted')addEventListener('deviceorientation',tilt)}).catch(()=>{});else addEventListener('deviceorientation',tilt)}catch(_){}}});
+function openTitle(){if(tapped)return;{tapped=true;document.body.classList.add('titled');if(window.__ddTitleSfx)window.__ddTitleSfx('open');if(!REDUCE){document.body.classList.add('bifo');setTimeout(bifrost,150);setTimeout(()=>document.body.classList.remove('bifo'),4000)}
+    try{if(window.DeviceOrientationEvent&&DeviceOrientationEvent.requestPermission)DeviceOrientationEvent.requestPermission().then(s=>{if(s==='granted')addEventListener('deviceorientation',tilt)}).catch(()=>{});else addEventListener('deviceorientation',tilt)}catch(_){}}}
+window.__ddTitleOpen=openTitle;
+root.addEventListener('pointerdown',e=>{const r=stage.getBoundingClientRect();if(tapped&&window.__ddTitleSfx)window.__ddTitleSfx('spark');burst(e.clientX-r.left,e.clientY-r.top,Math.random()<.5?'255,200,120':'140,230,255');openTitle()});
 // skip straight to the menu state when coming back from a game
 window.__ddTitleReady=()=>{tapped=true;menuK=1;document.body.classList.add('titled')};
 })();

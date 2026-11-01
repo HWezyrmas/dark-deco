@@ -599,7 +599,7 @@ A set of 4 square game ability icons in one image, in 2 rows of 2, each icon on 
 
 ---
 
-## 16. Intro cinematic (sheets I1 to I6)
+## 16. Intro cinematic (sheets I1 to I6) · done and live
 
 A short story intro that plays before the title screen the first time, and from a "Watch the intro" button. Claude animates it in code: slow camera pushes, parallax between plate and cutout, fog, embers, lightning, captions and music. Same painted, NOT pixel art style as the title screen. Plates are full images; cutouts go on magenta. Attach `title/src/heroes.png` for the hero cutouts and `enemies/src/boss.png` / `enemies/src/shadow.png` for the Foreman and the imps.
 
