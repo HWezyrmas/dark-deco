@@ -136,7 +136,7 @@ const SFX={
 
 /* ================= content: weapons, mods, stats, pairs ================= */
 const WDEF={
-  reaper:{cls:'warden',spec:'exec',name:'Headsman\'s Axe',desc:'Executioner only. A slow, crushing greataxe swing at enemies in front of you. Anything left under 22% health is Executed. Every hit builds Rage.',up3:'Every third swing goes all the way around you.',evo:'Headsman',evoD:'Swings 25% faster and Executes anything under 35% health.',need:'might'},
+  reaper:{cls:'warden',spec:'exec',name:'Headsman\'s Axe',desc:'A slow, crushing greataxe swing at enemies in front of you. Anything left under 22% health is Executed. Every hit builds Rage.',up3:'Every third swing goes all the way around you.',evo:'Headsman',evoD:'Swings 25% faster and Executes anything under 35% health.',need:'might'},
   cleave:{cls:'warden',spec:'berserk',name:'Fury Strikes',desc:'A fast 3-hit axe combo; the third hit heals you. Enemies under 25% health are Executed for triple damage. Every hit builds Rage.',up3:'The finisher hits all the way around you.',evo:'Rampage',evoD:'Every finisher unleashes 4 extra lightning-fast strikes.',need:'might'},
   whirl:{cls:'warden',spec:'berserk',name:'Whirlwind',desc:'Spends Rage to spin through everything around you, then you become Enraged: attacks 30% faster for 4 seconds.',up3:'Costs only 20 Rage.',evo:'Maelstrom',evoD:'Spins longer and drags enemies into the blades.',need:'dur'},
   slam:{cls:'warden',spec:'berserk',name:'Thunder Clap',desc:'A shockwave that launches crowds of enemies around you.',up3:'Stuns everything it hits.',evo:'Fault Line',evoD:'Leaves a burning crack that keeps hurting.',need:'reach'},
@@ -149,7 +149,7 @@ const WDEF={
   hook:{cls:'warden',spec:'exec',name:'Chain Hook',desc:'Hooks the farthest enemy (gunmen first) and yanks it to your axes.',up3:'Two hooks at once.',evo:'Reel',evoD:'Drags in everything along the chain.',need:'lode'},
   banner:{cls:'warden',spec:'berserk',name:'War Banner',desc:'Plants a banner that hurts enemies around it. Standing near it makes both of you attack 25% faster.',up3:'Bigger, lasts longer and slows enemies.',evo:'Royal Standard',evoD:'The banner also heals you both.',need:'dur'},
   shout:{cls:'warden',spec:'berserk',name:'Battle Shout',desc:'When surrounded, a roar blasts enemies away and makes them flee in fear.',up3:'Also gives you both +20% damage for 4 seconds.',evo:'Warcry',evoD:'Each roar grants 30 Rage and heals you both.',need:'haste'},
-  cinder:{cls:'lamp',spec:'fire',name:'Cinders',desc:'Firebrand only. Lobs burning cinders that splash and set enemies on fire.',up3:'Throws an extra cinder.',evo:'Inferno',evoD:'Cinders leave pools of fire where they land.',need:'volley'},
+  cinder:{cls:'lamp',spec:'fire',name:'Cinders',desc:'Lobs burning cinders that splash and set enemies on fire.',up3:'Throws an extra cinder.',evo:'Inferno',evoD:'Cinders leave pools of fire where they land.',need:'volley'},
   beam:{cls:'lamp',spec:'heal',name:'Light Bolts',desc:'Fires bolts of lantern light at the nearest enemy, faster the longer you keep shooting. Bolts that fly through your partner heal them.',up3:'Bolts pierce through one enemy.',evo:'Sunthread',evoD:'Bolts fire faster and pierce through 3 enemies.',need:'haste'},
   prism:{cls:'lamp',spec:'heal',name:'Prism',desc:'Each bolt that hits splits into a smaller bolt toward another enemy.',up3:'Splits into two bolts.',evo:'Kaleidoscope',evoD:'Splits into 4 bolts.',need:'volley'},
   lighthouse:{cls:'lamp',spec:'heal',name:'Lighthouse',desc:'A beam slowly sweeps around you like a lighthouse.',up3:'Two beams sweep around you.',evo:'Twin Lights',evoD:'Three longer beams.',need:'dur'},
@@ -189,7 +189,7 @@ const WDEF={
 };
 const PAS={might:{name:'Might',desc:'+12% damage per level.'},haste:{name:'Haste',desc:'Abilities recharge 7% faster per level.'},reach:{name:'Reach',desc:'Abilities are 10% bigger per level.'},dur:{name:'Duration',desc:'Effects last 12% longer per level.'},volley:{name:'Volley',desc:'+1 projectile at levels 1, 3 and 5.'},lode:{name:'Lodestone',desc:'Pick up gems from 40% farther per level.'},armor:{name:'Armor',desc:'Take 6% less damage per level.'},regen:{name:'Regeneration',desc:'Heal 0.4 health per second per level.'}};
 const PCOL={might:'#ff6a7e',haste:'#7fd7ff',reach:'#c9a0ff',dur:'#ffd27a',volley:'#ffb070',lode:'#8a7cff',armor:'#c9d6ee',regen:'#5fe08a'};
-const DUOS={ember:['whirl','flies'],rod:['slam','chain'],pax:['shield','prism'],sanct:['banner','garden']};
+const DUOS={ember:['whirl','flies'],rod:['slam','chain'],pax:['shield','prism'],sanct:['banner','garden'],phoenixrage:['bloodmoon','phoenix'],hellfire:['hellchain','firewall'],verdictlight:['guillotine','rose'],doomclock:['knell','clock']};
 const WBASE={rites:{cd:4},knell:{cd:14},firewall:{cd:6},pyre:{cd:4},reaper:{cd:1.35},cinder:{cd:.8},hellchain:{cd:7},wyrm:{cd:9},obelisk:{cd:8},thunder:{cd:5},bloodmoon:{cd:18},legion:{cd:10},phoenix:{cd:10},heaven:{cd:7},cranes:{cd:6},starwell:{cd:11},clock:{cd:12},fireworks:{cd:5},guillotine:{cd:7},vortex:{cd:8},grip:{cd:9},carnage:{cd:0},constellation:{cd:6},aurora:{cd:10},rose:{cd:9},wisp:{cd:4},cleave:{cd:.85},whirl:{cd:1.5},slam:{cd:5},shield:{cd:4},riposte:{cd:8},twirl:{cd:.62},flies:{cd:0},moths:{cd:2.5},candle:{cd:3},chain:{cd:3},beam:{cd:0},prism:{cd:0},lighthouse:{cd:0},ravager:{cd:0},blood:{cd:0},charge:{cd:6},earth:{cd:5},hook:{cd:4},banner:{cd:13},shout:{cd:8},starfall:{cd:3},lanterns:{cd:5},garden:{cd:0},halo:{cd:4},kite:{cd:.65}};
 const MODS={
   verdictq:{cls:'warden',sp:'exec',name:'Swift Judgement',desc:'Verdict recharges 2 seconds faster.'},
@@ -207,13 +207,19 @@ const MODS={
 };
 const STATS={hp:{name:'Iron Will',desc:'+20% max health, and heal 20 now.'},dmg:{name:'Sharpened',desc:'+15% damage on everything.'},spd:{name:'Quick Feet',desc:'+10% movement speed.'},cdr:{name:'Clockwork',desc:'Automatic attacks recharge 8% faster.'},mag:{name:'Lodestone',desc:'Pull in gems from 50% farther away.'}};
 const PAIRS={
-  litsteel:{name:'Lit Steel',desc:'While the Lamplighter\'s light powers him up, the Warden\'s hits set enemies on fire.'},
-  ward:{name:'Lantern Ward',desc:'Inside the Dome, all healing is doubled and the Dome lasts 1 second longer.'},
+  litsteel:{name:'Lit Steel',req:{lamp:'heal'},desc:'While the Lamplighter\'s light powers him up, the Warden\'s hits set enemies on fire.'},
+  kindred:{name:'Kindred Flames',req:{lamp:'fire'},desc:'Kindle lasts twice as long, and while he is Kindled he takes 20% less damage.'},
+  witness:{name:'Witness',req:{warden:'exec'},desc:'Every enemy he Executes heals the Lamplighter and fills her Spark.'},
+  ward:{name:'Lantern Ward',req:{warden:'berserk'},desc:'Inside the Dome, all healing is doubled and the Dome lasts 1 second longer.'},
   bond:{name:'Bond of Light',desc:'Your Bond fills twice as fast, and close together you heal three times faster.'},
   ember:{name:'Ember Storm',duo:1,desc:'Duo: while you stand close, her fireflies get pulled into his Whirlwind and everything it hits catches fire.'},
   rod:{name:'Lightning Rod',duo:1,desc:'Duo: while you stand close, his Thunder Clap sends her lightning through the whole crowd.'},
   pax:{name:'Prismatic Axe',duo:1,desc:'Duo: while you stand close, every Hurled Axe hit splits into rainbow bolts.'},
   sanct:{name:'Sanctuary',duo:1,desc:'Duo: while you stand close, the War Banner heals you both and blooms with flowers.'},
+  phoenixrage:{name:'Blood Phoenix',duo:1,desc:'Duo: while you stand close and his Blood Moon is up, her Phoenix burns twice as hard and every hit heals him.'},
+  hellfire:{name:'Hellfire',duo:1,desc:'Duo: while you stand close, every Hellchains collision leaves a ring of fire behind.'},
+  verdictlight:{name:'Verdict of Light',duo:1,desc:'Duo: while you stand close, every Guillotine drop bursts with holy light that heals you both and hurts everything around it.'},
+  doomclock:{name:'Doom Clock',duo:1,desc:'Duo: while you stand close, Death Knell freezes time instead of stunning, and Executes 10% more.'},
 };
 const CL={
   warden:{name:'Warden',color:C.cyan,spd:56,hp:140,s1:'Leap',s2:'Dome',cd1:5,cd2:12,start:'cleave'},
@@ -527,6 +533,7 @@ function healP(c,amt,show=true){if(c.state!=='ok')return;if(HEALER&&HEALER.spec=
 const QUIETW=new Set(['wyrm','bloodmoon','phoenix','starwell','vortex','aurora','carnage','ravager','halo','starfall','earth','lanterns','kite','garden','banner','shout','flies','candle','lighthouse']);
 const ROLE_DMG={warden:1.1,lamp:.62};
 function hitE(e,base,src,o={}){if(!alive(e))return false;if(o.w&&QUIETW.has(o.w)&&!o.exec)o.quiet=1;
+  if(o.exec&&teamMods.has('witness')){const L=chars.find(q=>q.cls==='lamp'&&q.state==='ok');if(L){healP(L,2,false);addSpark(L,2)}}
   const crit=o.crit??(rnd()<.15);if(src)e.ls=src;if(!o.det&&src){if(src.cls==='lamp'){if(!(e.detT>T))e.mark=4}else if(src.cls==='warden'&&e.mark>0){e.mark=0;e.detT=T+1.5;later.push({t:0,f:()=>detonate(e,src)})}}if(src&&src.kd>0)base*=1.3;e.lw=o.w||null;let a=Math.round(base*(src?src.st.dmg:1)*(src&&src.shoutT>0?1.2:1)*(src&&src.pow>0?1.5:1)*(src&&chars.length>1?1+.25*bond:1)*(src?ROLE_DMG[src.cls]||1:1)*(.85+rnd()*.3));if(crit)a*=2;
   if(window.__DLOG&&src)__DLOG[(src.cls==='lamp'?'L:':'W:')+(o.w||'other')]=(__DLOG[(src.cls==='lamp'?'L:':'W:')+(o.w||'other')]||0)+a;
   e.hp-=a;e.hit=.1;e.sq=.4;if(o.frz)e.frz=Math.max(e.frz||0,o.frz);const kr=e.kind>=4?0:e.kind===1?.35:1;e.kx+=(o.kx||0)*kr;e.ky+=(o.ky||0)*kr;if(o.up&&e.kind!==1&&e.kind<4)e.vz=Math.max(e.vz,o.up);if(o.stun)e.stun=Math.max(e.stun||0,o.stun);
@@ -560,8 +567,8 @@ function skill1(c,remote){if(c.state!=='ok')return;
     stepEffect(c,fx0,fy0)}}
 // ===== Executioner =====
 // ===== Firebrand =====
-function kindle(c){const p=partnerOf(c),hearth=c.mods.has('hearth');c.pow=Math.max(c.pow||0,3);emit('sfx','flare');
-  if(p&&p.state==='ok'&&len(p.x-c.x,(p.y-c.y)*1.4)<150){p.kd=8+(hearth?4:0);p.lit=p.kd;if(hearth){HEALER=null;healP(p,25)}const [lx,ly]=lanternPos(c);emit('kin',r1(lx),r1(ly),p.idx);emit('imp','fire',r1(p.x),r1(p.y),50,.45);emit('msgP',p.idx,'You are KINDLED','He is KINDLED')}
+function kindle(c){const p=partnerOf(c),hearth=c.mods.has('hearth'),kin=teamMods.has('kindred')?2:1;c.pow=Math.max(c.pow||0,3);emit('sfx','flare');
+  if(p&&p.state==='ok'&&len(p.x-c.x,(p.y-c.y)*1.4)<150){p.kd=(8+(hearth?4:0))*kin;p.lit=p.kd;if(hearth){HEALER=null;healP(p,25)}const [lx,ly]=lanternPos(c);emit('kin',r1(lx),r1(ly),p.idx);emit('imp','fire',r1(p.x),r1(p.y),50,.45);emit('msgP',p.idx,'You are KINDLED','He is KINDLED')}
   else{emit('imp','fire',r1(c.x),r1(c.y),70,.5);emit('wave',c.x,c.y,.4,70,'#ff8a2a',4,0);for(const e of en)if(alive(e)&&len(e.x-c.x,(e.y-c.y)*1.4)<62){hitE(e,16,c,{w:'cinder',kx:(e.x-c.x)*4,ky:(e.y-c.y)*4,col:WCOL.cinder});e.burn=Math.max(e.burn||0,3.5)}emit('msgP',c.idx,'Too far: fire nova','')}}
 // ===== Lamplighter: Guardian Ward, Spark + ultimate, charged shots, detonation marks =====
 const WARD_CD=6;
@@ -796,7 +803,7 @@ const AB={
     const n=Math.min(pool.length,(P.m3?6:4)+P.n),tg=[];for(let i=0;i<n;i++)tg.push(pool.splice((rnd()*pool.length)|0,1)[0]);let cx=0,cy=0;for(const e of tg){cx+=e.x;cy+=e.y}cx/=n;cy/=n;
     const pts=[];for(const e of tg)pts.push(r1(e.x),r1(e.y));emit('hch',pts,r1(cx),r1(cy),P.evo?1:0);emit('sfx','swoosh',1);
     const cyc=k=>{later.push({t:.35+k*.8,f:()=>{for(const e of tg)if(alive(e)){e.stun=Math.max(e.stun||0,.6);e.kx=(cx-e.x)*3.6;e.ky=(cy-e.y)*3.6}}});
-      later.push({t:.75+k*.8,f:()=>{for(const e of en){if(!alive(e))continue;const d=len(e.x-cx,(e.y-cy)*1.4);if(d<32*P.a+rad(e)*.5)hitE(e,38*P.d,c,{w:'hellchain',col:WCOL.hellchain,up:120,kx:(e.x-cx)*4,ky:(e.y-cy)*4})}emit('sfx','blast');emit('shake',0,1,4,c.idx)}})};cyc(0);if(P.evo)cyc(1)},
+      later.push({t:.75+k*.8,f:()=>{for(const e of en){if(!alive(e))continue;const d=len(e.x-cx,(e.y-cy)*1.4);if(d<32*P.a+rad(e)*.5)hitE(e,38*P.d,c,{w:'hellchain',col:WCOL.hellchain,up:120,kx:(e.x-cx)*4,ky:(e.y-cy)*4})}if(duo('hellfire',c)){const L=partnerOf(c);for(let i=0;i<8;i++){const a=i/8*TAU,x=cx+Math.cos(a)*34,y=cy+Math.sin(a)*20;if(walkable(x,y))zones.push({x,y,r:13,life:4,tick:0,dmg:7,src:L||c,col:'#ff7a3a'})}emit('imp','fire',r1(cx),r1(cy),80,.5)}emit('sfx','blast');emit('shake',0,1,4,c.idx)}})};cyc(0);if(P.evo)cyc(1)},
   wyrm(c,w,dt,rate){const P=AP(c,w);w.cd-=dt*rate;if(w.cd>0)return;const t=nearestEnemy(c,110);if(!t)return;w.cd=9*P.c;fired(c,w);
     const a=Math.atan2((t.y-c.y)/.7,t.x-c.x),dur=(P.evo?1.8:1.2)*P.du,Rr=(P.m3?110:90)*P.a,half=P.m3?.55:.45;emit('wyrm',c.idx,r2(a),r2(dur),Math.round(Rr),r2(half),P.evo?1:0);emit('sfx','charge');
     for(let s=.2;s<dur+.2;s+=.15)later.push({t:s,f:()=>{if(c.state!=='ok')return;const ox2=c.x,oy2=c.y-10;for(const e of en){if(!alive(e))continue;const dx=e.x-ox2,dy=(e.y-oy2)/.7,d=len(dx,dy);if(d>Rr||d<4)continue;let da=Math.atan2(dy,dx)-a;da=Math.atan2(Math.sin(da),Math.cos(da));if(Math.abs(da)<half){hitE(e,6*P.d,c,{w:'wyrm',col:WCOL.wyrm,crit:false,kx:Math.cos(a)*40,ky:Math.sin(a)*28});e.burn=Math.max(e.burn||0,1.5)}}
@@ -814,7 +821,7 @@ const AB={
     emit('leg',r1(x0),r1(y0),r2(a),n,back,c.idx);emit('sfx','charge');const hitS=new Set();
     for(let s=.05;s<(back?2.1:1.1);s+=.06)later.push({t:s,f:()=>{if(back&&Math.abs(s-1.05)<.04)hitS.clear();for(let g=0;g<n;g++){const [gx,gy]=legPos(x0,y0,a,n,g,s,back);for(const e of en){if(!alive(e)||hitS.has(e.id*10+g))continue;if(len(e.x-gx,(e.y-gy)*1.4)<13+rad(e)*.5){hitS.add(e.id*10+g);hitE(e,20*P.d,c,{w:'legion',col:WCOL.legion,kx:Math.cos(a)*(s<1.05?180:-180),ky:Math.sin(a)*(s<1.05?120:-120)})}}}}})},
   phoenix(c,w,dt,rate){const P=AP(c,w);if(c.phxT>0){c.phxT-=dt;c.phxA=(c.phxA||0)+dt;const [px,py]=phxPos(c,c.phxA,c.phxS);c.phxHit=c.phxHit||new Map();
-      for(const e of en){if(!alive(e))continue;if(len(e.x-px,(e.y-py)*1.3)<15){const lt=c.phxHit.get(e)||0;if(tAll-lt>.35){c.phxHit.set(e,tAll);hitE(e,9*P.d,c,{w:'phoenix',col:WCOL.phoenix,crit:false});e.burn=Math.max(e.burn||0,2)}}}
+      for(const e of en){if(!alive(e))continue;if(len(e.x-px,(e.y-py)*1.3)<15){const lt=c.phxHit.get(e)||0;if(tAll-lt>.35){c.phxHit.set(e,tAll);const m=partnerOf(c),pr=duo('phoenixrage',c)&&m&&m.moonT>0;hitE(e,9*P.d*(pr?2:1),c,{w:'phoenix',col:WCOL.phoenix,crit:false});e.burn=Math.max(e.burn||0,2);if(pr)healP(m,1,false)}}}
       if(P.evo){if(rnd()<dt*6)zones.push({x:px,y:py+8,r:10,life:1.6,tick:0,dmg:3*P.d,src:c,col:'#ff8a2a'});const m=partnerOf(c);if(m&&m.state==='ok'&&len(m.x-px,m.y-py)<16&&(c.phxH||0)<tAll-1){c.phxH=tAll;healP(m,5)}}return}
     w.cd-=dt*rate;if(w.cd>0||!nearestEnemy(c,120))return;w.cd=10*P.c;fired(c,w);c.phxT=(P.m3?5:4)*P.du;c.phxA=0;c.phxS=(P.m3?82:66)*P.a;emit('phx',c.idx,r1(c.phxT),Math.round(c.phxS),P.evo?1:0);emit('sfx','flare')},
   heaven(c,w,dt,rate){const P=AP(c,w);w.cd-=dt*rate;if(w.cd>0)return;if(!nearestEnemy(c,160))return;w.cd=7*P.c;fired(c,w);const n=(P.m3?4:3)+P.n,pts=[],R0=14*P.a,life=P.evo?1.6:.6;
@@ -844,9 +851,9 @@ const AB={
   rites(c,w,dt,rate){const P=AP(c,w);w.cd-=dt*rate;if(w.cd>0)return;const R=(P.m3?78:64)*P.a,thr=P.evo?.3:P.m3?.25:.2;let n=0;
     for(const e of en){if(!alive(e)||e.kind===5)continue;if(len(e.x-c.x,(e.y-c.y)*1.4)<R&&e.hp<e.max*thr){hitE(e,e.hp*3+10,c,{w:'rites',exec:true,col:WCOL.rites,kx:(e.x-c.x)*3,ky:(e.y-c.y)*3});n++}}
     if(!n)return;w.cd=4*P.c;fired(c,w);healP(c,1.5*n);emit('wave',c.x,c.y,.35,R*1.2,WCOL.rites,3,0);emit('sfx','exec');if(P.evo){emit('imp','shock',r1(c.x),r1(c.y),R*1.6,.45);for(const e of en)if(alive(e)&&len(e.x-c.x,(e.y-c.y)*1.4)<R)hitE(e,18*P.d,c,{w:'rites',col:WCOL.rites,kx:(e.x-c.x)*4,ky:(e.y-c.y)*4})}},
-  knell(c,w,dt,rate){const P=AP(c,w);w.cd-=dt*rate;if(w.cd>0)return;if(countNear(c,90)<8)return;w.cd=14*P.c*(P.m3?.8:1);fired(c,w);const thr=P.evo?.4:.3,st=P.evo?1.6:.8;
+  knell(c,w,dt,rate){const P=AP(c,w);w.cd-=dt*rate;if(w.cd>0)return;if(countNear(c,90)<8)return;w.cd=14*P.c*(P.m3?.8:1);fired(c,w);const dc=duo('doomclock',c),thr=(P.evo?.4:.3)+(dc?.1:0),st=P.evo?1.6:.8;
     emit('wave',c.x,c.y,.7,240,WCOL.knell,6,0);emit('wave',c.x,c.y,.9,320,'#ffffff',2,-.1);emit('imp','shock',r1(c.x),r1(c.y),160,.6);emit('big',.3,1.05,.05,6);emit('sfx','boom');emit('msgP',c.idx,'DEATH KNELL','DEATH KNELL');
-    for(const e of en){if(!alive(e))continue;if(len(e.x-c.x,e.y-c.y)>260)continue;if(e.kind!==5&&e.hp<e.max*thr)hitE(e,e.hp*3+10,c,{w:'knell',exec:true,col:WCOL.knell});else{hitE(e,22*P.d,c,{w:'knell',col:WCOL.knell,crit:false});e.stun=Math.max(e.stun||0,st)}}},
+    for(const e of en){if(!alive(e))continue;if(len(e.x-c.x,e.y-c.y)>260)continue;if(e.kind!==5&&e.hp<e.max*thr)hitE(e,e.hp*3+10,c,{w:'knell',exec:true,col:WCOL.knell});else{hitE(e,22*P.d,c,{w:'knell',col:WCOL.knell,crit:false});if(dc)e.frz=Math.max(e.frz||0,st*1.5);else e.stun=Math.max(e.stun||0,st)}}},
   firewall(c,w,dt,rate){const P=AP(c,w);w.cd-=dt*rate;if(w.cd>0)return;const t=nearestEnemy(c,150);if(!t)return;w.cd=6*P.c;fired(c,w);const dx=t.x-c.x,dy=t.y-c.y,d=len(dx,dy)||1,ux=dx/d,uy=dy/d,cx=c.x+ux*Math.min(d,70),cy=c.y+uy*Math.min(d,70)*.8;
     const pts=[];if(P.evo){for(let i=0;i<12;i++){const a=i/12*TAU;pts.push([cx+Math.cos(a)*42*P.a,cy+Math.sin(a)*26*P.a])}}else{const n=(P.m3?9:6);for(let i=0;i<n;i++){const k=(i-(n-1)/2)*15*P.a;pts.push([cx-uy*k,cy+ux*k*.8])}}
     pts.forEach(([x,y],i)=>{if(!walkable(x,y))return;zones.push({x,y,r:13,life:4*(c.st.dur||1),tick:0,dmg:7*P.d,src:c,col:'#ff7a3a'});later.push({t:i*.03,f:()=>emit('imp','fire',r1(x),r1(y),34,.4)})});emit('sfx','flare')},
@@ -854,7 +861,7 @@ const AB={
     B.forEach((b,i)=>later.push({t:i*.04,f:()=>{if(b.dead)return;const x=b.x,y=b.y;emit('imp','fire',r1(x),r1(y),44,.4);for(const e of en){if(!alive(e))continue;if(len(e.x-x,(e.y-y)*1.4)<R+rad(e)*.4){hitE(e,16*P.d,c,{w:'pyre',col:WCOL.pyre,kx:(e.x-x)*4,ky:(e.y-y)*4,crit:false});e.burn=Math.max(e.burn||0,2.5)}}if(P.evo)zones.push({x,y,r:14,life:2.5,tick:0,dmg:5,src:c,col:'#ff7a3a'})}}));emit('sfx','blast')},
   guillotine(c,w,dt,rate){const P=AP(c,w);w.cd-=dt*rate;if(w.cd>0)return;const t=densest(c,165*P.a,30);if(!t)return;w.cd=7*P.c;fired(c,w);
     const R=30*P.a,n=P.evo?3:1,ax=t.x-c.x,ay=t.y-c.y,al=len(ax,ay)||1;
-    for(let i=0;i<n;i++){const x=t.x+ax/al*(i-(n-1)/2)*38,y=t.y+ay/al*(i-(n-1)/2)*28,dl=i*.2;emit('guil',r1(x),r1(y),Math.round(R),P.m3?1:0,dl);
+    for(let i=0;i<n;i++){const x=t.x+ax/al*(i-(n-1)/2)*38,y=t.y+ay/al*(i-(n-1)/2)*28,dl=i*.2;emit('guil',r1(x),r1(y),Math.round(R),P.m3?1:0,dl);if(duo('verdictlight',c))later.push({t:.5+dl,f:()=>{emit('imp','holy',r1(x),r1(y),70,.45);for(const e of en)if(alive(e)&&len(e.x-x,(e.y-y)*1.4)<R*1.8)hitE(e,14*P.d,c,{col:'#fff3b0',crit:false});for(const q of chars)if(q.state==='ok')healP(q,5)}});
       later.push({t:.47+dl,f:()=>{for(const e of en){if(!alive(e))continue;const dx=e.x-x,dy=(e.y-y)*1.4,d=len(dx,dy);if(d<R+rad(e)*.5)hitE(e,50*P.d,c,{w:'guillotine',col:WCOL.guillotine,up:150,stun:.35,kx:dx/(d||1)*120,ky:dy/(d||1)*80,dir:-Math.PI/2})}
         if(P.m3)later.push({t:.14,f:()=>{for(const e of en){if(!alive(e))continue;const dx=e.x-x,dy=(e.y-y)*1.4,d=len(dx,dy);if(d<R*1.9&&d>R*.6)hitE(e,16*P.d,c,{w:'guillotine',col:WCOL.guillotine,kx:dx/(d||1)*200,ky:dy/(d||1)*140,quiet:1})}}});
         emit('sfx','slam');emit('shake',0,1,5,c.idx)}})}},
@@ -952,7 +959,7 @@ function updProj2(p,dt){
     if(p.evo&&!p.healed){const m=partnerOf(p.src);if(m&&m.state==='ok'&&Math.abs(len(m.x-p.x,(m.y-p.y)*1.4)-r)<12){p.healed=true;healP(m,8);emit('heal',m.idx)}}return true}
   return false}
 
-function hurtP(c,dmg,sx,sy,heavy){if(c.state==='ok'&&c.ward>0){parry(c,sx,sy);return}if(c.state!=='ok'||c.dash>0||c.strideT>0||c.inv>0||c.fall||c.leapT>0||c.bs>0)return;addRage(c,8);if(inDome(c.x,c.y))dmg*=.7;dmg*=(1+T/320)*(1-Math.min(.5,c.st.arm||0));
+function hurtP(c,dmg,sx,sy,heavy){if(c.kd>0&&teamMods.has('kindred'))dmg*=.8;if(c.state==='ok'&&c.ward>0){parry(c,sx,sy);return}if(c.state!=='ok'||c.dash>0||c.strideT>0||c.inv>0||c.fall||c.leapT>0||c.bs>0)return;addRage(c,8);if(inDome(c.x,c.y))dmg*=.7;dmg*=(1+T/320)*(1-Math.min(.5,c.st.arm||0));
   if(c.skin>0){const rp=c.weapons.find(w=>w.id==='riposte');c.skin--;c.inv=.45;emit('skinbreak',c.idx);if(rp){const L=lvm(rp),R=40*L.a*(c.st.area||1);emit('slash',c.x,c.y-12,0,R,1,TAU,'#ffffff');
     for(const e of en){if(!alive(e))continue;const ex=e.x-c.x,ey=e.y-c.y,ed=len(ex,ey*1.4)||1;if(ed<R)hitE(e,30*L.d,c,{w:'riposte',kx:ex/ed*220,ky:ey/ed*150,col:WCOL.riposte,stun:rp.lv>=5?.8:0,dir:Math.atan2(ey,ex)})}if(rp.lv>=5)healP(c,8)}return}
   c.hp-=dmg;c.inv=.45;const dx=c.x-sx,dy=c.y-sy,d=len(dx,dy)||1;emit('ouch',c.idx,Math.round(dmg),-dx/d,-dy/d,heavy?1:0);
@@ -1102,7 +1109,7 @@ function genOffers(c){const own=new Map(c.weapons.map(w=>[w.id,w])),newA=[],rest
     if(w){if(w.lv<4)rest.push({id:'w:'+k,wt:w.lv===2?3.2:2.4});else if(w.lv===4&&(c.pv[d.need]||0)>0)rest.push({id:'w:'+k,wt:5})}else if(c.weapons.length<6)newA.push({id:'w:'+k,wt:1})}
   const np=Object.keys(c.pv).length;for(const k of Object.keys(PAS)){const lv=c.pv[k]||0;if(lv>0&&lv<5)rest.push({id:'v:'+k,wt:1.5});else if(!lv&&np<4)rest.push({id:'v:'+k,wt:1.15})}
   for(const [k,d] of Object.entries(MODS))if(d.cls===c.cls&&(!d.sp||d.sp===c.spec)&&!c.mods.has(k))rest.push({id:'m:'+k,wt:.35});
-  if(chars.length>1){for(const k of ['litsteel','ward','bond'])if(!teamMods.has(k))rest.push({id:'p:'+k,wt:.25});for(const k of duoReady())rest.push({id:'p:'+k,wt:3})}
+  if(chars.length>1){const okReq=r=>!r||Object.entries(r).every(([cl,sp])=>chars.some(q=>q.cls===cl&&q.spec===sp));for(const k of ['litsteel','ward','bond','kindred','witness'])if(!teamMods.has(k)&&okReq(PAIRS[k].req))rest.push({id:'p:'+k,wt:.25});for(const k of duoReady())rest.push({id:'p:'+k,wt:3})}
   const pick=(pool,n,out)=>{while(n-->0&&pool.length){let s=pool.reduce((a,p)=>a+p.wt,0),r=rnd()*s,i=0;for(;i<pool.length;i++){r-=pool[i].wt;if(r<=0)break}out.push(pool.splice(Math.min(i,pool.length-1),1)[0])}};
   const out=[];pick(newA,c.weapons.length<6?2:0,out);pick(rest,3-out.length,out);pick(newA,3-out.length,out);
   if(!out.length)out.push({id:'s:hp'},{id:'s:dmg'},{id:'s:spd'});
@@ -1259,7 +1266,7 @@ function update(dt){tAll+=dt;beatTick(dt);if(msgT>0){msgT-=dt;if(msgT<=0)$('msg'
   const me=meC();if(!me)return;
   if(hitstop>0&&!paused){hitstop-=dt;const [hx,hy]=readMove();moveChar(me,hx,hy,dt);cam.x=me.x;cam.y=me.y-16;render();return}
   if(edge.swap&&solo&&!paused){ME=1-ME;setHud()}
-  if(!paused){if(edge.s3){skill3(me);tutEv('s3')}if(edge.s1){skill1(me);tutEv('s1')}if(edge.s2)tutEv('s2');if(edge.s2){if(solo&&me.cls==='lamp'){const m2=mateC();if(m2&&m2.cd2<=0&&!dome&&!m2.cast&&m2.state==='ok'&&len(m2.x-me.x,m2.y-me.y)<70)skill2(m2)}skill2(me,false,me.cls==='lamp'?(edge.aim||mouseAim(me)):null)}}edge.aim=null;
+  if(!paused){if(edge.s3){skill3(me);tutEv('s3')}if(edge.s1){skill1(me);tutEv('s1')}if(edge.s2)tutEv('s2');if(edge.s2){if(solo&&me.cls==='lamp'){const m2=mateC();if(m2&&m2.spec==='berserk'&&m2.cd2<=0&&!dome&&!m2.cast&&m2.state==='ok'&&len(m2.x-me.x,m2.y-me.y)<70)skill2(m2)}skill2(me,false,me.cls==='lamp'?(edge.aim||mouseAim(me)):null)}}edge.aim=null;
   edge.s1=edge.s2=edge.s3=edge.swap=false;
   if(!paused){const [ix,iy]=readMove();moveChar(me,ix,iy,dt);tutTick(dt,ix,iy);me.cd1=Math.max(0,me.cd1-dt);me.cd2=Math.max(0,me.cd2-dt);me.cd3=Math.max(0,(me.cd3||0)-dt);me.hit-=dt;me.pose-=dt;if(isHost)me.pow-=dt;
     if(solo){const b=mateC();if(b)bot(b,dt)}
@@ -2156,5 +2163,6 @@ function sim(sec,opt={}){window.__DLOG={};const dt=1/30,out={downs:0,minHp:[999,
   out.boss=boss?Math.round(boss.hp/boss.max*100):-1;out.T=Math.round(T);out.level=level;out.kills=kills;out.end=endState;out.en=en.length;out.kits=chars.map(c=>c.weapons.map(w=>w.id+w.lv).join(' ')+' | '+Object.entries(c.pv).map(([k,v])=>k+v).join(' '));out.teamMods=[...teamMods];out.hp=chars.map(c=>Math.round(c.hp)+'/'+Math.round(c.max)+c.state[0]);
   const tot=Object.values(__DLOG).reduce((a,b)=>a+b,0)||1;out.dmg=Object.entries(__DLOG).sort((a,b)=>b[1]-a[1]).map(([k,v])=>k+' '+Math.round(v/tot*100)+'%');return out}
 window.__ddTitleSfx=k=>{try{audioInit();if(k==='thunder')taThunder(Math.random()<.4);else if(k==='spark')taUi('spark');else if(k==='bifrost')taBif();else if(k==='open'){titleAudio(true);taWhoosh()}}catch(_){}};
+window.__ddData=()=>({WDEF,MODS,PAIRS,DUOS,PAS,WBASE,CL,SPECN,ROT:[...rotElig()]});
 window.__dd={get rot(){return [...rotElig()]},rotState:c=>rotState(c),get edge(){return edge},get TA(){return TA},get AC(){return AC},get spx(){return spx},sim,get chars(){return chars},get en(){return en},get mode(){return mode},get code(){return roomCode},get dome(){return dome},get combo(){return combo},get T(){return T},set T(v){T=v},get level(){return level},get xp(){return xp},set xp(v){xp=v},get LV(){return LV},get end(){return endState},get gems(){return gems},get kills(){return kills},applyCard,startLevel,spawnAt,get boss(){return boss},get alt(){return alt},set spec(v){SPEC=v},set altT(v){altT=v},set debT(v){debT=v},set chestT(v){chestT=v}};
 })();

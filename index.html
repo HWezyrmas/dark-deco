@@ -607,7 +607,7 @@ body:not(.playing) #tut{display:none}
 #tut .ttb{height:3px;background:rgba(255,255,255,.12);border-radius:2px;overflow:hidden}#tut .ttb i{display:block;height:100%;background:linear-gradient(90deg,#ffd27a,#fff3c4);transition:width .15s}
 #tut .ttd{display:inline-block;margin-top:7px;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:#7fd7ff;animation:nxtp .6s ease-in-out infinite alternate}
 #tut .ttnext{all:unset;cursor:pointer;margin-top:7px;float:right;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#2a1405;background:linear-gradient(180deg,#ffe3a0,#d6a84e);padding:5px 12px;border-radius:12px}
-.tutHi{position:relative;animation:tuthi 1s ease-in-out infinite!important;z-index:25}
+.tutHi{animation:tuthi 1s ease-in-out infinite!important;z-index:25}
 @keyframes tuthi{0%,100%{filter:drop-shadow(0 0 0 rgba(255,220,140,0))}50%{filter:drop-shadow(0 0 10px #ffd27a) drop-shadow(0 0 4px #fff)}}
 .tb.tutHi{outline:3px solid #ffd27a;outline-offset:4px;border-radius:50%}
 .tutopt{display:flex;gap:8px;align-items:center;font-size:12px;color:#d8cfe8;cursor:pointer}.tutopt input{accent-color:#d6a84e;width:16px;height:16px}
@@ -731,7 +731,7 @@ body:not(.playing) #tut{display:none}
         <div class="heads">
           <button class="hl" data-go="1"><small>Feature</small>Fury in Two Axes<span>Meet the Warden, the man who walks into the swarm</span></button>
           <button class="hl" data-go="3"><small>Profile</small>The Girl Who Carries the Light<span>She heals, he hits. Why it works</span></button>
-          <button class="hl" data-go="2"><small>Special issue</small>44 Abilities, Every Evolution<span>The complete arsenal, tap by tap</span></button>
+          <button class="hl" data-go="2"><small>Special issue</small>Every Ability, Every Spec<span>The complete arsenal, tap by tap</span></button>
           <button class="hl" data-go="5"><small>Classifieds</small>Perfect Pairings &amp; Passives<span>Duos, passives and what they unlock</span></button>
         </div>
         <p class="swipe">Swipe or tap › to turn the page</p>
@@ -744,11 +744,12 @@ body:not(.playing) #tut{display:none}
         <div class="byl">By our rooftop correspondent · 140 health</div>
         <figure class="hero"><button class="stage" aria-label="Make Warden attack"><span class="rays"></span><span class="spr" data-cls="warden"></span><span class="pad"></span><span class="tapme">tap me</span></button><figcaption>The Warden, mid-swing. Tap him.</figcaption></figure>
         <div class="body"><p class="drop">Nobody on the rooftops asks the Warden to slow down. He fights up close with two axes, and every blow feeds a red bar of Rage under his health. When the swarm closes in, that Rage pours out as Whirlwind; when it fills to the brim, he becomes a storm.</p>
-          <p>His job is simple: stand between the dark and the Lamplighter. He has the health for it, the Dome to shelter them both, and a leap that lands like a hammer.</p></div>
+          <p>His job is simple: stand between the dark and the Lamplighter. He has the health for it, and two ways to fight: the Berserker, all axes and Rage, or the Executioner, one greataxe that finishes anything weak.</p></div>
         <blockquote>“She keeps me standing. I keep the dark off her.”</blockquote>
         <aside class="side"><h4>By the numbers</h4><div class="meters"><div class="mt"><span>Damage</span><i style="--v:5"><u></u><u></u><u></u><u></u><u></u></i></div><div class="mt"><span>Toughness</span><i style="--v:5"><u></u><u></u><u></u><u></u><u></u></i></div><div class="mt"><span>Support</span><i style="--v:1"><u></u><u></u><u></u><u></u><u></u></i></div><div class="mt"><span>Speed</span><i style="--v:3"><u></u><u></u><u></u><u></u><u></u></i></div></div></aside>
-        <h3 class="sub">How he fights</h3><ol class="steps"><li><img src="icons/cleave.png" alt=""><div><span class="kk">Automatic</span><b>Fury Strikes</b><p>A three-hit axe combo on anything close. Every hit builds <em class="r">Rage</em>, the red bar under your health.</p></div></li><li><img src="ui/sym_rage.png" alt=""><div><span class="kk">When surrounded</span><b>Whirlwind</b><p>Spends Rage by itself when enemies close in, then you swing faster for a few seconds.</p></div></li><li><img src="ui/sym_storm.png" alt=""><div><span class="kk">Full Rage</span><b>Bladestorm</b><p>The small button turns into <em class="r">STORM</em>: a long spin nothing can hurt you in.</p></div></li><li><img src="ui/sym_leap.png" alt=""><div><span class="kk">Small button · Q</span><b>Heroic Leap</b><p>Jump the way you are moving and slam down on a crowd. Untouchable in the air.</p></div></li><li><img src="ui/sym_dome.png" alt=""><div><span class="kk">Big button · E</span><b>The Dome</b><p>A shield you can both stand in. It pushes enemies out, stops bullets and cuts the damage you take.</p></div></li></ol>
-        <p class="tip"><b>Editor's pick:</b> Guillotine, Titan's Grip and Blade Vortex clear crowds. Iron Skin, War Banner and Armor keep him standing.</p>
+        <h3 class="sub">How he fights · Berserker</h3><ol class="steps"><li><img src="icons/cleave.png" alt=""><div><span class="kk">Automatic</span><b>Fury Strikes</b><p>A fast three-hit axe combo on anything close. Every hit builds <em class="r">Rage</em>.</p></div></li><li><img src="ui/sym_rage.png" alt=""><div><span class="kk">When surrounded</span><b>Whirlwind</b><p>Spends Rage to spin through the crowd, then he swings faster for a few seconds.</p></div></li><li><img src="ui/sym_leap.png" alt=""><div><span class="kk">Small button · Q</span><b>Heroic Leap</b><p>Jump the way you are moving and slam down on a crowd. At full Rage it becomes <em class="r">Bladestorm</em>.</p></div></li><li><img src="ui/sym_dome.png" alt=""><div><span class="kk">Big button · E</span><b>The Dome</b><p>A shield you can both stand in. It pushes enemies out, stops bullets and cuts the damage you take.</p></div></li></ol>
+        <h3 class="sub">How he fights · Executioner</h3><ol class="steps"><li><img src="icons/reaper.png" alt=""><div><span class="kk">Automatic</span><b>Headsman's Axe</b><p>One slow, crushing greataxe swing at whatever is in front of you. Anything under 22% health is Executed.</p></div></li><li><img src="ui/sym_verdict.png" alt=""><div><span class="kk">Small button · Q</span><b>Verdict</b><p>Plant your feet and cleave a wide arc that Executes under 35%. At full Rage it becomes the <em class="r">Grand Verdict</em>, all the way around you.</p></div></li><li><img src="ui/sym_stride.png" alt=""><div><span class="kk">Big button · E</span><b>Reaper's Stride</b><p>Dash through enemies, untouchable. Every Execute resets it. No Dome in this spec.</p></div></li></ol>
+        <p class="tip"><b>Editor's pick:</b> Berserker: Blade Vortex, Thunderlord and Blood Moon. Executioner: Guillotine, Last Rites and Death Knell.</p>
       </section>
 
       <section class="pg paper" style="--gc:#1ab3c8">
@@ -765,11 +766,13 @@ body:not(.playing) #tut{display:none}
         <div class="byl">By our society columnist · 90 health</div>
         <figure class="hero"><button class="stage" aria-label="Make Lamplighter attack"><span class="rays"></span><span class="spr" data-cls="lamp"></span><span class="pad"></span><span class="tapme">tap me</span></button><figcaption>The Lamplighter, lantern raised. Tap her.</figcaption></figure>
         <div class="body"><p class="drop">She will never out-fight him, and she is not trying to. The Lamplighter fires bolts of lantern light that heal the Warden as they pass through him, leaves pools of light wherever she steps, and keeps a Solar Lance ready for the moment he staggers.</p>
-          <p>Stay behind him, keep the light on him, and let him do the rest. Fire the Lance through the Dome and it splits into a rainbow.</p></div>
+          <p>Stay behind him, Ward him from the big hits, and mark the crowd for him to blow up. Healer keeps him alive; Firebrand sets everything on fire.</p></div>
         <blockquote>“I don't need to win the fight. I need him to.”</blockquote>
         <aside class="side"><h4>By the numbers</h4><div class="meters"><div class="mt"><span>Damage</span><i style="--v:2"><u></u><u></u><u></u><u></u><u></u></i></div><div class="mt"><span>Toughness</span><i style="--v:2"><u></u><u></u><u></u><u></u><u></u></i></div><div class="mt"><span>Support</span><i style="--v:5"><u></u><u></u><u></u><u></u><u></u></i></div><div class="mt"><span>Speed</span><i style="--v:3"><u></u><u></u><u></u><u></u><u></u></i></div></div></aside>
-        <h3 class="sub">How she fights</h3><ol class="steps"><li><img src="icons/beam.png" alt=""><div><span class="kk">Automatic</span><b>Light Bolts</b><p>Shoots the nearest enemy, faster the longer she fires. Bolts that fly through the Warden heal him.</p></div></li><li><img src="ui/sym_step.png" alt=""><div><span class="kk">Small button · Q</span><b>Step</b><p>A quick blink the way she is moving. It leaves a pool of light that heals whoever stands in it.</p></div></li><li><img src="ui/sym_lance.png" alt=""><div><span class="kk">Big button · E</span><b>Solar Lance</b><p>A huge beam. Through the Warden it heals 35% and powers him up; through the Dome it splits into a rainbow.</p></div></li></ol>
-        <p class="tip"><b>Editor's pick:</b> Glow Garden, Sun Kite, Halo Pulse and Aurora keep you both alive. Constellation and Rose Window thin the swarm.</p>
+        <h3 class="sub">How she fights · both specs</h3><ol class="steps"><li><img src="ui/sym_dome.png" alt=""><div><span class="kk">Shield button · R</span><b>Guardian Ward</b><p>A shield over him. A hit that lands while it is up is blocked and blasted back.</p></div></li><li><img src="ui/sym_lance.png" alt=""><div><span class="kk">Stand still</span><b>Charged shot</b><p>Stand still to charge your lantern; a full charge fires a big shot. Moving fires quick small ones.</p></div></li><li><img src="ui/sym_bond.png" alt=""><div><span class="kk">Full Spark · Q</span><b>Ultimate</b><p>Fill Spark with close calls, Wards and heals. Then the small button becomes Sunburst (Healer) or Meteor (Firebrand).</p></div></li></ol>
+        <h3 class="sub">Healer</h3><ol class="steps"><li><img src="icons/beam.png" alt=""><div><span class="kk">Automatic</span><b>Light Bolts</b><p>Bolts that fly through him heal him.</p></div></li><li><img src="ui/sym_step.png" alt=""><div><span class="kk">Small button · Q</span><b>Step</b><p>Blink the way you are moving, leaving a pool of healing light.</p></div></li><li><img src="ui/sym_lance.png" alt=""><div><span class="kk">Big button · E</span><b>Solar Lance</b><p>Hold and drag to aim. Through him it heals 35% and powers him up.</p></div></li></ol>
+        <h3 class="sub">Firebrand</h3><ol class="steps"><li><img src="icons/cinder.png" alt=""><div><span class="kk">Automatic</span><b>Cinders</b><p>Burning splashes that set enemies alight.</p></div></li><li><img src="ui/sym_flashfire.png" alt=""><div><span class="kk">Small button · Q</span><b>Flashfire</b><p>Blink through fire and leave a line of it behind you.</p></div></li><li><img src="ui/sym_kindle.png" alt=""><div><span class="kk">Big button · E</span><b>Kindle</b><p>Sets his weapons ablaze for 8 seconds: his hits burn and do 30% more. Heals are 40% weaker in this spec.</p></div></li></ol>
+        <p class="tip"><b>Editor's pick:</b> Healer: Glow Garden, Sun Kite and Aurora. Firebrand: Firewall, Pyre and Phoenix.</p>
       </section>
 
       <section class="pg paper" style="--gc:#d48a12">
@@ -810,7 +813,7 @@ body:not(.playing) #tut{display:none}
       <section class="pg paper" style="--gc:#c2185b">
         <span class="kick">Advice column</span>
         <h2 class="hed">Ask the Lamplighter</h2>
-        <div class="qa"><p class="q">“My Warden keeps falling over. What am I doing wrong?”</p><p class="a">You are probably in front of him. Stay behind, keep your bolts flying through him, and save the Lance for when his bar turns red. If he does go down, stand next to him to bring him back before the 20 seconds run out.</p></div>
+        <div class="qa"><p class="q">“My Warden keeps falling over. What am I doing wrong?”</p><p class="a">You are probably in front of him. Stay behind him, and throw a Ward over him whenever red appears under his feet. If he does go down, stand next to him to bring him back before the 20 seconds run out.</p></div>
         <div class="qa"><p class="q">“When should I pick a passive instead of a new ability?”</p><p class="a">Once you have four or five abilities. Every ability's level 5 evolution needs a specific passive, and each entry in the Arsenal tells you which one.</p></div>
         <div class="qa"><p class="q">“What's in the gold chests?”</p><p class="a">Gatekeepers drop them. Grab one for an evolution, a duo or a handful of free upgrades.</p></div>
         <div class="qa"><p class="q">“Too many numbers on screen!”</p><p class="a">Only big hits show by default. You can switch all of them on in the Learned skills screen.</p></div>
@@ -843,8 +846,8 @@ body:not(.playing) #tut{display:none}
 </div>
 
 <script src="peerjs.min.js"></script>
-<script src="icons.js?v=1793537202"></script>
-<script src="title.js?v=1793537202"></script>
-<script src="game.js?v=1793537202"></script>
+<script src="icons.js?v=1793539105"></script>
+<script src="title.js?v=1793539105"></script>
+<script src="game.js?v=1793539105"></script>
 </body>
 </html>
