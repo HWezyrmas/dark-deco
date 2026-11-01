@@ -50,7 +50,7 @@ function pt(e){const r=stage.getBoundingClientRect();return[(e.clientX-r.left)/r
 addEventListener('pointermove',e=>{if(!run)return;const [x,y]=pt(e);parT.x=Math.max(-1,Math.min(1,x));parT.y=Math.max(-1,Math.min(1,y))},{passive:true});
 function tilt(e){if(!run||e.gamma==null)return;parT.x=Math.max(-1,Math.min(1,e.gamma/25));parT.y=Math.max(-1,Math.min(1,(e.beta-45)/25))}
 function burst(x,y,c){for(let i=0;i<26;i++){const a=Math.random()*7,s=40+Math.random()*120;sparks.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-30,g:140,l:.5+Math.random()*.6,m:0,r:1.3+Math.random()*1.4,c})}}
-root.addEventListener('pointerdown',e=>{const r=stage.getBoundingClientRect();burst(e.clientX-r.left,e.clientY-r.top,Math.random()<.5?'255,200,120':'140,230,255');
+root.addEventListener('pointerdown',e=>{const r=stage.getBoundingClientRect();if(tapped&&window.__ddTitleSfx)window.__ddTitleSfx('spark');burst(e.clientX-r.left,e.clientY-r.top,Math.random()<.5?'255,200,120':'140,230,255');
   if(!tapped){tapped=true;document.body.classList.add('titled');if(window.__ddTitleSfx)window.__ddTitleSfx('open');
     try{if(window.DeviceOrientationEvent&&DeviceOrientationEvent.requestPermission)DeviceOrientationEvent.requestPermission().then(s=>{if(s==='granted')addEventListener('deviceorientation',tilt)}).catch(()=>{});else addEventListener('deviceorientation',tilt)}catch(_){}}});
 // skip straight to the menu state when coming back from a game
