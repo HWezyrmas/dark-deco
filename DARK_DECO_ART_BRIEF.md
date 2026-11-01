@@ -526,7 +526,7 @@ A pixel art animation sprite sheet of ONE character, matching the attached refer
 
 ## 14. Spec art: Executioner and Firebrand (sheets K and L, plus PixelLab)
 
-The Warden now has a second spec, the **Executioner** (one huge greataxe, crimson and bone-white accents), and the Lamplighter has the **Firebrand** (fire magic, orange and ember accents). They currently borrow other abilities' icons. Same rules as before: image generator only, one sheet per message, show Hamza, no commits.
+The Warden now has a second spec, the **Executioner** (one huge greataxe, crimson and bone-white accents), and the Lamplighter has the **Firebrand** (fire magic, orange and ember accents). **Status: sheets K and L and the four button symbols are done and live.** Only the PixelLab hero sprites remain. Same rules as before: image generator only, one sheet per message, show Hamza, no commits.
 
 **Sheet K: Executioner icons** (2 rows of 3, black background like sheets A and B)
 ```
