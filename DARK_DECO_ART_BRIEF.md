@@ -521,3 +521,28 @@ A pixel art animation sprite sheet of ONE character, matching the attached refer
 ```
 A pixel art animation sprite sheet of ONE character, matching the attached reference image exactly: same design, colours, proportions, outline and painterly pixel-art style. 2 rows of 4 frames on a solid flat pure magenta #FF00FF background, every frame the same size, the character the same size in every frame, facing right in a 3/4 top-down game view, feet on the same baseline in every frame, evenly spaced with clear gaps between frames. No ground, no shadow, no text, no frames or borders, no magenta inside the character. Row 1: a 4-frame slow, heavy walk cycle, furnace glow pulsing, chimneys puffing. Row 2: a 4-frame double-fist slam: raise both fists, peak with the furnace blazing, smash down, recover.
 ```
+
+---
+
+## 14. Spec art: Executioner and Firebrand (sheets K and L, plus PixelLab)
+
+The Warden now has a second spec, the **Executioner** (one huge greataxe, crimson and bone-white accents), and the Lamplighter has the **Firebrand** (fire magic, orange and ember accents). They currently borrow other abilities' icons. Same rules as before: image generator only, one sheet per message, show Hamza, no commits.
+
+**Sheet K: Executioner icons** (2 rows of 3, black background like sheets A and B)
+```
+A set of 6 square game ability icons in one image, in 2 rows of 3, each icon on its own dark navy rounded tile with clear space between tiles, on a plain flat dark background. Painterly pixel art with neon glow, dark art deco fantasy, bold readable silhouettes that read at 48 pixels, matching a premium mobile roguelite. No text, no letters, no numbers. 1) a giant executioner's greataxe mid-swing with a crimson motion arc; 2) a crushing downward greataxe strike splitting the ground in a wide crimson arc (Verdict); 3) the same strike as a full blazing white circle around a figure (Grand Verdict); 4) a red crosshair sigil of judgement hovering over a skull (Condemn); 5) a gold hourglass with a crimson axe blade (Swift Judgement); 6) three red crosshair sigils marking shadows (Doom Mark).
+```
+
+**Sheet L: Firebrand icons** (2 rows of 3, black background)
+```
+A set of 6 square game ability icons in one image, in 2 rows of 3, each icon on its own dark navy rounded tile with clear space between tiles, on a plain flat dark background. Painterly pixel art with neon glow, dark art deco fantasy, bold readable silhouettes that read at 48 pixels, matching a premium mobile roguelite. No text, no letters, no numbers. 1) three burning cinders arcing through the air and splashing into flame (Cinders); 2) a pool of fire spreading on the ground under falling cinders (Inferno); 3) a glowing girl's silhouette blinking forward and leaving a line of fire behind (Flashfire); 4) a lantern pouring a ribbon of flame onto a raised axe, setting it ablaze (Kindle); 5) a long burning trail that keeps blazing (Wildfire); 6) a warm hearth flame cupped in two hands with a small heart (Hearth).
+```
+
+**Skill button symbols** (one image, black background, 4 symbols in a row)
+```
+Four separate simple glowing game button symbols in a row, each centred with clear space between them, on a pure solid black background. Painterly pixel art, bold single-colour neon glyphs with a soft glow, readable at 32 pixels, art deco style. No text. 1) a downward greataxe with a crimson arc (Verdict); 2) a red crosshair sigil (Condemn); 3) a running flame streak (Flashfire, orange); 4) a lantern flame jumping to a blade (Kindle, orange).
+```
+
+**Hero animations (PixelLab, not ChatGPT).** In PixelLab, start from the existing Warden and Lamplighter sprites so the faces and bodies match:
+- **Executioner Warden:** the same Warden carrying one huge two-handed greataxe instead of two axes, darker armour with crimson trim. Animations: 8-direction walk, a slow overhead greataxe chop, and a planted wide sweeping swing (Verdict).
+- **Firebrand Lamplighter:** the same Lamplighter with an ember-orange lantern, flame-tipped hair and a scorched-hem dress. Animations: 8-direction walk, a lob throw (Cinders), and a two-handed cast with a burst of fire (Kindle).

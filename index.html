@@ -124,6 +124,13 @@ input#code{flex:1;min-width:0;font:400 22px var(--display);letter-spacing:.4em;t
 .cls[data-c="lamp"] .role,.cls[data-c="lamp"] b{color:var(--lamp)}
 .cls[aria-pressed="true"]{border-color:var(--moon);background:rgba(255,255,255,.05)}
 .cls.mate{box-shadow:inset 0 0 0 1px var(--neon)}
+.specs{display:flex;flex-direction:column;gap:8px;width:100%}
+.specrow{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:stretch}
+.specrow .sl{grid-column:1/-1;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim,#9a93b8)}
+.spec{background:rgba(255,255,255,.03);border:1px solid rgba(214,168,78,.35);color:var(--moon);padding:8px 10px;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:2px;font-family:var(--ui);border-radius:3px;min-width:0}
+.spec b{font-size:13px;letter-spacing:.04em}.spec small{font-size:10.5px;opacity:.75;line-height:1.3}
+.spec[aria-pressed="true"]{border-color:#f2cf7a;background:rgba(242,207,122,.12);box-shadow:0 0 12px rgba(242,207,122,.25) inset}
+.specrow.locked{opacity:.45;pointer-events:none}
 .picks{display:flex;justify-content:center;gap:18px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;flex-wrap:wrap}
 .picks .m{color:var(--neon)}
 .keys{display:grid;grid-template-columns:auto auto;gap:5px 14px;font-size:12px;text-align:left;color:var(--fog)}
@@ -533,9 +540,13 @@ em.r{font-style:normal;font-weight:700;color:#d81b50}
       <button class="cls" data-c="warden" aria-pressed="false"><span class="role">Protector · 140 health</span><b>Warden</b><span>A fury of blades: fast combos build Rage, Whirlwind spends it, and at full Rage he unleashes Bladestorm. Heroic Leap crashes into crowds. Dome shields you both and blasts the swarm back.</span></button>
       <button class="cls" data-c="lamp" aria-pressed="false"><span class="role">Healer · 90 health</span><b>Lamplighter</b><span>Shoots homing light bolts that heal the Warden when they fly through him. Step blinks and leaves a healing pool; Solar Lance heals and powers him up.</span></button>
     </div>
+    <div class="specs">
+      <div class="specrow" data-c="warden"><span class="sl">Warden spec</span><button class="spec" data-s="berserk" aria-pressed="true"><b>Berserker</b><small>Two axes, Rage, Leap, Dome</small></button><button class="spec" data-s="exec" aria-pressed="false"><b>Executioner</b><small>Greataxe, Verdict, Condemn</small></button></div>
+      <div class="specrow" data-c="lamp"><span class="sl">Lamplighter spec</span><button class="spec" data-s="heal" aria-pressed="true"><b>Healer</b><small>Light bolts, Step, Lance</small></button><button class="spec" data-s="fire" aria-pressed="false"><b>Firebrand</b><small>Cinders, Flashfire, Kindle</small></button></div>
+    </div>
     <div class="picks"><span id="pickMe">You: ·</span><span class="m" id="pickMate"></span></div>
-    <div class="keys kb"><b>WASD</b><span>Move</span><b>Q or Space</b><span>Leap (Storm at full Rage) / Step</span><b>E</b><span>Dome / Lance</span></div>
-    <div class="keys tch"><b>Left thumb</b><span>Move</span><b>Small button</b><span>Leap (Storm at full Rage) / Step</span><b>Big button</b><span>Dome / Lance</span></div>
+    <div class="keys kb"><b>WASD</b><span>Move</span><b>Q or Space</b><span>Leap · Verdict · Step · Flashfire</span><b>E</b><span>Dome · Condemn · Lance · Kindle</span></div>
+    <div class="keys tch"><b>Left thumb</b><span>Move</span><b>Small button</b><span>Leap · Verdict · Step · Flashfire</span><b>Big button</b><span>Dome · Condemn · Lance · Kindle</span></div>
     <p class="small">Stay close and your Bond fills: you heal each other and hit harder. Apart, it fades; reunite to rekindle it. Fire the Lance into the Dome and it splits into six beams.</p>
     <div class="btns"><button class="btn" id="bStart" disabled>Start</button><button class="btn ghost" id="bLeave">Leave</button></div>
   </div>
@@ -585,7 +596,7 @@ em.r{font-style:normal;font-weight:700;color:#d81b50}
       <section class="pg paper" style="--gc:#1ab3c8">
         <span class="kick">Special issue · Part one</span>
         <h2 class="hed">The Warden's Arsenal</h2>
-        <p class="dek">Twenty-two abilities he can learn on the way. Tap any entry to see how it grows. <span class="cnt" data-cls="warden"></span></p>
+        <p class="dek">Twenty-three abilities he can learn on the way, depending on his spec. Tap any entry to see how it grows. <span class="cnt" data-cls="warden"></span></p>
         <div class="cat" data-cls="warden"></div>
       </section>
 
@@ -606,7 +617,7 @@ em.r{font-style:normal;font-weight:700;color:#d81b50}
       <section class="pg paper" style="--gc:#d48a12">
         <span class="kick">Special issue · Part two</span>
         <h2 class="hed">The Lamplighter's Arsenal</h2>
-        <p class="dek">Twenty-two ways to light up the night. Tap any entry to see how it grows. <span class="cnt" data-cls="lamp"></span></p>
+        <p class="dek">Twenty-three ways to light up the night, depending on her spec. Tap any entry to see how it grows. <span class="cnt" data-cls="lamp"></span></p>
         <div class="cat" data-cls="lamp"></div>
       </section>
 
@@ -621,6 +632,13 @@ em.r{font-style:normal;font-weight:700;color:#d81b50}
         <div class="ads"></div>
       </section>
 
+      <section class="pg paper" style="--gc:#b0303f">
+        <span class="kick">Two paths each</span>
+        <h2 class="hed">Pick your spec</h2>
+        <div class="qa"><p class="q">Warden · Executioner</p><p class="a">Trades the axe flurry for one huge greataxe. Each swing is slow but crushing, only hits what is in front of you, and Executes anything under 22% health. <b>Verdict</b> (Q): plant your feet and cleave a wide arc that Executes under 35%. At full Rage it becomes the Grand Verdict, all the way around you. <b>Condemn</b> (E): mark up to six enemies ahead. Marked enemies take 60% more damage, and every marked kill heals you both. No Dome, so she has to look after herself.</p></div>
+        <div class="qa"><p class="q">Lamplighter · Firebrand</p><p class="a">Swaps light for fire. <b>Cinders</b> lob burning splashes that set enemies alight. <b>Flashfire</b> (Q) blinks and leaves a line of fire behind her. <b>Kindle</b> (E) sets him ablaze for 8 seconds: his hits burn and do 30% more damage. If he is too far away it bursts around her instead. Her heals are 40% weaker, but burning enemies that die near him heal him a little.</p></div>
+        <div class="qa"><p class="q">Choose in the lobby.</p><p class="a">Under the two heroes, pick a spec for your own hero. In practice mode you choose the bot's spec too.</p></div>
+      </section>
       <section class="pg paper" style="--gc:#e0402a">
         <span class="kick">Breaking news</span>
         <h2 class="hed">The roofs fight back</h2>
@@ -665,7 +683,7 @@ em.r{font-style:normal;font-weight:700;color:#d81b50}
 </div>
 
 <script src="peerjs.min.js"></script>
-<script src="icons.js?v=1793527351"></script>
-<script src="game.js?v=1793527351"></script>
+<script src="icons.js?v=1793528560"></script>
+<script src="game.js?v=1793528560"></script>
 </body>
 </html>
