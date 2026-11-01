@@ -97,6 +97,10 @@ for(const ev of ['touchend','click','keydown'])document.addEventListener(ev,()=>
 document.addEventListener('pointerdown',e=>{const b=e.target.closest('.btn,.spec,.cls,.hb,.pick,.ce,.at,#mag button');if(!b)return;audioInit();taUi(b.id==='bHost'||b.id==='bStart'?'main':'press')},true);
 document.addEventListener('pointerover',e=>{if(e.pointerType!=='mouse')return;const b=e.target.closest('.btn,.spec,.cls,.hb');if(b&&!b.contains(e.relatedTarget))taUi('hover')},true);
 const SFX={
+  cmb(s,k){if(!ok('cmb'+k,60))return;const lo=k===1?.6:k===3?.8:1;
+    if(k<2){if(s===1)nz(.12,900*lo,3800*lo,1.4,.26);else if(s===2)nz(.18,500*lo,2600*lo,1,.32);else{nz(.26,300*lo,1600*lo,.8,.38);tn(130*lo,48,.3,'sine',.55,.06)}}
+    else if(k===2){const f=[1320,1568,1976][s-1];tn(f,f*1.01,.14,'triangle',.07);if(s===3){tn(f*1.5,f*1.5,.22,'sine',.05,.05);tn(2640,2640,.3,'sine',.03,.1)}}
+    else{nz(.1+s*.05,700,2400,2,.12+s*.05,'bandpass');if(s===3)tn(95,40,.3,'sine',.35,.08)}},
   swoosh(h){if(!ok('sw',40))return;nz(h?.28:.17,h?300:700,h?2200:3200,.9,h?.5:.32)},
   hit(h){if(!ok('hit',28))return;const p=1+(rnd()-.5)*.3;tn(170*p,55,h?.2:.11,'sine',h?.9:.6);nz(.07,2600*p,700,1.2,h?.5:.3,'lowpass')},
   crit(){if(!ok('crit',60))return;tn(1500,1500,.08,'square',.1);tn(2250,2250,.12,'triangle',.08,.02)},
@@ -306,6 +310,7 @@ const FXF={
   star(x,y,col){for(let i=0;i<14;i++){const a=i/14*TAU,s=70+rnd()*30;parts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s*.6,life:.35,max:.35,col,em:true,streak:1})}},
   num(x,y,txt,col,big){num(x,y,txt,col,big)},
   sfx(n,a){SFX[n]&&SFX[n](a)},
+  cmb(ci,s){const c=chars.find(q=>q.idx===ci);if(!c)return;c.cmbS=s;c.cmbT=tAll;SFX.cmb(s,c.cls==='lamp'?(c.spec==='fire'?3:2):(c.spec==='exec'?1:0))},
   big(fl,zm,hs,ky){flashA=Math.max(flashA,fl);zoom=Math.max(zoom,Math.min(zm,1.04));hitstop=Math.max(hitstop,Math.min(hs,.06));kick(0,1,ky*.6)},
   hs(t){hitstop=Math.max(hitstop,Math.min(t,.04))},
   shake(dx,dy,m,who){if(who===undefined||who===null||who===ME)kick(dx,dy,m)},
@@ -420,10 +425,10 @@ function enterLobby(){go('lobby');$('lobEyebrow').textContent=isHost?(solo?'Prac
   if(!isHost)lobStatus('Connected. The host starts the game','ok');if(solo)lobStatus('A bot plays the other class','ok')}
 // ===== hero select rendering =====
 const HSEL={warden:{role:'The protector',name:'Warden',art:'lobby/warden.webp',face:'portraits/warden.webp?v=3'},lamp:{role:'The light',name:'Lamplighter',art:'lobby/lamp.webp',face:'portraits/lamp.webp?v=3'}};
-const SPUI={berserk:{c:'#4fb6e0',tag:'Two axes. No brakes.',st:[5,1,1,4],kit:[['AUTO','icons/cleave.png','Fury Strikes','A fast three-hit axe combo on anything close. Every hit builds Rage.'],['Q','ui/sym_leap.png','Heroic Leap','Leap where you move and slam down on a crowd.'],['E','ui/sym_stride.png','Reckless Charge','Dash through the crowd, untouchable. Every kill resets it. Hits heal him, but he takes 20% more damage.'],['RAGE','ui/sym_storm.png','Bladestorm','At full Rage, Leap becomes a long spin nothing can hurt you in.']]},
- exec:{c:'#e0475e',tag:'One axe. Holds the line.',st:[4,5,2,2],kit:[['AUTO','icons/reaper.png',"Headsman's Axe",'One slow, crushing swing ahead of you. Executes anything under 22% health.'],['Q','ui/sym_verdict.png','Verdict','Plant your feet and cleave a wide arc. Executes under 35%.'],['E','ui/sym_dome.png','The Dome','A shield for you both. +40 health, and he takes 25% less damage while standing still.'],['RAGE','icons/grandverdict.png','Grand Verdict','At full Rage, Verdict hits all around you and Executes under 50%.']]},
- heal:{c:'#e8b84a',tag:'Keep his light burning.',st:[2,1,5,3],kit:[['AUTO','icons/beam.png','Light Bolts','Bolts that heal him as they fly through him. Stand still to charge a piercing beam.'],['Q','ui/sym_step.png','Step','Blink and leave healing light. Full Spark turns it into Sunburst.'],['E','ui/sym_lance.png','Solar Lance','Hold and aim. Through him it heals and powers him up.'],['R','ui/sym_dome.png','Guardian Ward','Shield him. A hit on the shield is blocked and blasted back.']]},
- fire:{c:'#f07a2a',tag:'Set the night on fire.',st:[3,1,3,4],kit:[['AUTO','icons/cinder.png','Cinders','Burning splashes. Stand still to charge a cinder bomb.'],['Q','ui/sym_flashfire.png','Flashfire','Blink through fire. Full Spark turns it into Meteor.'],['E','ui/sym_kindle.png','Kindle','Set his weapons ablaze: his hits burn and do 30% more.'],['R','ui/sym_dome.png','Guardian Ward','Shield him. A hit on the shield is blocked and blasted back.']]}};
+const SPUI={berserk:{c:'#4fb6e0',tag:'Two axes. No brakes.',st:[5,1,1,4],kit:[['AUTO','icons/cleave.png','Fury Strikes','A 3-hit cycle: quick forehand, lunging backhand, then an overhead slam that heals him. Every hit builds Rage.'],['Q','ui/sym_leap.png','Heroic Leap','Leap where you move and slam down on a crowd.'],['E','ui/sym_stride.png','Reckless Charge','Dash through the crowd, untouchable. Every kill resets it. Hits heal him, but he takes 20% more damage.'],['RAGE','ui/sym_storm.png','Bladestorm','At full Rage, Leap becomes a long spin nothing can hurt you in.']]},
+ exec:{c:'#e0475e',tag:'One axe. Holds the line.',st:[4,5,2,2],kit:[['AUTO','icons/reaper.png',"Headsman's Axe",'A 3-hit cycle: a long narrow chop, a wide sweep, then a heavy drop that crushes a spot ahead. Executes the weak.'],['Q','ui/sym_verdict.png','Verdict','Plant your feet and cleave a wide arc. Executes under 35%.'],['E','ui/sym_dome.png','The Dome','A shield for you both. +40 health, and he takes 25% less damage while standing still.'],['RAGE','icons/grandverdict.png','Grand Verdict','At full Rage, Verdict hits all around you and Executes under 50%.']]},
+ heal:{c:'#e8b84a',tag:'Keep his light burning.',st:[2,1,5,3],kit:[['AUTO','icons/beam.png','Light Bolts','A 3-shot cycle: one fast bolt, twin bolts, then a flare of five piercing bolts. Bolts that pass through him heal him.'],['Q','ui/sym_step.png','Step','Blink and leave healing light. Full Spark turns it into Sunburst.'],['E','ui/sym_lance.png','Solar Lance','Hold and aim. Through him it heals and powers him up.'],['R','ui/sym_dome.png','Guardian Ward','Shield him. A hit on the shield is blocked and blasted back.']]},
+ fire:{c:'#f07a2a',tag:'Set the night on fire.',st:[3,1,3,4],kit:[['AUTO','icons/cinder.png','Cinders','A 3-shot cycle: one cinder, two flanking cinders, then a firebomb that leaves the ground burning.'],['Q','ui/sym_flashfire.png','Flashfire','Blink through fire. Full Spark turns it into Meteor.'],['E','ui/sym_kindle.png','Kindle','Set his weapons ablaze: his hits burn and do 30% more.'],['R','ui/sym_dome.png','Guardian Ward','Shield him. A hit on the shield is blocked and blasted back.']]}};
 let lobKey='',lobKt=0;
 function lobbyRender(){document.body.classList.toggle('solo',!!solo);const L=$('sLobby');if(!L||!$('lStage'))return;const H=HSEL[myCls],sp=SPEC[myCls],U=SPUI[sp],key=myCls+sp,other=myCls==='warden'?'lamp':'warden';
   L.style.setProperty('--sc',U.c);
@@ -673,8 +678,8 @@ function detonate(e,w){if(STORY.on)STORY.dets++;const L=chars.find(q=>q.cls==='l
   addSpark(L,3)}
 function startVerdict(c,grand){if(c.cast)return;if(grand)c.rage=0;c.cast={k:'verdict',t:0,dur:.42,grand,a:Math.atan2(c.amy??0,c.amx??c.f)};emit('sfx','charge');if(grand)emit('msgP',c.idx,'GRAND VERDICT','GRAND VERDICT')}
 function execW(c){return c.weapons.find(w=>w.id==='reaper')||{lv:1}}
-function reapHit(c,w,ad,R,dmg,thr,full,col){let n=0,ex=false;emit('slash',c.x+Math.cos(ad)*6,c.y-12,ad,R,1,full?TAU:0,col);
-  for(const e of en){if(!alive(e))continue;const dx=e.x-c.x,dy=(e.y-c.y)*1.4,d=len(dx,dy)||1;if(d>R+rad(e)*.6)continue;if(!full&&Math.cos(Math.atan2(dy,dx)-ad)<.2&&d>16)continue;
+function reapHit(c,w,ad,R,dmg,thr,full,col,cone=.2,X=c.x,Y=c.y,skind=1){let n=0,ex=false;if(skind>=0)emit('slash',X+Math.cos(ad)*6,Y-12,ad,R,skind,full?TAU:0,col);
+  for(const e of en){if(!alive(e))continue;const dx=e.x-X,dy=(e.y-Y)*1.4,d=len(dx,dy)||1;if(d>R+rad(e)*.6)continue;if(!full&&Math.cos(Math.atan2(dy,dx)-ad)<cone&&d>16)continue;
     const exe=e.kind!==5&&e.hp<e.max*thr;if(exe)ex=true;if(hitE(e,dmg*(exe?3:1),c,{w:'reaper',exec:exe,kx:dx/d*200,ky:dy/d*140,up:100,col,dir:Math.atan2(dy,dx),frz:.1}))n++}
   if(ex)emit('sfx','exec');if(n){emit('sfx','hit',1);emit('shake',Math.cos(ad),.6,Math.min(5,2+n*.4),c.idx);emit('hs',.04)}addRage(c,Math.min(22,n*6));return n}
 function verdictHit(c){const w=execW(c),L=lvm(w),g=c.cast.grand,ad=c.cast.a,R=(g?104:92)*L.a;const hx=c.x+Math.cos(ad)*20,hy=c.y+Math.sin(ad)*14;
@@ -790,8 +795,10 @@ function beamWeapons(c,dt){c.beams=[];const rate=cdRate(c);
     if(!c.bT||!alive(c.bT)||len(c.bT.x-c.x,(c.bT.y-c.y)*1.4)>R+24){const n=nearestEnemy(c,R);if(n!==c.bT){c.bT=n;c.heat=c.bT&&c.heat>0?c.heat*.6:0}}
     if(c.bT){const t=c.bT,[sx,sy]=lanternPos(c);c.heat=Math.min(1,(c.heat||0)+dt*rate*.45);c.f=t.x>=c.x?1:-1;
       c.shotCd=(c.shotCd||0)-dt*rate*(1+c.heat*.8)*(evo?1.3:1)*1.25;
-      if(c.tok&&!c.charging){c.tok=false;c.shotCd=0;const tx=t.x,ty=t.y-8-t.z,dx=tx-sx,dy=ty-sy,d=len(dx,dy)||1,sp=270,a0=Math.atan2(dy,dx);
-        for(const o of [-.16,0,.16])proj.push({k:'lbolt',x:sx,y:sy,vx:Math.cos(a0+o)*sp,vy:Math.sin(a0+o)*sp,a:a0+o,life:.75,tgt:o?null:t,dmg:7*L.d*(1+c.heat*.35),src:c,heat:c.heat,pierce:evo?3:bw.lv>=3?1:0,hit:new Set(),lv:bw.lv,healed:false});
+      if(c.tok&&!c.charging){c.tok=false;c.shotCd=0;const tx=t.x,ty=t.y-8-t.z,dx=tx-sx,dy=ty-sy,d=len(dx,dy)||1,a0=Math.atan2(dy,dx),st=cmbNext(c);
+        const OF=st===1?[0]:st===2?[-.1,.1]:[-.5,-.25,0,.25,.5],dm=st===1?12:st===2?9:7,sp=st===1?340:st===2?290:250;
+        if(st===3){emit('wave',sx,sy,.3,26,'#ffd27a',3,0);emit('puff',sx,sy,8,'#ffe9a8',70,.35,true,6,1)}
+        for(const o of OF)proj.push({k:'lbolt',x:sx,y:sy,vx:Math.cos(a0+o)*sp,vy:Math.sin(a0+o)*sp,a:a0+o,life:.75,tgt:o?null:t,dmg:dm*L.d*(1+c.heat*.35),src:c,heat:c.heat,pierce:(evo?3:bw.lv>=3?1:0)+(st===3?1:0),hit:new Set(),lv:bw.lv,healed:false,big:st===3});
         emit('shot',c.idx)}}
     else c.heat=Math.max(0,(c.heat||0)-dt*1.5)}
   const lh=c.weapons.find(w=>w.id==='lighthouse');
@@ -808,6 +815,8 @@ function updLance(c,dt){const Ln=c.lance;Ln.t+=dt;Ln.x=c.x;Ln.y=c.y;if(Ln.t>=Ln.
   if(dome&&!Ln.refr){const px=dome.x-sx,py=(dome.y-14)-sy,along=px*Ln.dx+py*Ln.dy,perp=Math.abs(px*Ln.dy-py*Ln.dx);if(along>0&&along<LEN&&perp<36){Ln.refr=true;emit('num',dome.x,dome.y-52,'PRISM DOME','#ffd84a',1.4);emit('sfx','boom');emit('big',.3,1.05,.04,6)}}}
 function dirOf(c){let dx=c.mx,dy=c.my;if(!dx&&!dy){dx=c.f;dy=0}const l=len(dx,dy)||1;return[dx/l,dy/l]}
 function fired(c,w){emit('wfire',c.idx,w.id)}
+// basic attacks run in a 3-step cycle; a pause longer than 4s starts it over
+function cmbNext(c){if(tAll-(c.cmbLast||0)>4)c.cmb=0;c.cmbLast=tAll;c.cmb=(c.cmb||0)%3+1;emit('cmb',c.idx,c.cmb);return c.cmb}
 function whirl(c,R,dmg,pull){emit('slash',c.x,c.y-12,0,R,1,TAU,C.cyan);emit('wave',c.x,c.y,.3,R,C.cyan,2,0);let n=0;
   for(const e of en){if(!alive(e))continue;const dx=e.x-c.x,dy=e.y-c.y,d=len(dx,dy*1.4)||1;if(d<R+3){n++;hitE(e,dmg,c,{w:'whirl',kx:dx/d*(pull?-120:160),ky:dy/d*(pull?-80:110),col:C.cyan,dir:Math.atan2(dy,dx)})}}
   if(n){emit('sfx','hit',1);emit('shake',0,1,1.5,c.idx)}}
@@ -819,9 +828,9 @@ function meleeAuto(c,w,dt,rate){const L=lvm(w),evo=w.lv>=5;w.cd-=dt*rate;if(c.cl
     return}
   const t=nearestEnemy(c,c.cls==='warden'?40*L.a:28*L.a);
   if(t&&c.tok&&c.dash<=0){c.tok=false;c.adir=Math.atan2((t.y-c.y)*1.4,t.x-c.x);c.f=t.x>=c.x?1:-1;c.struck=false;c.flung=false;
-    if(c.cls==='warden'){if(tAll-(c.lastSw||0)>1.3)c.swing=0;c.lastSw=tAll;c.swing++;const st=(c.swing-1)%3;c.heavy=st===2?1:st===1?2:0;c.atkDur=c.heavy===1?.36:.24;w.cd=0;fired(c,w)}else{c.atkDur=.42;w.cd=.62*L.c;emit('twirl',c.idx,w.lv);fired(c,w)}
+    if(c.cls==='warden'){const st=cmbNext(c)-1;c.heavy=st===2?1:st===1?2:0;c.atkDur=st===0?.2:st===1?.26:.4;w.cd=0;fired(c,w);if(st===1){const lx=c.x+Math.cos(c.adir)*12,ly=c.y+Math.sin(c.adir)*8;if(walkable(lx,ly)){c.x=lx;c.y=ly}emit('puff',c.x,c.y,6,'#3a3660',50,.3,false,10,2)}}else{c.atkDur=.42;w.cd=.62*L.c;emit('twirl',c.idx,w.lv);fired(c,w)}
     c.atk=c.atkDur}}
-function furyHit(c,w,kind,ad){const L=lvm(w),evo=w.lv>=5,fin=kind===1,rap=kind===3,BM=rap?1:2.2;let n=0,ex=false,rg=0;const R=(fin?52:rap?40:46)*L.a;
+function furyHit(c,w,kind,ad){const L=lvm(w),evo=w.lv>=5,fin=kind===1,rap=kind===3,bk=kind===2,BM=rap?1:fin?2.2:bk?2.3:1.9;let n=0,ex=false,rg=0;const R=(fin?54:rap?40:bk?50:42)*L.a;
   emit('slash',c.x+Math.cos(ad)*4,c.y-12,ad,R,rap?(rnd()<.5?0:2):kind,0,fin?'#ffffff':C.cyan);
   for(const e of en){if(!alive(e))continue;const dx=e.x-c.x,dy=(e.y-c.y)*1.4,d=len(dx,dy)||1;
     if(d<R+(e.kind===1||e.kind>=4?10:3)&&(fin&&w.lv>=3||Math.cos(Math.atan2(dy,dx)-ad)>(fin?-.35:-.1))){const exe=e.kind!==5&&e.hp<e.max*.25;if(exe)ex=true;
@@ -915,12 +924,19 @@ const AB={
     tg.forEach(([x,y],i)=>{const tt=.5+i*.12;later.push({t:tt,f:()=>{for(const e of en){if(!alive(e))continue;if(len(e.x-x,(e.y-y)*1.4)<22*P.a+rad(e)*.5)hitE(e,22*P.d,c,{w:'fireworks',col:['#ff6fd8','#ffd84a','#6fffb0','#7ab8ff'][i%4]})}emit('sfx','blast')}});if(P.evo)later.push({t:tt+.35,f:()=>{for(const e of en){if(!alive(e))continue;if(len(e.x-x,(e.y-y)*1.4)<30*P.a)hitE(e,9*P.d,c,{w:'fireworks',col:'#ffffff',quiet:1})}}})})},
 
   reaper(c,w,dt,rate){const P=AP(c,w);if(c.atk>0){c.atk-=dt;return}w.cd-=dt*rate;if(w.cd>0||c.cast||c.leapT>0||!c.tok)return;AIMC=c;const t=nearestEnemy(c,58*P.a);AIMC=null;if(!t)return;
-    c.tok=false;w.cd=.9*P.c*(P.evo?.75:1);fired(c,w);const ad=Math.atan2((t.y-c.y)*1.4,t.x-c.x);c.adir=ad;c.f=t.x>=c.x?1:-1;c.heavy=1;c.atkDur=.44;c.atk=.44;c.struck=false;c.rpn=(c.rpn||0)+1;const full=P.m3&&c.rpn%3===0;
-    later.push({t:.18,f:()=>{if(c.state==='ok')reapHit(c,w,ad,(full?54:60)*P.a,19*P.d,P.evo?.35:.22,full,'#ff5a6a')}})},
-  cinder(c,w,dt,rate){const P=AP(c,w);w.cd-=dt*rate*1.2;if(w.cd>0||c.charging||!c.tok)return;const t=nearestEnemy(c,160);if(!t)return;c.tok=false;w.cd=.4*P.c;fired(c,w);const n=1+(P.m3?1:0)+P.n,[lx,ly]=lanternPos(c);
-    for(let i=0;i<n;i++){const tg=i?randEnemy(c,160)||t:t,tx=tg.x+(i?(rnd()-.5)*10:0),ty=tg.y+(i?(rnd()-.5)*8:0),fl=.32+i*.06;emit('cin',r1(lx),r1(ly),r1(tx),r1(ty),r2(fl));
-      later.push({t:fl,f:()=>{emit('puff',tx,ty-4,6,'#ff8a2a',60,.35,true,10,1);for(const e of en){if(!alive(e))continue;if(len(e.x-tx,(e.y-ty)*1.4)<16*P.a+rad(e)*.4){hitE(e,10*P.d,c,{w:'cinder',col:WCOL.cinder,kx:(e.x-tx)*3,ky:(e.y-ty)*3});e.burn=Math.max(e.burn||0,1.2)}}
-        if(P.evo)zones.push({x:tx,y:ty,r:14,life:2.2,tick:0,dmg:5,src:c,col:'#ff7a3a'})}})}},
+    c.tok=false;w.cd=.9*P.c*(P.evo?.75:1);fired(c,w);const ad=Math.atan2((t.y-c.y)*1.4,t.x-c.x);c.adir=ad;c.f=t.x>=c.x?1:-1;c.struck=false;const st=cmbNext(c),thr=P.evo?.35:.22;
+    if(st===1){c.heavy=0;c.atkDur=c.atk=.32;later.push({t:.13,f:()=>{if(c.state==='ok')reapHit(c,w,ad,72*P.a,25*P.d,thr,false,'#ff5a6a',.72,c.x,c.y,0)}})}
+    else if(st===2){c.heavy=2;c.atkDur=c.atk=.36;later.push({t:.15,f:()=>{if(c.state!=='ok')return;reapHit(c,w,ad,58*P.a,15*P.d,thr,false,'#ff7a8a',-.25,c.x,c.y,2)}})}
+    else{c.heavy=1;c.atkDur=c.atk=.5;const full=P.m3,hx=c.x+Math.cos(ad)*24,hy=c.y+Math.sin(ad)*16;
+      later.push({t:.26,f:()=>{if(c.state!=='ok')return;const X=full?c.x:hx,Y=full?c.y:hy;reapHit(c,w,ad,(full?56:44)*P.a,29*P.d,thr+.08,true,'#ffffff',.2,X,Y,-1);
+        emit('imp','shock',r1(X),r1(Y),full?96:76,.4);emit('crack',X,Y,'#ff5a6a');emit('wave',X,Y,.35,(full?56:44)*P.a,'#ff5a6a',4,0);emit('hs',.05);emit('big',.08,1.02,.04,5)}})}},
+  cinder(c,w,dt,rate){const P=AP(c,w);w.cd-=dt*rate*1.2;if(w.cd>0||c.charging||!c.tok)return;const t=nearestEnemy(c,160);if(!t)return;c.tok=false;w.cd=.4*P.c;fired(c,w);const st=cmbNext(c),extra=(P.m3?1:0)+P.n,[lx,ly]=lanternPos(c),ad=Math.atan2(t.y-c.y,t.x-c.x),px=-Math.sin(ad),py=Math.cos(ad);
+    const shots=st===1?[[t.x,t.y,16,9,0]]:st===2?[[t.x+px*16,t.y+py*11,15,7,0],[t.x-px*16,t.y-py*11,15,7,0]]:[[t.x,t.y,26,13,1]];
+    for(let i=0;i<extra;i++){const tg=randEnemy(c,160)||t;shots.push([tg.x+(rnd()-.5)*10,tg.y+(rnd()-.5)*8,16,9,0])}
+    shots.forEach(([tx,ty,R,dm,bomb],i)=>{const fl=(bomb?.42:.3)+i*.05;emit('cin',r1(lx),r1(ly),r1(tx),r1(ty),r2(fl));
+      later.push({t:fl,f:()=>{emit('puff',tx,ty-4,bomb?14:6,'#ff8a2a',bomb?90:60,.35,true,bomb?18:10,bomb?2:1);for(const e of en){if(!alive(e))continue;if(len(e.x-tx,(e.y-ty)*1.4)<R*P.a+rad(e)*.4){hitE(e,dm*P.d,c,{w:'cinder',col:WCOL.cinder,kx:(e.x-tx)*(bomb?5:3),ky:(e.y-ty)*(bomb?5:3)});e.burn=Math.max(e.burn||0,bomb?2:1.2)}}
+        if(bomb){emit('wave',tx,ty,.3,R*P.a,'#ff8a2a',3,0);emit('sfx','blast');zones.push({x:tx,y:ty,r:18*P.a,life:1.6,tick:0,dmg:3,src:c,col:'#ff7a3a'})}
+        if(P.evo)zones.push({x:tx,y:ty,r:14,life:2.2,tick:0,dmg:5,src:c,col:'#ff7a3a'})}})})},
   rites(c,w,dt,rate){const P=AP(c,w);w.cd-=dt*rate;if(w.cd>0)return;const R=(P.m3?78:64)*P.a,thr=P.evo?.3:P.m3?.25:.2;let n=0;
     for(const e of en){if(!alive(e)||e.kind===5)continue;if(len(e.x-c.x,(e.y-c.y)*1.4)<R&&e.hp<e.max*thr){hitE(e,e.hp*3+10,c,{w:'rites',exec:true,col:WCOL.rites,kx:(e.x-c.x)*3,ky:(e.y-c.y)*3});n++}}
     if(!n)return;w.cd=4*P.c;fired(c,w);healP(c,1.5*n);emit('wave',c.x,c.y,.35,R*1.2,WCOL.rites,3,0);emit('sfx','exec');if(P.evo){emit('imp','shock',r1(c.x),r1(c.y),R*1.6,.45);for(const e of en)if(alive(e)&&len(e.x-c.x,(e.y-c.y)*1.4)<R)hitE(e,18*P.d,c,{w:'rites',col:WCOL.rites,kx:(e.x-c.x)*4,ky:(e.y-c.y)*4})}},
@@ -1620,7 +1636,10 @@ function drawSpecFx(){for(const c of chars){if(c.state!=='ok')continue;const x=c
       eg.globalAlpha=.9;eg.strokeStyle=col;eg.lineWidth=2;eg.beginPath();eg.arc(lx,ly,12,-Math.PI/2,-Math.PI/2+TAU*c.chg);eg.stroke();eg.lineWidth=1;eg.globalAlpha=1;if(full)fillE(lg,lx,ly,3,3,'#ffffff',1)}
     if(c.kd>0){const pu=.5+.3*Math.sin(tAll*12);eg.globalAlpha=pu;eg.strokeStyle='#ff8a2a';eg.lineWidth=2;eg.beginPath();eg.ellipse(x,y,16,7,0,0,TAU);eg.stroke();eg.lineWidth=1;eg.globalAlpha=1;if(rnd()<.8&&parts.length<480)parts.push({x:c.x+(rnd()-.5)*16,y:c.y-rnd()*26,vx:0,vy:-40-rnd()*30,life:.35,max:.35,col:rnd()<.5?'#ffb23a':'#ff5a1a',em:true,sz:rnd()<.3?2:1})}
     if(c.cast&&c.cast.k==='verdict'){const k=clamp(c.cast.t/c.cast.dur,0,1),g=c.cast.grand,R=(g?104:92)*(lvm(execW(c)).a),a0=c.cast.a??0;eg.globalAlpha=.25+.35*k;eg.fillStyle=g?'#ffffff':'#ff5a6a';eg.beginPath();if(g){eg.ellipse(x,y,R*k,R*k/1.4,0,0,TAU)}else{eg.moveTo(x,y);for(let i=-8;i<=8;i++){const a=a0+i/8*1.37;eg.lineTo(x+Math.cos(a)*R*k,y+Math.sin(a)*R*k/1.4)}eg.closePath()}eg.fill();eg.globalAlpha=1}}}
-function drawRhythm(){for(const c of chars){if(c.state!=='ok')continue;const rs=rotState(c,BT);if(!rs)continue;const x=c.x+ox,y=c.y+oy+1,L=rs.L,pulse=1-((BT/BEAT)%1);
+function drawCmb(c){if(!c.cmbT||tAll-c.cmbT>2.4||c.state!=='ok')return;const x=Math.round(c.x+ox),y=Math.round(c.y+oy+9),col=c.cls==='lamp'?(c.spec==='fire'?'#ff8a3a':'#ffd27a'):(c.spec==='exec'?'#ff5a6a':C.cyan),fresh=Math.max(0,1-(tAll-c.cmbT)/.25),fade=Math.min(1,(2.4-(tAll-c.cmbT))/.4);
+  for(let i=1;i<=3;i++){const px=x+(i-2)*6,on=i<=c.cmbS,cur=i===c.cmbS;lg.globalAlpha=fade*(on?1:.35);lg.fillStyle=on?col:'#3a3458';const r=cur?2+fresh*1.5:1.5;lg.fillRect(Math.round(px-r),Math.round(y-r*.6),Math.round(r*2),Math.max(1,Math.round(r*1.2)))}
+  if(c.cmbS===3&&fresh>0){strokeE(eg,x,y-9,10+(1-fresh)*14,(10+(1-fresh)*14)*.42,col,2,fresh)}lg.globalAlpha=1}
+function drawRhythm(){for(const c of chars)drawCmb(c);for(const c of chars){if(c.state!=='ok')continue;const rs=rotState(c,BT);if(!rs)continue;const x=c.x+ox,y=c.y+oy+1,L=rs.L,pulse=1-((BT/BEAT)%1);
     for(let i=0;i<L;i++){const w=rs.R[i],a=-Math.PI/2+i/L*TAU,px=Math.round(x+Math.cos(a)*15),py=Math.round(y+Math.sin(a)*6),cur=i===rs.idx,col=w?WCOL[w.id]||'#ffffff':'#5a5478';
       if(cur){fillE(eg,px,py,3+pulse*1.5,2+pulse,col,.9);R(lg,px-1,py-1,2,2,'#ffffff')}else{eg.globalAlpha=w?.6:.3;eg.fillStyle=col;eg.fillRect(px-1,py-1,2,2);eg.globalAlpha=1}}
     // a ring tightens onto the hero during the beat before the next ability fires
