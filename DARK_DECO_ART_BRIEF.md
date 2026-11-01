@@ -546,3 +546,36 @@ Four separate simple glowing game button symbols in a row, each centred with cle
 **Hero animations (PixelLab, not ChatGPT).** In PixelLab, start from the existing Warden and Lamplighter sprites so the faces and bodies match:
 - **Executioner Warden:** the same Warden carrying one huge two-handed greataxe instead of two axes, darker armour with crimson trim. Animations: 8-direction walk, a slow overhead greataxe chop, and a planted wide sweeping swing (Verdict).
 - **Firebrand Lamplighter:** the same Lamplighter with an ember-orange lantern, flame-tipped hair and a scorched-hem dress. Animations: 8-direction walk, a lob throw (Cinders), and a two-handed cast with a burst of fire (Kindle).
+
+---
+
+## 15. Title screen (sheets S1 to S5)
+
+Hamza wants a cinematic, animated title screen like a World of Warcraft expansion launch. Claude builds the animation in code: the camera slowly pushes in through the layers, the towers and heroes shift with the phone's tilt or a finger drag, fog drifts, neon flickers, rain and embers fall, lightning flashes, and the logo reveals with a light sweep before the menu buttons slide in.
+
+For that, the picture has to come in separate layers that line up. Use the same tall portrait framing (2:3) for S1 to S3. Attach `sprites/hero_reference.png` for S3. Same rules as before: image generator only, one image per message, show Hamza, no commits.
+
+**S1 Splash sky (far layer)**
+```
+A tall portrait game key art background, 2:3 aspect ratio, for the title screen of a dark art deco noir game. A night sky with a huge pale moon half behind drifting clouds, faint stars, two searchlight beams crossing the sky, and a distant hazy art deco skyline along the bottom third with tiny lit windows in cyan, pink and gold, purple fog glowing at the base. No foreground buildings, no characters, no text, no frame. High-detail painterly pixel art, cinematic lighting, deep violet and indigo palette with neon accents.
+```
+
+**S2 Splash towers (middle layer, cut out)**
+```
+A tall portrait image, 2:3 aspect ratio, of two tall art deco skyscrapers framing the left and right edges, seen from a low angle looking up, with stepped crowns, gold trim, gargoyles, glowing windows and a vertical neon sign on each in cyan and pink. The centre of the image between the towers is empty. Everything that is not a building is solid flat pure magenta #FF00FF with no gradient, so it can be cut out. No magenta on the buildings, no characters, no text. High-detail painterly pixel art, dark noir, neon glow.
+```
+
+**S3 Splash heroes (front layer, cut out)**
+```
+A tall portrait image, 2:3 aspect ratio, of the two heroes from the attached reference standing side by side on the edge of an art deco rooftop ledge at night, seen from slightly below, full bodies in the lower half of the image: the bearded armoured Warden with his two axes, braced and ready, and the small brown-haired Lamplighter girl in her purple dress raising her glowing lantern staff. Wind blows her hair and his cape, the lantern casts warm light on both. The rooftop ledge with gold art deco trim runs across the bottom edge. Match the characters' designs, colours and outfits to the reference exactly. Everything above and around them is solid flat pure magenta #FF00FF with no gradient. No magenta on the characters, no text. High-detail painterly pixel art, dramatic rim lighting in cyan and amber.
+```
+
+**S4 Logo**
+```
+A game logo with the exact text "DARK DECO" in two words on one line, spelled exactly D-A-R-K space D-E-C-O, centred on a pure solid black background. Bold geometric art deco capital letters in polished gold with engraved lines, a thin inner neon glow in cyan and pink, small art deco sunburst ornaments and a horizontal line flourish under the letters. Crisp and readable, wide with lots of black space around it. No other text, no characters, no frame.
+```
+
+**S5 Fog band**
+```
+A wide horizontal strip, 3:1 aspect ratio, of soft wispy drifting night fog in violet and lavender, glowing faintly, filling the middle of the image and fading to nothing at the top and bottom, on a pure solid black background. The left edge must continue seamlessly into the right edge. Painterly, no objects, no text.
+```
