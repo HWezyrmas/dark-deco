@@ -823,7 +823,7 @@ function updEnemies(dt){
     else{ // elite / boss
       const big=e.kind===5;
       if(e.st===0){mv(big?16:18,ux,uy);if(d<(big?24:18)&&e.atkT<=0){e.atkT=1.2;hurtP(tgt,big?26:20,e.x,e.y,true)}e.cd-=dt;
-        if(e.cd<=0){const r=rnd();if(big&&r>=.5&&r<.72){e.st=7;e.stt=.75;emit('tele','c',r1(e.x),r1(e.y),58,0,0,.75,'#ff4a7a');emit('sfx','warn')}else if(big&&r>=.72&&r<.86){e.st=0;e.cd=3.2;emit('msg','Stone rain!');for(const c of chars){if(c.state!=='ok')continue;for(let i=0;i<3;i++){const lx=c.x+(rnd()-.5)*90,ly=c.y+(rnd()-.5)*50;if(walkable(lx,ly))strike('c',lx,ly,26,0,0,1+i*.3,22,'#ff4a7a',()=>{emit('imp','fire',r1(lx),r1(ly),52,.45);emit('sfx','blast')})}}}else if(r<(big?.3:.32)){e.st=4;e.stt=.85;e.ax=ux;e.ay=uy;emit('sfx','warn');emit('tele','l',r1(e.x),r1(e.y),r2(Math.atan2(uy*.8,ux)),big?180:150,big?30:24,.85+.35,'#ff4a7a')}else if(big&&r<.5){e.st=0;e.cd=4;for(let i=0;i<2;i++)spawnPack();for(let i=0;i<2;i++)spawnAt(2,e);emit('msg','The Foreman calls the shadows');emit('sfx','warn');emit('big',.1,1.03,0,4)}
+        if(e.cd<=0){const r=rnd();if(big&&r>=.5&&r<.72){e.st=7;e.stt=.75;emit('tele','c',r1(e.x),r1(e.y),58,0,0,.75,'#ff4a7a');emit('sfx','warn')}else if(big&&r>=.72&&r<.86){e.st=0;e.cd=3.2;emit('msg','Stone rain!');for(const c of chars){if(c.state!=='ok')continue;for(let i=0;i<3;i++){const lx=c.x+(rnd()-.5)*90,ly=c.y+(rnd()-.5)*50;if(walkable(lx,ly))strike('c',lx,ly,26,0,0,1+i*.3,22,'#ff4a7a',()=>{emit('imp','fire',r1(lx),r1(ly),52,.45);emit('sfx','blast')})}}}else if(r<(big?.3:.32)){e.st=4;e.stt=.85;e.ax=ux;e.ay=uy;emit('sfx','warn');emit('tele','l',r1(e.x),r1(e.y),r2(Math.atan2(uy*.8,ux)),big?180:150,big?30:24,.85+.35,'#ff4a7a')}else if(big&&r<.5){e.st=0;e.cd=4;for(let i=0;i<2;i++)spawnPack();for(let i=0;i<2;i++)spawnAt(2,e);emit('msg','Shadows rise!');emit('sfx','warn');emit('big',.1,1.03,0,4)}
           else{e.st=3;e.stt=big?.9:1.05;e.ax=tgt.x;e.ay=tgt.y;emit('sfx','charge');emit('tele','c',r1(tgt.x),r1(tgt.y),big?44:36,0,0,r2(e.stt),C.red)}}}
       else if(e.st===3){e.stt-=dt;if(e.stt<=0){const R=big?44:36;emit('imp','shock',r1(e.ax),r1(e.ay),R*1.5,.45);emit('sfx','slam');emit('wave',e.ax,e.ay,.45,R*1.3,C.red,4,0);emit('crack',e.ax,e.ay,C.red);emit('big',.12,1.04,.04,7);for(const c of chars)if(len(c.x-e.ax,(c.y-e.ay)*1.6)<R)hurtP(c,big?28:22,e.ax,e.ay,true);e.st=0;e.cd=big?2.2:3.2}}
       else if(e.st===4){e.stt-=dt;if(e.stt<=0){e.st=5;e.stt=big?.7:.58}}
@@ -1375,8 +1375,10 @@ function drawESpr(e,x,yb,sq,hitc,kind){const S=ESPR[kind],G=GAIT[kind];let img=S
   let fi=-1,A=S.an;if(A){hop*=.3;if(G.ty!==2)rot*=.35;
     if(e._pst!==e.st){if((e._pst===6||e._pst===3||e._pst===1||e._pst===5)&&e.st===0)e._rel=now;e._pst=e.st}const rel=e._rel!=null?now-e._rel:9;
     if(kind===3&&e.st===2)fi=4+Math.min(3,Math.floor((1-e.stt/.9)*4));
-    else if((kind===1&&e.st===6)||(kind>=4&&e.st===3))fi=e.stt>.4?4:5;
-    else if(kind>=4&&e.st===4)fi=5;else if(kind>=4&&e.st===5)fi=6;
+    else if(kind===4&&e.st===3)fi=e.stt>.55?4:e.stt>.2?5:6;
+    else if((kind===1&&e.st===6)||(kind===5&&e.st===3))fi=e.stt>.4?4:5;
+    else if(kind>=4&&e.st===4)fi=5;else if(kind>=4&&e.st===5)fi=kind===4?7:6;
+    else if(kind===4&&rel<.45)fi=7;
     else if(kind===2&&e.st===1)fi=e.stt>.25?4:5;
     else if(rel<.22)fi=6;else if(rel<.48)fi=7;
     else if(kind===0&&chars.some(c=>c.state==='ok'&&len(c.x-e.x,(c.y-e.y)*1.4)<16))fi=4+Math.floor(now*8+e.id)%4;
