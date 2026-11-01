@@ -9,7 +9,7 @@ function size(){const r=$('iStage').getBoundingClientRect();W=r.width;H=r.height
 // a layer = a plate (cover) plus optional cutouts placed with a transform; scenes cross-fade between two layer slots
 let slot=0;function layer(){slot^=1;return slot?A:B}
 function img(src,cls){const i=new Image();i.src='intro/'+src;i.className=cls||'';i.alt='';i.decoding='async';return i}
-const pre=['p1.jpg','p2.jpg','p3.jpg','p4.jpg'].map(s=>{const i=new Image();i.src='intro/'+s;return i});
+const pre=['p1.jpg','p2.jpg','../story/s3.jpg','p3.jpg','../story/s1.jpg','../story/s2.jpg'].map(s=>{const i=new Image();i.src='intro/'+s;return i});
 function after(ms,f){timers.push(setTimeout(f,ms))}
 function anim(el,frames,o){return el.animate(frames,Object.assign({fill:'forwards',easing:'cubic-bezier(.25,.6,.3,1)'},o))}
 function caption(t,dl=700){cap.classList.remove('on');after(dl,()=>{cap.textContent=t;void cap.offsetWidth;cap.classList.add('on')})}
@@ -19,12 +19,15 @@ function sfx(k){try{window.__ddIntroSfx&&window.__ddIntroSfx(k)}catch(_){}}
 function show(L,parts2,dur,fromS=1.12,toS=1,origin='50% 60%'){const prev=L===A?B:A;L.innerHTML='';for(const p of parts2)L.appendChild(p);L.style.transformOrigin=origin;L.style.zIndex=2;prev.style.zIndex=1;
   anim(L,[{opacity:0,filter:'brightness(.4) blur(4px)'},{opacity:1,filter:'brightness(1) blur(0px)'}],{duration:1800,easing:'ease-in-out'});anim(L,[{transform:`scale(${fromS})`},{transform:`scale(${toS})`}],{duration:dur,easing:'cubic-bezier(.35,.1,.3,1)'});anim(prev,[{opacity:1},{opacity:0}],{duration:1800,delay:200,easing:'ease-in-out'});return L}
 const SC=[
- {d:7000,f(){mode='gold';const L=layer();show(L,[img('p1.jpg','plate')],8200,1.28,1.06,'50% 75%');caption('Lumen. The city of a thousand lamps.',1200)}},
- {d:8200,f(){mode='smoke';const L=layer();show(L,[img('p2.jpg','plate')],9200,1.04,1.2,'62% 42%');cap.classList.remove('on');
-   after(1500,()=>{flash(.75,700);shake(10,700);sfx('thunder')});after(2300,()=>{if(window.DLG)DLG.play([['foreman','Burn bright, little city.'],['foreman:laugh','My furnaces are hungry.']],{bark:true,cine:true})})}},
- {d:7000,f(){mode='ash';const L=layer();show(L,[img('p3.jpg','plate')],8200,1.08,1.22,'30% 60%');caption('One by one, the lamps went out.',1300);
-   [2600,3000,3500,4300].forEach((t,i)=>after(t,()=>{flash(.12+i*.04,260);sfx('fizz')}))}},
- {d:7400,f(){mode='lantern';const L=layer();show(L,[img('p4.jpg','plate')],8600,1.3,1.08,'52% 76%');caption('Until only one still burned.',1300)}},
+ {d:6600,f(){mode='gold';show(layer(),[img('p1.jpg','plate')],7800,1.28,1.06,'50% 75%');caption('Lumen. The city of a thousand lamps.',1100)}},
+ {d:7000,f(){mode='smoke';show(layer(),[img('p2.jpg','plate')],8200,1.04,1.18,'62% 42%');caption('Then the furnaces came.',1100);after(2000,()=>{flash(.6,700);shake(8,600);sfx('thunder')})}},
+ {d:8200,f(){mode='smoke';show(layer(),[img('../story/s3.jpg','plate')],9400,1.25,1.04,'45% 30%');cap.classList.remove('on');
+   after(1400,()=>{flash(.8,700);shake(12,700);sfx('thunder')});after(2000,()=>{if(window.DLG)DLG.play([['foreman','Burn bright, little city.'],['foreman:laugh','My furnaces are hungry.']],{bark:true})})}},
+ {d:6600,f(){mode='ash';show(layer(),[img('p3.jpg','plate')],7800,1.08,1.22,'30% 60%');caption('One by one, the lamps went out.',1100);[2400,2900,3500].forEach((t,i)=>after(t,()=>{flash(.1+i*.05,260);sfx('fizz')}))}},
+ {d:8200,f(){mode='lantern';show(layer(),[img('../story/s1.jpg','plate')],9400,1.22,1.04,'65% 30%');caption('Until only one still burned.',1100);
+   after(3600,()=>{sfx('chime');if(window.DLG)DLG.play([['lamp:worried','Not this one. Not while I am here.']],{bark:true})})}},
+ {d:9200,f(){mode='lantern';show(layer(),[img('../story/s2.jpg','plate')],10400,1.12,1.0,'58% 50%');cap.classList.remove('on');after(900,()=>{flash(1,450);shake(16,600);sfx('boom');burst()});
+   after(2000,()=>{if(window.DLG)DLG.play([['warden:shout','Get behind me!'],['lamp:surprised','Who... who are you?'],['warden:grin','Someone who hates the dark.']],{bark:true})})}},
 ];
 
 // particles per mood
@@ -32,7 +35,7 @@ function spawn(){const n=mode==='gold'?2:mode==='lantern'?3:mode==='eyes'?2:1;fo
   if(mode==='gold'||mode==='lantern')parts.push({x:mode==='lantern'?W*(.45+Math.random()*.2):Math.random()*W,y:mode==='lantern'?H*.74:H*(.6+Math.random()*.4),vx:(Math.random()-.5)*12,vy:-14-Math.random()*26,l:2.5+Math.random()*2,m:0,r:1+Math.random()*1.8,c:'255,200,110'});
   else if(mode==='smoke'||mode==='ash')parts.push({x:Math.random()*W,y:-10,vx:6+Math.random()*10,vy:12+Math.random()*16,l:5,m:0,r:.8+Math.random()*1.2,c:mode==='smoke'?'255,120,70':'190,170,220'});
   else parts.push({x:Math.random()*W,y:H*(.5+Math.random()*.5),vx:(Math.random()-.5)*8,vy:-6-Math.random()*8,l:3,m:0,r:1+Math.random(),c:'200,140,255'})}}
-function burst(){for(let i=0;i<70;i++){const a=Math.PI+Math.random()*Math.PI,s=80+Math.random()*260;parts.push({x:W*.3,y:H*.62,vx:Math.cos(a)*s,vy:Math.sin(a)*s*.7,l:.8+Math.random()*.7,m:0,r:1.5+Math.random()*2,c:Math.random()<.5?'255,210,140':'127,240,255',g:300})}}
+function burst(){for(let i=0;i<70;i++){const a=Math.PI+Math.random()*Math.PI,s=80+Math.random()*260;parts.push({x:W*.35,y:H*.72,vx:Math.cos(a)*s,vy:Math.sin(a)*s*.7,l:.8+Math.random()*.7,m:0,r:1.5+Math.random()*2,c:Math.random()<.5?'255,210,140':'127,240,255',g:300})}}
 let last=0;function loop(t){if(!running)return;requestAnimationFrame(loop);const dt=Math.min(.05,(t-last)/1000||0);last=t;if(!REDUCE&&parts.length<160)spawn();
   g.clearRect(0,0,W,H);g.globalCompositeOperation='lighter';for(const p of parts){p.m+=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;if(p.g)p.vy+=p.g*dt;const a=Math.max(0,1-p.m/p.l)*Math.min(1,p.m*3);g.fillStyle=`rgba(${p.c},${a})`;g.beginPath();g.arc(p.x,p.y,p.r,0,7);g.fill()}
   parts=parts.filter(p=>p.m<p.l&&p.y>-20&&p.y<H+20);g.globalCompositeOperation='source-over'}

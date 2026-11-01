@@ -657,7 +657,7 @@ A tall portrait image, 2:3 aspect ratio, of the Warden and the Lamplighter from 
 
 ---
 
-## 17. Story and dialogue art (D1 to D3, S1 to S5)
+## 17. Story and dialogue art (D1 to D3, S1 to S5) · done and live
 
 The game now has a story: a short intro, a playable prologue that teaches the game one step at a time through dialogue between the Warden, the Lamplighter and the Foreman, and story moments during the run (Gatekeepers, the boss, victory and defeat). Dialogue uses character portraits with expressions, and the key story moments use full painted frames with the characters painted into the scene (not cut out and pasted). Painted style, NOT pixel art. Attach `title/src/heroes.png` for the heroes and `enemies/src/boss.png` for the Foreman. Portrait sheets go on magenta; story frames are full images.
 

@@ -481,10 +481,10 @@ function tutTick(dt,ix,iy){if(!TUT||mode!=='play'||LV)return;const s=TUT.S[TUT.i
   if(s.done==='s1')c.cd1=Math.min(c.cd1,0);if(s.done==='s2')c.cd2=Math.min(c.cd2,0);if(s.done==='s3')c.cd3=0}
 // ===== Story: the prologue that teaches the game one beat at a time, plus story beats during the run =====
 const SCRIPT={
- pro0:()=>[['lamp:worried','The last lamp on this side of the river... it has to stay lit.'],['warden','Then it stays lit.'],['lamp:surprised','Who are you?'],['warden:grin','Someone who hates the dark. Walk with me to the lamp. Stay close.']],
- pro1:()=>[['warden','Here they come.'],['lamp:worried','What do I do?'],['warden','Keep moving. Our weapons swing on their own. Just stay out of their reach.']],
+ pro0:()=>[['lamp:worried','The lamp ahead is the last one on this roof. If it goes out, they take the whole district.'],['warden','Then it stays lit.'],['warden:grin','Walk with me. Stay close.']],
+ pro1:()=>[['warden:shout','Here they come!'],['lamp:worried','What do I do?'],['warden','Keep moving. Our weapons swing on their own. Just stay out of their reach.']],
  pro2:()=>[['lamp:happy','Look! Everything my light touches starts to glow.'],['warden:grin','Then light them up. I will do the rest.'],['narr','Her hits mark shadows. When he hits a marked shadow, it bursts.']],
- pro3:()=>[['warden:shout','Big one! Watch the floor. Red means MOVE!'],['narr','Step out of the red circle before it fills.']],
+ pro3:()=>[['warden:shout','Big one! Watch the floor. Red means MOVE!'],['lamp:shout','Got it. Out of the red!']],
  pro4:()=>{const W=chars.find(c=>c.cls==='warden'),ex=W&&W.spec==='exec';return[['lamp','More of them! Use everything you have!'],['warden',ex?'My Verdict will cut them down. When red is under me, shield me.':'I will leap into them. When red is under me, shield me.'],['narr',ex?'Warden: tap the small button for Verdict.  Lamplighter: tap the shield button to Ward him.':'Warden: tap the small button to Leap.  Lamplighter: tap the shield button to Ward him.']]},
  pro5:()=>[['lamp:happy','Do you feel that? The light is growing in us.'],['warden','Then let us use it. Choose what you learn.']],
  pro6:()=>[['lamp','There, a lamp altar! If we stand in it, the light comes back.'],['narr','Stand inside the gold ring until it fills.']],
@@ -492,10 +492,10 @@ const SCRIPT={
  gate1:()=>[['foreman','My Gatekeepers will grind you to dust.'],['warden','Let them try.']],
  gate2:()=>[['lamp:worried','Two of them this time!'],['warden:shout','Stay behind me!']],
  boss:()=>[['foreman:laugh','ENOUGH. I WILL DO THIS MYSELF.'],['lamp','One minute to dawn!'],['warden:shout','Then let us make it count!']],
- downW:()=>[['lamp:worried','Get up! Please, get up!']],downL:()=>[['warden:shout','I have got you. Hold on!']],
+ downW:()=>[['warden:hurt','Agh...'],['lamp:shout','Get up! Please, get up!']],downL:()=>[['warden:shout','I have got you. Hold on!']],
  altar:()=>[['lamp','A lamp altar! Stand in it with me!']],
  win:()=>[['lamp:happy','Look... the sun.'],['warden:grin','Told you it would stay lit.']],
- lose:()=>[['foreman:laugh','Darkness. Forever.']],
+ lose:()=>[['foreman:laugh','Darkness. Forever.'],['lamp:worried','...We will light it again.']],
 };
 let STORY={on:false},WP=null,PROLOGUE=true,lastBark=0;
 function storySay(k,bark,cb){if(bark&&(LV||(window.DLG&&DLG.busy())||T-lastBark<6))return;lastBark=T;if(cb)STORY.cb=cb;emit('story',k,bark?1:0)}
@@ -1147,7 +1147,7 @@ function hostStep(dt){
   if(!LV&&chestQ>0&&!endState){chestQ--;startLevel('chest');return}
   if(!LV&&xp>=need(level)&&!endState)startLevel()}
 function endRun(win){if(TUT){TUT=null;tutShow()}if(endState)return;endState={win,T:Math.floor(T),level,kills};showEnd()}
-function showEnd(){const s=endState;go('end');if(window.DLG)setTimeout(()=>DLG.play(SCRIPT[s.win?'win':'lose'](),{bark:true}),600);$('endEye').textContent=s.win?'The city breathes again':'The fog wins tonight';$('endTitle').textContent=s.win?'Rooftops cleared':'Lost to the fog';$('endBan').className=s.win?'win':'';
+function showEnd(){const s=endState;go('end');$('sEnd').style.backgroundImage=`linear-gradient(180deg,rgba(9,7,20,.2),rgba(9,7,20,.55) 45%,rgba(9,7,20,.92)),url(story/${s.win?'s4':'s5'}.jpg)`;if(window.DLG)setTimeout(()=>DLG.play(SCRIPT[s.win?'win':'lose'](),{bark:true}),600);$('endEye').textContent=s.win?'The city breathes again':'The fog wins tonight';$('endTitle').textContent=s.win?'Rooftops cleared':'Lost to the fog';$('endBan').className=s.win?'win':'';
   const tt=s.T;$('endStats').innerHTML=`<span>Time</span><b>${String(Math.floor(tt/60)).padStart(2,'0')}:${String(tt%60).padStart(2,'0')}</b><span>Level</span><b>${s.level}</b><span>Shadows cleared</span><b>${s.kills}</b>`;
   $('bAgain').hidden=!isHost;$('endNote').textContent=isHost?'':'Waiting for the host to start another run.';if(s.win)SFX.win()}
 

@@ -7,7 +7,7 @@ const P=el.querySelector('#dlgP'),N=el.querySelector('#dlgN'),Tx=el.querySelecto
 let Q=[],cur=null,o={},full='',shown=0,acc=0,raf=0,hold=0,lastT=0,done=null;
 P.onerror=()=>{const b=P.dataset.base;if(b&&P.src.indexOf(b)<0)P.src=b};
 function show(line){cur=line;const [whoM,text]=line,[who,mood]=whoM.split(':'),W=WHO[who]||WHO.narr;el.hidden=false;el.className=(o.bark?'bark ':'')+(W.right?'right ':'')+(who==='narr'?'narr ':'')+'in';void el.offsetWidth;
-  if(who!=='narr'){const base='portraits/'+who+'.webp?v=2';P.dataset.base=base;P.src=mood?'portraits/'+who+'_'+mood+'.webp?v=2':base}
+  if(who!=='narr'){const base='portraits/'+who+'.webp?v=3';P.dataset.base=base;P.src=mood?'portraits/'+who+'_'+mood+'.webp?v=3':base}
   N.textContent=W.name;el.style.setProperty('--wc',W.col);full=text;shown=0;acc=0;hold=0;Tx.textContent='';el.classList.remove('ready')}
 function tick(t){raf=requestAnimationFrame(tick);const dt=Math.min(.1,(t-lastT)/1000||0);lastT=t;if(!cur)return;
   if(shown<full.length){acc+=dt*(o.bark?42:38);const n=Math.min(full.length,Math.floor(acc));if(n>shown){if(window.__ddBlip&&n%3===0)window.__ddBlip(cur[0].split(':')[0]);shown=n;Tx.textContent=full.slice(0,shown)}if(shown>=full.length)el.classList.add('ready')}
