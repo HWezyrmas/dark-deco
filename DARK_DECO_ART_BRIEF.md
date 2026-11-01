@@ -551,6 +551,8 @@ Four separate simple glowing game button symbols in a row, each centred with cle
 
 ## 15. Title screen (sheets S1 to S5)
 
+**Status: S1 to S5 are done and live.**
+
 Hamza wants a cinematic, animated title screen like a World of Warcraft expansion launch. Claude builds the animation in code: the camera slowly pushes in through the layers, the towers and heroes shift with the phone's tilt or a finger drag, fog drifts, neon flickers, rain and embers fall, lightning flashes, and the logo reveals with a light sweep before the menu buttons slide in.
 
 The title screen is the one place the art is NOT pixel art: it should look like epic painted key art. For that, the picture has to come in separate layers that line up. Use the same tall portrait framing (2:3) for S1 to S3. Attach `sprites/hero_reference.png` for S3. Same rules as before: image generator only, one image per message, show Hamza, no commits.
@@ -578,4 +580,9 @@ A game logo with the exact text "DARK DECO" in two words on one line, spelled ex
 **S5 Fog band**
 ```
 A wide horizontal strip, 3:1 aspect ratio, of soft wispy drifting night fog in violet and lavender, glowing faintly, smooth and high resolution, NOT pixel art, filling the middle of the image and fading to nothing at the top and bottom, on a pure solid black background. The left edge must continue seamlessly into the right edge. Painterly, no objects, no text.
+```
+
+**Sheet K2: Reaper's Stride** (replaces Condemn; one image, black background)
+```
+A set of 3 game art pieces in one row on a pure solid black background, with clear space between them. 1) and 2) are square ability icons, each on its own dark navy rounded tile with a thin gold art deco frame; 3) is a simple glowing button symbol with no tile. Epic painted fantasy style with neon glow, crimson and bone-white, bold readable silhouettes. No text. 1) an armoured warrior blurring forward in a crimson dash streak, greataxe trailing, shadows cut apart behind him (Reaper's Stride); 2) the same dash streak twice as long, splitting through a line of shadows (Long Stride); 3) a single crimson forward-dash glyph: a greataxe head with three speed lines behind it, glowing.
 ```
