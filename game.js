@@ -189,7 +189,7 @@ const DUOS={ember:['whirl','flies'],rod:['slam','chain'],pax:['shield','prism'],
 const WBASE={reaper:{cd:1.35},cinder:{cd:.8},hellchain:{cd:7},wyrm:{cd:9},obelisk:{cd:8},thunder:{cd:5},bloodmoon:{cd:18},legion:{cd:10},phoenix:{cd:10},heaven:{cd:7},cranes:{cd:6},starwell:{cd:11},clock:{cd:12},fireworks:{cd:5},guillotine:{cd:7},vortex:{cd:8},grip:{cd:9},carnage:{cd:0},constellation:{cd:6},aurora:{cd:10},rose:{cd:9},wisp:{cd:4},cleave:{cd:.85},whirl:{cd:1.5},slam:{cd:5},shield:{cd:4},riposte:{cd:8},twirl:{cd:.62},flies:{cd:0},moths:{cd:2.5},candle:{cd:3},chain:{cd:3},beam:{cd:0},prism:{cd:0},lighthouse:{cd:0},ravager:{cd:0},blood:{cd:0},charge:{cd:6},earth:{cd:5},hook:{cd:4},banner:{cd:13},shout:{cd:8},starfall:{cd:3},lanterns:{cd:5},garden:{cd:0},halo:{cd:4},kite:{cd:.65}};
 const MODS={
   verdictq:{cls:'warden',sp:'exec',name:'Swift Judgement',desc:'Verdict recharges 2 seconds faster.'},
-  doom:{cls:'warden',sp:'exec',name:'Doom Mark',desc:'Condemn marks 3 more enemies and they stay marked 4 seconds longer.'},
+  longstride:{cls:'warden',sp:'exec',name:'Long Stride',desc:'Reaper\'s Stride goes 40% farther and Executes anything under 45% health.'},
   wildfire:{cls:'lamp',sp:'fire',name:'Wildfire',desc:'Flashfire\'s trail burns twice as long.'},
   hearth:{cls:'lamp',sp:'fire',name:'Hearth',desc:'Kindle also heals him for 25 and lasts 4 seconds longer.'},
   mirror:{cls:'warden',sp:'berserk',name:'Mirror Dome',desc:'The Dome reflects bullets back as your own.'},
@@ -221,8 +221,8 @@ const UNIT={prism:'split bolts',lighthouse:'beams',twirl:'sparks',moths:'moths',
 function upText(id,lv){if(lv===3&&WDEF[id]&&WDEF[id].up3)return WDEF[id].up3+' Plus +25% damage.';const n0=wCount(id,lv-1),n1=wCount(id,lv),p=[];if(UNIT[id]&&n1>n0)p.push(n0+' → '+n1+' '+UNIT[id]);p.push('+25% damage');if(['cleave','whirl','slam','twirl','flies','candle'].includes(id))p.push('bigger');p.push('faster');return p.join(' · ')}
 function lvm(w){return{d:1+.25*(w.lv-1)+(w.lv>=5?.25:0),c:1-.07*(w.lv-1),a:(1+.08*(w.lv-1))*(w.ar||1)}}
 function cd1Max(c){if(c.spec==='exec')return 6.5-(c.mods.has('verdictq')?2:0);return CL[c.cls].cd1-(c.mods.has('quickbash')||c.mods.has('quickstep')?1.5:0)}
-function cd2Max(c){return c.spec==='exec'?13:c.spec==='fire'?12:CL[c.cls].cd2}
-function skillN(c){return c.spec==='exec'?['Verdict','Condemn']:c.spec==='fire'?['Flashfire','Kindle']:[CL[c.cls].s1,CL[c.cls].s2]}
+function cd2Max(c){return c.spec==='exec'?7:c.spec==='fire'?12:CL[c.cls].cd2}
+function skillN(c){return c.spec==='exec'?['Verdict','Stride']:c.spec==='fire'?['Flashfire','Kindle']:[CL[c.cls].s1,CL[c.cls].s2]}
 
 /* ================= characters ================= */
 const S=64,FX=32,FY=56;
@@ -279,6 +279,7 @@ const FXF={
   wisp(pts,evo,dl){spx.push({k:'wisp',pts,evo,t:-(dl||0),life:(pts.length/2-1)*.2+.45})},
   imp(n,x,y,h,dur){impFx(n,x,y,h,dur)},
   tele(k,x,y,a,b,w,dur,col){tele.push({k,x,y,a,b,w,t:0,dur,col})},
+  sreset(ci){const c=chars.find(q=>q.idx===ci);if(!c)return;if(ci===ME||(isHost&&solo)){c.cd2=0}else if(isHost)c.cd2=0;banners.push({c,txt:'RESET',col:'#ff5a6a',t:0});FXF.star(c.x,c.y-16,'#ff5a6a');SFX.exec&&SFX.exec()},
   cin(x0,y0,x1,y1,fl){spx.push({k:'cin',x0,y0,x1,y1,t:0,life:fl})},
   kin(x0,y0,ci){spx.push({k:'kin',x0,y0,ci,t:0,life:.45})},
   pud(x,y,r,life){puds.push({x,y,r,life,max:life})},
@@ -401,7 +402,7 @@ function showCode(){menuStatus('');enterLobby();$('roomCode').textContent=roomCo
 function enterLobby(){go('lobby');$('lobEyebrow').textContent=isHost?(solo?'Practice with a bot':'Room code · share it with your partner'):'Joined room';$('roomCode').hidden=solo;$('roomCode').textContent=roomCode;
   if(!isHost)lobStatus('Connected. The host starts the game','ok');if(solo)lobStatus('A bot plays the other class','ok')}
 function updLobby(){document.querySelectorAll('.cls').forEach(b=>{b.setAttribute('aria-pressed',b.dataset.c===myCls);b.classList.toggle('mate',b.dataset.c===mateCls)});
-  const SPD={berserk:'Two axes and Rage. Leap into crowds, Dome to shield you both, Bladestorm at full Rage.',exec:'One greataxe. Slow crushing swings that Execute the weak. Verdict cleaves, Condemn marks prey.',heal:'Light bolts heal him as they pass through. Step leaves healing light; the Lance powers him up.',fire:'Cinders set enemies alight. Flashfire blinks through fire; Kindle sets his weapons ablaze.'};
+  const SPD={berserk:'Two axes and Rage. Leap into crowds, Dome to shield you both, Bladestorm at full Rage.',exec:'One greataxe. Slow crushing swings that Execute the weak. Verdict cleaves; Reaper\'s Stride dashes through them, and every Execute resets it.',heal:'Light bolts heal him as they pass through. Step leaves healing light; the Lance powers him up.',fire:'Cinders set enemies alight. Flashfire blinks through fire; Kindle sets his weapons ablaze.'};
   document.querySelectorAll('.sdesc').forEach(d=>{const t=SPD[SPEC[d.dataset.c]];if(d.textContent!==t){d.textContent=t;d.classList.remove('fl');void d.offsetWidth;d.classList.add('fl')}});
   document.querySelectorAll('.specrow').forEach(r=>{const c=r.dataset.c,mine=solo||c===myCls;r.classList.toggle('locked',!mine);r.querySelectorAll('.spec').forEach(b=>b.setAttribute('aria-pressed',SPEC[c]===b.dataset.s))});
   $('pickMe').textContent='You: '+CL[myCls].name+' · '+SPECN[SPEC[myCls]];$('pickMate').textContent=solo?'Bot: '+CL[myCls==='warden'?'lamp':'warden'].name:((isHost&&!mateJoined)?'':'Partner: '+(mateCls?CL[mateCls].name:'choosing…'));
@@ -440,7 +441,7 @@ $('skillsBtn').addEventListener('click',()=>{openSkills();$('skillsBtn').blur()}
 function setHud(){const c=meC();if(!c)return;
   $('track').querySelectorAll('i').forEach(n=>n.remove());for(const [t,cl] of [[ELITE_T[0],''],[ELITE_T[1],''],[BOSS_T,'boss']]){const i=document.createElement('i');i.className=cl;i.style.left=(t/RUN*100)+'%';i.dataset.t=t;$('track').appendChild(i)}const D=CL[c.cls],t=document.body.classList.contains('touch');$('name').textContent=D.name;$('name').style.color=D.color;
   const m=mateC();$('rowMate').hidden=!m;if(m){$('mateName').textContent=CL[m.cls].name;$('mateName').style.color=CL[m.cls].color}
-  $('swap').hidden=!solo;const SN=skillN(c);$('b1').textContent=SN[0].toUpperCase();$('b2').textContent=SN[1].toUpperCase();{const SY=c.spec==='exec'?['verdict','condemn']:c.spec==='fire'?['flashfire','kindle']:{warden:['leap','dome'],lamp:['step','lance']}[c.cls]||['leap','dome'];$('b1').style.setProperty('--sym','url(ui/sym_'+SY[0]+'.png)');$('b2').style.setProperty('--sym','url(ui/sym_'+SY[1]+'.png)');$('tc').style.setProperty('--cc',D.color)}$('n1').textContent=(t?'':'Q · ')+SN[0];$('n2').textContent=(t?'':'E · ')+SN[1];$('cd1').style.color=$('cd2').style.color=D.color;kitKey=''}
+  $('swap').hidden=!solo;const SN=skillN(c);$('b1').textContent=SN[0].toUpperCase();$('b2').textContent=SN[1].toUpperCase();{const SY=c.spec==='exec'?['verdict','stride']:c.spec==='fire'?['flashfire','kindle']:{warden:['leap','dome'],lamp:['step','lance']}[c.cls]||['leap','dome'];$('b1').style.setProperty('--sym','url(ui/sym_'+SY[0]+'.png)');$('b2').style.setProperty('--sym','url(ui/sym_'+SY[1]+'.png)');$('tc').style.setProperty('--cc',D.color)}$('n1').textContent=(t?'':'Q · ')+SN[0];$('n2').textContent=(t?'':'E · ')+SN[1];$('cd1').style.color=$('cd2').style.color=D.color;kitKey=''}
 let msgT=0;function say(t,d=1.8){$('msg').textContent=t;$('msg').style.opacity=1;msgT=d}
 let kitKey='';
 function hud(){const me=meC();if(!me)return;
@@ -518,6 +519,16 @@ function reapHit(c,w,ad,R,dmg,thr,full,col){let n=0,ex=false;emit('slash',c.x+Ma
   if(ex)emit('sfx','exec');if(n){emit('sfx','hit',1);emit('shake',Math.cos(ad),.6,Math.min(5,2+n*.4),c.idx);emit('hs',.04)}addRage(c,Math.min(22,n*6));return n}
 function verdictHit(c){const w=execW(c),L=lvm(w),g=c.cast.grand,ad=c.cast.a,R=(g?104:92)*L.a;const hx=c.x+Math.cos(ad)*20,hy=c.y+Math.sin(ad)*14;
   reapHit(c,w,ad,R,(g?70:50)*L.d,g?.5:.35,g,g?'#ffffff':'#ff5a6a');emit('imp','shock',r1(g?c.x:hx),r1(g?c.y:hy),g?110:80,.45);emit('crack',hx,hy,'#ff5a6a');emit('big',g?.25:.12,g?1.06:1.03,.05,g?9:6);emit('wave',c.x,c.y,.4,R*1.1,'#ff5a6a',4,0)}
+// ===== Reaper's Stride: a heavy dash through enemies along where you are heading. Invulnerable while dashing; any Execute resets it =====
+function strideDir(c){let dx=c.moving?c.mx:(c.amx??c.f),dy=c.moving?c.my:(c.amy??0);const l=len(dx,dy)||1;return[dx/l,dy/l]}
+function startStride(c){if(c.dash>0||c.leap)return;const [dx,dy]=strideDir(c),L=c.mods.has('longstride')?1.4:1;c.dash=.4*L;c.dx=dx;c.dy=dy;c.hitSet=new Set();c.inv=Math.max(c.inv||0,.4*L+.1);c.f=dx>=0?1:-1;c.sq=-.3;c.strideX=1;
+  SFX.dash();FXF.puff(c.x,c.y,10,'#3a1620',60,.4,false,10,2);
+  if(!isHost){evQ.push(['stride',r2(dx),r2(dy),r2(c.dash)]);return}hostStride(c)}
+function hostStride(c){c.strideT=c.dash;emit('slash',c.x,c.y-12,Math.atan2(c.dy,c.dx),40,1,0,'#ff5a6a')}
+function strideHit(c,e){const L=lvm(execW(c)),thr=c.mods.has('longstride')?.45:.35,exe=e.kind!==5&&e.hp<e.max*thr;
+  hitE(e,40*L.d*(exe?3:1),c,{w:'reaper',exec:exe,kx:-c.dy*200*(rnd()<.5?1:-1),ky:c.dx*150,up:90,col:'#ff5a6a',dir:Math.atan2(c.dy,c.dx),frz:.08});
+  emit('sfx','hit',1);emit('shake',c.dx,c.dy,2.5,c.idx);addRage(c,6);
+  if(exe&&!c.strideReset){c.strideReset=1;emit('sreset',c.idx)}}
 function condemn(c){const n=6+(c.mods.has('doom')?3:0),life=7+(c.mods.has('doom')?4:0),ax=c.amx??c.f,ay=c.amy??0,cand=[];
   for(const e of en){if(!alive(e))continue;const dx=e.x-c.x,dy=(e.y-c.y)*1.25,d=len(dx,dy)||1;if(d>150)continue;if(d>24&&(dx*ax+dy*ay)/d<.35)continue;cand.push([e,(e.kind>=4?1e4:e.kind===1?5e3:0)+e.hp-d])}
   cand.sort((a,b)=>b[1]-a[1]);for(const [e] of cand.slice(0,n)){e.mark=life;emit('star',e.x,e.y-14,'#ff3a5a')}emit('sfx','exec');emit('wave',c.x,c.y,.35,60,'#ff3a5a',3,0);emit('msgP',c.idx,cand.length?'Condemned: '+Math.min(n,cand.length):'No one to condemn','')}
@@ -553,6 +564,7 @@ function autoAim(c){const p=partnerOf(c),[sx,sy]=lanternPos(c);let best=null,bs=
   return bs>0?best:dirOf(c)}
 function skill2(c,remote,aim){if(c.state!=='ok')return;if(!remote){if(c.cd2>0||c.cast)return;c.cd2=cd2Max(c)}
   if(c.cls==='lamp'){let A=aim&&len(aim[0],aim[1])>.1?aim:null;if(!A)A=autoAim(c);const l=len(A[0],A[1])||1;c.aim=[A[0]/l,A[1]/l];if(A[0])c.f=A[0]>0?1:-1}
+  if(c.spec==='exec'){if(!remote)startStride(c);return}
   const CK=c.spec==='exec'?'condemn':c.spec==='fire'?'kindle':c.cls==='warden'?'dome':'lance',CD=CK==='condemn'?.22:CK==='kindle'?.3:c.cls==='warden'?.32:.35;
   if(!isHost){evQ.push(['s2',...(c.aim?c.aim.map(r2):[])]);c.cast={k:CK,t:0,dur:CD};SFX.charge();return}
   if(c.cast)return;c.cast={k:CK,t:0,dur:CD};if(remote)local('sfx','charge');else emit('sfx','charge')}
@@ -833,7 +845,7 @@ function updProj2(p,dt){
     if(p.evo&&!p.healed){const m=partnerOf(p.src);if(m&&m.state==='ok'&&Math.abs(len(m.x-p.x,(m.y-p.y)*1.4)-r)<12){p.healed=true;healP(m,8);emit('heal',m.idx)}}return true}
   return false}
 
-function hurtP(c,dmg,sx,sy,heavy){if(c.state!=='ok'||c.dash>0||c.inv>0||c.fall||c.leapT>0||c.bs>0)return;addRage(c,8);if(inDome(c.x,c.y))dmg*=.7;dmg*=(1+T/320)*(1-Math.min(.5,c.st.arm||0));
+function hurtP(c,dmg,sx,sy,heavy){if(c.state!=='ok'||c.dash>0||c.strideT>0||c.inv>0||c.fall||c.leapT>0||c.bs>0)return;addRage(c,8);if(inDome(c.x,c.y))dmg*=.7;dmg*=(1+T/320)*(1-Math.min(.5,c.st.arm||0));
   if(c.skin>0){const rp=c.weapons.find(w=>w.id==='riposte');c.skin--;c.inv=.45;emit('skinbreak',c.idx);if(rp){const L=lvm(rp),R=40*L.a*(c.st.area||1);emit('slash',c.x,c.y-12,0,R,1,TAU,'#ffffff');
     for(const e of en){if(!alive(e))continue;const ex=e.x-c.x,ey=e.y-c.y,ed=len(ex,ey*1.4)||1;if(ed<R)hitE(e,30*L.d,c,{w:'riposte',kx:ex/ed*220,ky:ey/ed*150,col:WCOL.riposte,stun:rp.lv>=5?.8:0,dir:Math.atan2(ey,ex)})}if(rp.lv>=5)healP(c,8)}return}
   c.hp-=dmg;c.inv=.45;const dx=c.x-sx,dy=c.y-sy,d=len(dx,dy)||1;emit('ouch',c.idx,Math.round(dmg),-dx/d,-dy/d,heavy?1:0);
@@ -949,7 +961,9 @@ function hostStep(dt){
     if(c.state!=='ok'){c.cast=null;c.atk=0;c.beams=[];c.lance=null;c.ch=0;c.ww=0;c.bs=0;continue}
     if(c.lance)updLance(c,dt);if(c.ch>0){c.ch-=dt;c.beams=[];c.lit=Math.max(0,(c.lit||0)-dt);c.kd=Math.max(0,(c.kd||0)-dt);continue}c.lit=Math.max(0,(c.lit||0)-dt);c.kd=Math.max(0,(c.kd||0)-dt);
     if(c.cast){c.beams=[];c.cast.t+=dt;if(c.cast.t>=c.cast.dur)release(c)}else{HEALER=c.cls==='lamp'?c:null;runWeapons(c,dt);HEALER=null}updFury(c,dt);
-    if(c.dash>0&&c.hitSet)for(const e of en){if(!alive(e)||c.hitSet.has(e))continue;if(len(e.x-c.x,(e.y-c.y)*1.4)<16+rad(e)*.5){c.hitSet.add(e);hitE(e,30,c,{kx:c.dx*240,ky:c.dy*170,up:130,col:C.cyan,dir:Math.atan2(c.dy,c.dx)});emit('sfx','hit',1);emit('shake',c.dx,c.dy,2.5,c.idx)}}
+    if(c.strideT>0){c.strideT-=dt;if(c.strideT<=0)c.strideReset=0}
+    if(c.spec==='exec'&&(c.dash>0||c.strideT>0)&&c.hitSet){for(const e of en){if(!alive(e)||c.hitSet.has(e))continue;if(len(e.x-c.x,(e.y-c.y)*1.4)<20+rad(e)*.6){c.hitSet.add(e);strideHit(c,e)}}}
+    else if(c.dash>0&&c.hitSet)for(const e of en){if(!alive(e)||c.hitSet.has(e))continue;if(len(e.x-c.x,(e.y-c.y)*1.4)<16+rad(e)*.5){c.hitSet.add(e);hitE(e,30,c,{kx:c.dx*240,ky:c.dy*170,up:130,col:C.cyan,dir:Math.atan2(c.dy,c.dx)});emit('sfx','hit',1);emit('shake',c.dx,c.dy,2.5,c.idx)}}
     if(c.fireT>0&&c.dash>0){c.fireT-=dt;if(rnd()<.5)zones.push({x:c.x,y:c.y,r:12,life:2.5,tick:0,dmg:6,src:c,col:'#ff7a3a'})}}
   updPlayers(dt);for(const c of chars)aimTrack(c);
   // spawns
@@ -1056,6 +1070,7 @@ function moveChar(c,ix,iy,dt){const D=CL[c.cls];
     if(rnd()<.8)parts.push({x:c.x+(rnd()-.5)*8,y:c.y-c.z-10-rnd()*14,vx:-(Lp.x1-Lp.x0)*.6,vy:-(Lp.y1-Lp.y0)*.6,life:.22,max:.22,col:C.cyan,em:true,streak:1});
     if(k>=1){c.leap=null;c.z=0;c.sq=.4;c.tx=c.x;c.ty=c.y}return}
   if(c.cast||c.ch>0){c.vx*=.8;c.vy*=.8;c.moving=false;return}
+  if(c.dash>0&&c.strideX){c.dash-=dt;tryMove(c,c.dx*330*dt,c.dy*290*dt);c.moving=true;if(rnd()<.9)ghosts.push({c,x:c.x,y:c.y,f:c.f,life:.22,col:'#ff3a5a'});if(c.dash<=0){c.strideX=0;c.sq=.35;puff(c.x,c.y,10,'#3a1620',50,.4,false,10,2)}return}
   if(c.dash>0){c.dash-=dt;tryMove(c,c.dx*260*dt,c.dy*230*dt);c.moving=true;if(c.dash<=0){c.sq=.25;puff(c.x,c.y,8,'#3a3660',40,.4,false,10,2)}return}
   const sp=D.spd*c.st.spd*(c.bs>0?.8:c.ww>0?.9:1),k=1;c.vx+=(ix*sp-c.vx)*k;c.vy+=(iy*sp*.85-c.vy)*k;tryMove(c,c.vx*dt,c.vy*dt);
   c.moving=len(ix,iy)>.15;if(Math.abs(ix)>.15&&c.atk<=0)c.f=ix>0?1:-1;if(c.moving){c.mx=ix;c.my=iy}}
@@ -1088,7 +1103,7 @@ function snapshot(){
     LV:LV?{id:LV.id,k:LV.kind,o:LV.offers[1],p:LV.picked,n:LV.names}:0,TM:[...teamMods],END:endState||0,fx:fxQ});fxQ=[]}
 function onGuestInput(m){const c=chars.find(q=>q.idx===1);if(!c)return;
   if(!c.cast&&c.state==='ok'){c.tx=m.x;c.ty=m.y;pushHist(c,m.x,m.y)}if(c.atk<=0)c.f=m.f;c.moving=!!m.mv;c.mx=m.mx;c.my=m.my;c.dash=m.da?.1:0;c.z=m.z||0;
-  for(const ev of m.ev){if(c.state!=='ok')break;if(ev[0]==='leap'){local('sfx','dash');hostLeap(c,ev[1],ev[2])}else if(ev[0]==='bs'){if(c.rage>=95)startStorm(c);else c.bs=0}else if(ev[0]==='verd'){startVerdict(c,c.rage>=95)}else if(ev[0]==='step'){local('star',ev[1],ev[2]-14,C.amber);local('star',ev[3],ev[4]-14,C.amber);local('starburst',ev[3],ev[4]-14);local('sfx','step');stepEffect(c,ev[1],ev[2])}else if(ev[0]==='s2'){skill2(c,true,ev.length>2?[ev[1],ev[2]]:null)}}}
+  for(const ev of m.ev){if(c.state!=='ok')break;if(ev[0]==='leap'){local('sfx','dash');hostLeap(c,ev[1],ev[2])}else if(ev[0]==='bs'){if(c.rage>=95)startStorm(c);else c.bs=0}else if(ev[0]==='stride'){c.dx=ev[1];c.dy=ev[2];c.hitSet=new Set();c.strideT=ev[3];c.strideReset=0;local('sfx','dash')}else if(ev[0]==='verd'){startVerdict(c,c.rage>=95)}else if(ev[0]==='step'){local('star',ev[1],ev[2]-14,C.amber);local('star',ev[3],ev[4]-14,C.amber);local('starburst',ev[3],ev[4]-14);local('sfx','step');stepEffect(c,ev[1],ev[2])}else if(ev[0]==='s2'){skill2(c,true,ev.length>2?[ev[1],ev[2]]:null)}}}
 let PRg=[],flyG=[],ravG=[],kiteG=[],beamsG=[],lancesG=[];
 function onSnap(s){T=s.T;level=s.lv;xp=s.xp;kills=s.k;tether=s.tth;bond=s.bd??bond;beamsG=s.BM||[];lancesG=(s.LA||[]).map(a=>({sx:a[0],sy:a[1],dx:a[2],dy:a[3],t:a[4],dur:a[5],refr:a[6],wide:a[7]}));
   for(const q of s.C){const [ch,amx,amy,idx,x,y,f,atk,atkDur,heavy,adir,pow,ck,ct,cd,da,hit,hp,max,state,rev,down,tp,rage,enr,ww,bs,cz,dns,kd]=q;const c=chars.find(z=>z.idx===idx);if(!c)continue;c.downs=dns||0;c.kd=kd||0;

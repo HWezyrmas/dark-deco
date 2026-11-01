@@ -581,3 +581,8 @@ A game logo with the exact text "DARK DECO" in two words on one line, spelled ex
 ```
 A wide horizontal strip, 3:1 aspect ratio, of soft wispy drifting night fog in violet and lavender, glowing faintly, smooth and high resolution, NOT pixel art, filling the middle of the image and fading to nothing at the top and bottom, on a pure solid black background. The left edge must continue seamlessly into the right edge. Painterly, no objects, no text.
 ```
+
+**Sheet K2: Reaper's Stride** (replaces Condemn; one image, black background)
+```
+A set of 3 game art pieces in one row on a pure solid black background, with clear space between them. 1) and 2) are square ability icons, each on its own dark navy rounded tile with a thin gold art deco frame; 3) is a simple glowing button symbol with no tile. Epic painted fantasy style with neon glow, crimson and bone-white, bold readable silhouettes. No text. 1) an armoured warrior blurring forward in a crimson dash streak, greataxe trailing, shadows cut apart behind him (Reaper's Stride); 2) the same dash streak twice as long, splitting through a line of shadows (Long Stride); 3) a single crimson forward-dash glyph: a greataxe head with three speed lines behind it, glowing.
+```
