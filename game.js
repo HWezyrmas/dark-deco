@@ -601,7 +601,9 @@ function hud(){const me=meC();if(!me)return;rotHud(me);
   const p1=(me.cls==='warden'&&me.rage>=100)||(me.cls==='lamp'&&(me.spark||0)>=100)?1:1-me.cd1/cd1Max(me),p2=1-me.cd2/cd2Max(me);$('b1').style.setProperty('--p',p1);$('b2').style.setProperty('--p',p2);$('b1').classList.toggle('rdy',p1>=1);$('b2').classList.toggle('rdy',p2>=1);$('f1').style.width=p1*100+'%';$('f2').style.width=p2*100+'%'}
 
 /* ================= feedback helpers ================= */
-function kick(dx,dy,m){if(RM)return;shk.x+=dx*m;shk.y+=dy*m}
+let shkB=6,shkT=0;
+function kick(dx,dy,m){if(RM)return;shkB=Math.min(6,shkB+(tAll-shkT)*10);if(m<3&&tAll-shkT<.09)return;shkT=tAll;const k=Math.min(m,shkB);if(k<=.3)return;shkB-=k;
+  const l=len(dx,dy)||1;shk.x+=dx/l*k;shk.y+=dy/l*k;const d=len(shk.x,shk.y);if(d>5){shk.x*=5/d;shk.y*=5/d}}
 function puff(x,y,n,col,sp=40,life=.5,em=false,up=0,sz=1){for(let i=0;i<n&&parts.length<500;i++){const a=rnd()*TAU,s=sp*(.3+rnd());parts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s*.6-up,life:life*(.5+rnd()*.7),max:life,col,em,sz})}}
 function sparks(x,y,dir,n,col){for(let i=0;i<n&&parts.length<500;i++){const a=dir+(rnd()-.5)*1.6,s=90+rnd()*140,arc=i%2===0;parts.push({x,y,vx:Math.cos(a)*s*(arc?.6:1),vy:Math.sin(a)*s*.62-(arc?70:0),life:arc?.35:.18+rnd()*.15,max:arc?.35:.3,col,em:true,streak:arc?0:1,grav:arc?1:0,sz:arc?1:undefined})}
   for(let i=0;i<3&&parts.length<500;i++){const a=dir+(rnd()-.5)*.35,s=240+rnd()*120;parts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s*.62,life:.16,max:.16,col:'#ffffff',em:true,streak:1})}}
@@ -1077,7 +1079,7 @@ function updPlayers(dt){
     else if(c.state==='out'){c.out-=dt;if(c.out<=0){const o=chars.find(q=>q!==c&&q.state==='ok');if(o){c.x=o.x+12;c.y=o.y;c.tx=c.x;c.ty=c.y;c.tp=(c.tp||0)+1}revive(c,o)}}}
   // tether
   if(chars.length>1){const [a,b]=chars;const close=a.state==='ok'&&b.state==='ok'&&len(a.x-b.x,(a.y-b.y)*1.4)<75,bm=teamMods.has('bond')?2:1;
-    bond=close?Math.min(1,bond+dt*.7*bm):Math.max(0,bond-dt*.18);if(bond<.3&&!apart){apart=true;emit('msg','Apart, your bond fades')}if(apart&&close&&bond>.55){apart=false;rekindle(a,b)}
+    bond=close?Math.min(1,bond+dt*.7*bm):Math.max(echoes.length?.5:0,bond-dt*.18);if(bond<.3&&!apart){apart=true;emit('msg','Apart, your bond fades')}if(apart&&close&&bond>.55){apart=false;rekindle(a,b)}
     if(close){const r=(1+2*bond)*(teamMods.has('bond')?3:1)*dt;for(const c of chars){c.tetherAcc=(c.tetherAcc||0)+r;if(c.tetherAcc>=1){c.tetherAcc-=1;healP(c,1,false)}}}tether=close?1:0}else{bond=0;tether=0}
   for(const p of pools){p.life-=dt;for(const c of chars)if(c.state==='ok'&&len(c.x-p.x,(c.y-p.y)*2)<26){p.hb=(p.hb||0)-dt;if(p.hb<=0){p.hb=.5;healP(c,4*(p.pw||1))}}}pools=pools.filter(p=>p.life>0);
   if(chars.every(c=>c.state!=='ok')&&!endState)endRun(false)}
@@ -1094,7 +1096,10 @@ function divStep(dt){if(STORY.on||chars.length<2||endState)return;
     if(T>=DIV.end){DIV.ph=2;DIV.rt=T;emit('div',0,0);emit('obj','Find each other');emit('story','divEnd',1)}}
   else if(DIV.ph===2){const [a,b]=chars;if(a.state==='ok'&&b.state==='ok'&&len(a.x-b.x,(a.y-b.y)*1.4)<60){reunite(a,b);DIV=null;emit('obj','')}else if(T-DIV.rt>30){DIV=null;emit('obj','')}}}
 function reunite(a,b){apart=false;bond=1;rekindle(a,b);for(const c of chars){c.pow=Math.max(c.pow,8);healP(c,c.max*.35)}emit('big',.45,1.06,.06,10);emit('msg','Reunited! Empowered for 8s');emit('story','reunite',1)}
-function useMemory(c){if(!DIVON||!DIV||DIV.ph!==1||c.state!=='ok'||c.memU===DIV.i+1)return;c.memU=DIV.i+1;emit('echo',c.idx,15);emit('story',c.cls==='lamp'?'memL':'memW',1)}
+function useMemory(c){if(!DIVON||!DIV||DIV.ph!==1||c.state!=='ok'||c.memU===DIV.i+1)return;c.memU=DIV.i+1;emit('echo',c.idx,8);halfKindle(c);emit('story',c.cls==='lamp'?'memL':'memW',1)}
+// Memory = half a Rekindle: half the heal, half the knockback, half the Empowered time, and the Bond held at 50% while the echo lasts
+function halfKindle(c){bond=Math.max(bond,.5);emit('rekindle',c.x,c.y);healP(c,10);c.pow=Math.max(c.pow,4);
+  for(const e of en){if(!alive(e))continue;const dx=e.x-c.x,dy=e.y-c.y,d=len(dx,dy*1.4)||1;if(d<60)hitE(e,15,c,{kx:dx/d*150,ky:dy/d*100,up:40,col:C.gold,crit:false})}}
 function echoMove(E,dt){const o=chars.find(q=>q.idx===E.o);if(!o)return;const tx=o.x-o.f*22,ty=o.y+5,k=Math.min(1,dt*5);E.x+=(tx-E.x)*k;E.y+=(ty-E.y)*k;E.t-=dt}
 function echoStep(dt){for(const E of echoes){echoMove(E,dt);const o=chars.find(q=>q.idx===E.o),p=o&&partnerOf(o);if(!o||!p||o.state!=='ok')continue;const bi=Math.floor(T/BEAT);if(bi===E.b)continue;E.b=bi;E.n=(E.n||0)+1;
     let t=null,bd=p.cls==='warden'?52:150;for(const e of en){if(!alive(e))continue;const d=len(e.x-E.x,(e.y-E.y)*1.4);if(d<bd){bd=d;t=e}}
@@ -2307,5 +2312,5 @@ window.__ddIntroSfx=k=>{try{audioInit();if(AC&&AC.state!=='running')AC.resume();
 $('bIntro').addEventListener('click',()=>{if(window.__ddIntro)window.__ddIntro()});
 window.__ddTitleSfx=k=>{try{audioInit();if(k==='thunder')taThunder(Math.random()<.4);else if(k==='spark')taUi('spark');else if(k==='bifrost')taBif();else if(k==='open'){titleAudio(true);taWhoosh()}}catch(_){}};
 window.__ddData=()=>({WDEF,MODS,PAIRS,DUOS,PAS,WBASE,CL,SPECN,ROT:[...rotElig()]});
-window.__dd={get DIV(){return DIV},get DIVON(){return DIVON},get echoes(){return echoes},get STORY(){return STORY},get WP(){return WP},get alt2(){return alt},get rot(){return [...rotElig()]},rotState:c=>rotState(c),get edge(){return edge},get TA(){return TA},get AC(){return AC},get spx(){return spx},sim,get chars(){return chars},get en(){return en},get mode(){return mode},get code(){return roomCode},get dome(){return dome},get combo(){return combo},get T(){return T},set T(v){T=v},get level(){return level},get xp(){return xp},set xp(v){xp=v},get LV(){return LV},get end(){return endState},get gems(){return gems},get kills(){return kills},applyCard,startLevel,spawnAt,get boss(){return boss},get alt(){return alt},set spec(v){SPEC=v},set altT(v){altT=v},set debT(v){debT=v},set chestT(v){chestT=v}};
+window.__dd={get bond(){return bond},get shk(){return shk},get DIV(){return DIV},get DIVON(){return DIVON},get echoes(){return echoes},get STORY(){return STORY},get WP(){return WP},get alt2(){return alt},get rot(){return [...rotElig()]},rotState:c=>rotState(c),get edge(){return edge},get TA(){return TA},get AC(){return AC},get spx(){return spx},sim,get chars(){return chars},get en(){return en},get mode(){return mode},get code(){return roomCode},get dome(){return dome},get combo(){return combo},get T(){return T},set T(v){T=v},get level(){return level},get xp(){return xp},set xp(v){xp=v},get LV(){return LV},get end(){return endState},get gems(){return gems},get kills(){return kills},applyCard,startLevel,spawnAt,get boss(){return boss},get alt(){return alt},set spec(v){SPEC=v},set altT(v){altT=v},set debT(v){debT=v},set chestT(v){chestT=v}};
 })();
