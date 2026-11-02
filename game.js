@@ -388,28 +388,36 @@ function readMove(){let ix=0,iy=0;if(keys.a||keys.arrowleft)ix--;if(keys.d||keys
   if(joy){const dx=joy.x-joy.ox,dy=joy.y-joy.oy,l=len(dx,dy);if(l>8){const m=Math.min(1,l/46);ix=dx/l*m;iy=dy/l*m}}const l=len(ix,iy);if(l>1){ix/=l;iy/=l}return[ix,iy]}
 
 /* ================= network ================= */
-let peer=null,conn=null,bc=null,roomCode='',lastRecv=0,connTimer=null;
+let peer=null,conn=null,bc=null,roomCode='',lastRecv=0,connTimer=null,mateAway=false;
+// a phone that locks or switches app tells the other one; the host pauses the run until both are back
+function awayShow(){const el=$('away');if(!el)return;const inRun=mode==='play'||mode==='pick';const stale=!solo&&inRun&&(mateJoined||!isHost)&&performance.now()-lastRecv>2500;
+  const show=inRun&&!solo&&(mateAway||stale);if(el.hidden===show){el.hidden=!show;el.querySelector('b').textContent=mateAway?"Your partner's phone is asleep":'Waiting for your partner';}}
+document.addEventListener('visibilitychange',()=>{if(solo||!(mateJoined||!isHost))return;send({t:'away',on:document.hidden?1:0})});
 const ALPHA='ABCDEFGHJKMNPQRSTUVWXYZ23456789';
 function genCode(){let s='';for(let i=0;i<4;i++)s+=ALPHA[Math.floor(Math.random()*ALPHA.length)];return s}
 function send(o){try{if(LOCAL){bc&&bc.postMessage({from:isHost?'h':'g',o})}else if(conn&&conn.open)conn.send(o)}catch(_){}}
 function netClose(){try{conn&&conn.close()}catch(_){}try{peer&&peer.destroy()}catch(_){}try{bc&&bc.close()}catch(_){}conn=null;peer=null;bc=null;mateJoined=false;clearTimeout(connTimer)}
-function hostNet(){isHost=true;solo=false;roomCode=genCode();
+// relay servers: phones on mobile data often cannot connect directly, so WebRTC falls back to a TURN relay (Metered Open Relay, time-limited credentials from its shared secret)
+let ICE=null;async function iceConfig(){if(ICE)return ICE;const base=[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:staticauth.openrelay.metered.ca:80'}];
+  try{const user=Math.floor(Date.now()/1000)+86400+':dd',k=await crypto.subtle.importKey('raw',new TextEncoder().encode('openrelayprojectsecret'),{name:'HMAC',hash:'SHA-1'},false,['sign']),sig=await crypto.subtle.sign('HMAC',k,new TextEncoder().encode(user)),cred=btoa(String.fromCharCode(...new Uint8Array(sig)));
+    ICE={iceServers:[...base,{urls:['turn:staticauth.openrelay.metered.ca:80','turn:staticauth.openrelay.metered.ca:443','turn:staticauth.openrelay.metered.ca:443?transport=tcp','turns:staticauth.openrelay.metered.ca:443?transport=tcp'],username:user,credential:cred}]}}catch(_){ICE={iceServers:base}}return ICE}
+async function hostNet(){isHost=true;solo=false;roomCode=genCode();
   if(LOCAL){bc=new BroadcastChannel('dd3-'+roomCode);bc.onmessage=ev=>{if(ev.data.from==='g')onData(ev.data.o)};showCode();return}
   if(typeof Peer==='undefined'){menuStatus('Networking failed to load. Reload the page.','err');return}
-  menuStatus('Opening a room…');peer=new Peer('ddeco-'+roomCode.toLowerCase(),{debug:1});
+  menuStatus('Opening a room…');const cfg=await iceConfig();peer=new Peer('ddeco-'+roomCode.toLowerCase(),{debug:1,config:cfg});
   peer.on('open',()=>showCode());
   peer.on('error',e=>{if(e.type==='unavailable-id'){peer.destroy();hostNet()}else if(mode==='lobby'&&!mateJoined)lobStatus('Connection problem ('+e.type+'). Try hosting again.','err');else if(mode==='menu')menuStatus('Could not open a room ('+e.type+').','err')});
   peer.on('connection',c=>{if(conn&&conn.open){c.close();return}conn=c;c.on('open',()=>{lastRecv=performance.now();onPartnerJoin()});c.on('data',onData);c.on('close',onPartnerLeft);c.on('error',onPartnerLeft)});
   peer.on('disconnected',()=>{try{peer.reconnect()}catch(_){}})}
-function joinNet(code){isHost=false;solo=false;roomCode=code;
+async function joinNet(code){isHost=false;solo=false;roomCode=code;
   if(LOCAL){bc=new BroadcastChannel('dd3-'+code);bc.onmessage=ev=>{if(ev.data.from==='h')onData(ev.data.o)};send({t:'hello'});return}
   if(typeof Peer==='undefined'){menuStatus('Networking failed to load. Reload the page.','err');return}
-  menuStatus('Connecting…');peer=new Peer({debug:1});
+  menuStatus('Connecting…');const cfg=await iceConfig();peer=new Peer({debug:1,config:cfg});
   peer.on('open',()=>{conn=peer.connect('ddeco-'+code.toLowerCase(),{reliable:true,serialization:'json'});
     conn.on('open',()=>{clearTimeout(connTimer);lastRecv=performance.now();send({t:'hello'})});conn.on('data',onData);conn.on('close',onHostLeft);conn.on('error',onHostLeft)});
   peer.on('error',e=>{clearTimeout(connTimer);if(e.type==='peer-unavailable')menuStatus('No game with that code. Check the letters.','err');else menuStatus('Could not connect ('+e.type+').','err');netClose()});
   connTimer=setTimeout(()=>{if(!conn||!conn.open){menuStatus('Could not reach your partner. Try again, or both on the same Wi-Fi.','err');netClose()}},15000)}
-function onPartnerJoin(){mateJoined=true;lobStatus('Partner joined','ok');sendLobby();updLobby()}
+function onPartnerJoin(){mateJoined=true;mateAway=false;lobStatus('Partner joined','ok');sendLobby();updLobby()}
 function onPartnerLeft(){if(!mateJoined)return;mateJoined=false;conn=null;mateCls=null;
   if(mode==='play'||mode==='pick'||mode==='end'){chars=chars.filter(c=>c.idx===0);say('Partner left');if(LV){LV=null;if(mode==='pick')go('play')}}else{lobStatus('Partner left. Waiting for someone to join','err');updLobby()}}
 function onHostLeft(){if(mode==='menu')return;netClose();go('menu');menuStatus('The host left the game.','err')}
@@ -418,6 +426,7 @@ function onData(m){lastRecv=performance.now();
   switch(m.t){
     case 'hello':if(isHost&&LOCAL)onPartnerJoin();break;
     case 'dlg':if(isHost&&window.DLG)DLG.advance();break;
+    case 'away':mateAway=!!m.on;awayShow();break;
     case 'pick':if(isHost){mateCls=m.c;if(m.s&&m.c)SPEC[m.c]=m.s;sendLobby();updLobby()}break;
     case 'lobby':if(!isHost){if(mode==='menu')enterLobby();mateCls=m.h;if(m.sp)SPEC=Object.assign({},m.sp);if(m.g)myCls=m.g;else{myCls=m.h==='warden'?'lamp':'warden';send({t:'pick',c:myCls,s:SPEC[myCls]})}updLobby()}break;
     case 'start':if(!isHost)startGuest(m);break;
@@ -1401,7 +1410,7 @@ function update(dt){tAll+=dt;beatTick(dt);if(msgT>0){msgT-=dt;if(msgT<=0)$('msg'
   for(const d of dn)d.t+=dt;dn=dn.filter(d=>d.t<.8);for(const b of banners)b.t+=dt;banners=banners.filter(b=>b.t<2.4);tintA=Math.max(0,tintA-dt*1.2);
   if(learnQ&&mode==='play'){const q=learnQ;learnQ=null;$('learnT').textContent=q.tag.toUpperCase();$('learnN').textContent=q.name;$('learnN').style.color=q.col;$('learnD').textContent=q.desc;$('learn').classList.add('on');learnT=3}
   if(learnT>0){learnT-=dt;if(learnT<=0)$('learn').classList.remove('on')}
-  const paused=!!LV||!!endState||!!(window.DLG&&DLG.blocking());
+  const paused=!!LV||!!endState||!!(window.DLG&&DLG.blocking())||(isHost&&mateAway);
   const me=meC();if(!me)return;
   if(hitstop>0&&!paused){hitstop-=dt;const [hx,hy]=readMove();moveChar(me,hx,hy,dt);cam.x=me.x;cam.y=me.y-16;render();return}
   if(edge.swap&&solo&&!paused){ME=1-ME;setHud()}
@@ -1448,7 +1457,7 @@ function update(dt){tAll+=dt;beatTick(dt);if(msgT>0){msgT-=dt;if(msgT<=0)$('msg'
    const sp=len(mvx,mvy),LA=RM?0:24,wx=sp>8?mvx/sp*LA:0,wy=sp>8?mvy/sp*LA*.85:0,kk=Math.min(1,dt*(sp>8?2.6:1.4));cam.lx+=(wx-cam.lx)*kk;cam.ly+=(wy-cam.ly)*kk;if(sp>400){cam.lx=cam.ly=0}}
   {const tx=me.x+cam.lx,ty=me.y-16+cam.ly,d=len(tx-cam.x,ty-cam.y);if(d>18){const k=Math.min(1,dt*14);cam.x+=(tx-cam.x)*k;cam.y+=(ty-cam.y)*k}else{cam.x=tx;cam.y=ty}}
   const sd=Math.pow(.0008,dt);shk.x*=sd;shk.y*=sd;zoom=1+(zoom-1)*Math.pow(.004,dt);flashA=Math.max(0,flashA-dt*3.5);
-  hud();
+  hud();awayShow();
   if(!solo){if(isHost&&mateJoined){snapT-=dt;if(snapT<=0){snapT=1/30;snapshot()}}
     else if(!isHost){inT-=dt;if(inT<=0||evQ.length){inT=1/30;send({t:'i',x:r1(me.x),y:r1(me.y),f:me.f,mv:me.moving?1:0,mx:r2(me.mx),my:r2(me.my),da:me.dash>0?1:0,z:r1(me.z||0),ev:evQ});evQ=[]}}
     const stale=(mateJoined||!isHost)&&performance.now()-lastRecv>2500;$('net').textContent=stale?'Connection weak':''}
@@ -2325,5 +2334,5 @@ window.__ddIntroSfx=k=>{try{audioInit();if(AC&&AC.state!=='running')AC.resume();
 $('bIntro').addEventListener('click',()=>{if(window.__ddIntro)window.__ddIntro()});
 window.__ddTitleSfx=k=>{try{audioInit();if(k==='thunder')taThunder(Math.random()<.4);else if(k==='spark')taUi('spark');else if(k==='bifrost')taBif();else if(k==='open'){titleAudio(true);taWhoosh()}}catch(_){}};
 window.__ddData=()=>({WDEF,MODS,PAIRS,DUOS,PAS,WBASE,CL,SPECN,ROT:[...rotElig()]});
-window.__dd={get bond(){return bond},get shk(){return shk},get DIV(){return DIV},get DIVON(){return DIVON},get echoes(){return echoes},get STORY(){return STORY},get WP(){return WP},get alt2(){return alt},get rot(){return [...rotElig()]},rotState:c=>rotState(c),get edge(){return edge},get TA(){return TA},get AC(){return AC},get spx(){return spx},sim,get chars(){return chars},get en(){return en},get mode(){return mode},get code(){return roomCode},get dome(){return dome},get combo(){return combo},get T(){return T},set T(v){T=v},get level(){return level},get xp(){return xp},set xp(v){xp=v},get LV(){return LV},get end(){return endState},get gems(){return gems},get kills(){return kills},applyCard,startLevel,spawnAt,get boss(){return boss},get alt(){return alt},set spec(v){SPEC=v},set altT(v){altT=v},set debT(v){debT=v},set chestT(v){chestT=v}};
+window.__dd={iceConfig,get bond(){return bond},get shk(){return shk},get DIV(){return DIV},get DIVON(){return DIVON},get echoes(){return echoes},get STORY(){return STORY},get WP(){return WP},get alt2(){return alt},get rot(){return [...rotElig()]},rotState:c=>rotState(c),get edge(){return edge},get TA(){return TA},get AC(){return AC},get spx(){return spx},sim,get chars(){return chars},get en(){return en},get mode(){return mode},get code(){return roomCode},get dome(){return dome},get combo(){return combo},get T(){return T},set T(v){T=v},get level(){return level},get xp(){return xp},set xp(v){xp=v},get LV(){return LV},get end(){return endState},get gems(){return gems},get kills(){return kills},applyCard,startLevel,spawnAt,get boss(){return boss},get alt(){return alt},set spec(v){SPEC=v},set altT(v){altT=v},set debT(v){debT=v},set chestT(v){chestT=v}};
 })();

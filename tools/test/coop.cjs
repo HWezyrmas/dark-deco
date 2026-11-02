@@ -28,6 +28,10 @@ await H.evaluate(()=>{__dd.xp=20});await W(1500);
 const pk=async p=>p.evaluate(()=>[__dd.mode,!!__dd.LV,document.querySelectorAll('.pick').length]);log('levelup H',await pk(H),'G',await pk(G));await W(1500);log('card text H',await H.evaluate(()=>[...document.querySelectorAll('.pick')].map(b=>b.innerText.replace(/\s+/g,' ').slice(0,40))),'G',await G.evaluate(()=>[...document.querySelectorAll('.pick')].map(b=>b.innerText.replace(/\s+/g,' ').slice(0,40))));log('b3 G',await G.evaluate(()=>[document.getElementById('b3').hidden,document.body.className]));await H.screenshot({path:O+'/c_lvH.png'});await G.screenshot({path:O+'/c_lvG.png'});
 for(const p of [H,G]){await p.evaluate(()=>{const b=document.querySelector('.pick');b&&b.click()});await W(500)}
 await W(1500);log('after picks H',await pk(H),'G',await pk(G));
+// guest phone goes to sleep and comes back
+const vis=(p,h)=>p.evaluate(h=>{Object.defineProperty(document,'hidden',{value:h,configurable:true});document.dispatchEvent(new Event('visibilitychange'))},h);
+await vis(G,true);await W(400);const ta=await H.evaluate(()=>__dd.T);await W(1500);log('away: host T moved',(await H.evaluate(()=>__dd.T))-ta,'overlay H',await H.evaluate(()=>!document.getElementById('away').hidden));
+await vis(G,false);await W(800);const tb=await H.evaluate(()=>__dd.T);await W(1000);log('back: host T moved',((await H.evaluate(()=>__dd.T))-tb).toFixed(2),'overlay H',await H.evaluate(()=>!document.getElementById('away').hidden));
 // keep both alive
 const god=()=>H.evaluate(()=>{for(const c of __dd.chars){c.hp=c.max}});
 // guest moves and uses skills
