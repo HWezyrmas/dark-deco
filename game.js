@@ -315,6 +315,7 @@ const FXF={
   star(x,y,col){for(let i=0;i<14;i++){const a=i/14*TAU,s=70+rnd()*30;parts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s*.6,life:.35,max:.35,col,em:true,streak:1})}},
   num(x,y,txt,col,big){num(x,y,txt,col,big)},
   sfx(n,a){SFX[n]&&SFX[n](a)},
+  dlgs(i){if(!isHost&&window.DLG)DLG.sync(i)},
   divwarn(){DIVW=tAll;SFX.crack&&SFX.crack()},
   div(on,i){DIVON=!!on;if(on){DIVI=i;for(const c of chars)c.side=c.cls==='lamp'?1:-1;SFX.boom()}else{echoes=[];for(const c of chars)c.side=0;FXF.star(480,129,C.gold);FXF.star(480,349,C.gold);SFX.flare&&SFX.flare()}},
   echo(ci,dur){const o=chars.find(q=>q.idx===ci);if(!o)return;const E={o:ci,t:dur,max:dur,x:o.x-o.f*22,y:o.y+5,b:-1,f:o.f};echoes.push(E);waves.push({x:E.x,y:E.y,t:0,dur:.6,r:50,col:o.cls==='lamp'?'#9fe8ff':'#ffe2a0',w:3});puff(E.x,E.y-14,20,'#ffffff',80,.6,true,14,1);SFX.flare&&SFX.flare()},
@@ -416,6 +417,7 @@ function sendLobby(){send({t:'lobby',h:myCls,g:mateCls,sp:SPEC})}
 function onData(m){lastRecv=performance.now();
   switch(m.t){
     case 'hello':if(isHost&&LOCAL)onPartnerJoin();break;
+    case 'dlg':if(isHost&&window.DLG)DLG.advance();break;
     case 'pick':if(isHost){mateCls=m.c;if(m.s&&m.c)SPEC[m.c]=m.s;sendLobby();updLobby()}break;
     case 'lobby':if(!isHost){if(mode==='menu')enterLobby();mateCls=m.h;if(m.sp)SPEC=Object.assign({},m.sp);if(m.g)myCls=m.g;else{myCls=m.h==='warden'?'lamp':'warden';send({t:'pick',c:myCls,s:SPEC[myCls]})}updLobby()}break;
     case 'start':if(!isHost)startGuest(m);break;
@@ -469,7 +471,7 @@ $('code').addEventListener('keydown',e=>{if(e.key==='Enter')$('bJoin').click()})
 $('bSolo').addEventListener('click',()=>{audioInit();netClose();isHost=true;solo=true;alone=false;myCls='warden';enterLobby();updLobby()});
 $('bStart').addEventListener('click',()=>{audioInit();startHost()});
 $('bLeave').addEventListener('click',()=>{netClose();go('menu');menuStatus('')});
-$('bAgain').addEventListener('click',()=>{if(isHost)startHost()});
+$('bAgain').addEventListener('click',()=>{if(isHost){PROLOGUE=false;startHost()}});
 $('bEndLeave').addEventListener('click',()=>{netClose();go('menu');menuStatus('')});
 
 let wakeLock=null;async function wake(){try{wakeLock=await navigator.wakeLock.request('screen')}catch(_){}}
@@ -1086,7 +1088,8 @@ function updPlayers(dt){
   if(chars.every(c=>c.state!=='ok')&&!endState)endRun(false)}
 let tether=0,bond=1,apart=false,chestQ=0;
 function divStep(dt){if(STORY.on||chars.length<2||endState)return;
-  if(!DIV){if(bossSpawned)return;const i=DIV_T.findIndex((t,k)=>T>=t-3&&!divDone[k]);if(i<0)return;divDone[i]=1;DIV={i,ph:0,t0:T+3};emit('divwarn');emit('sfx','warn');emit('msg','The bridges are burning!');emit('story','div',1);return}
+  if(bossSpawned&&DIV&&DIV.ph<2){if(DIVON)emit('div',0,0);emit('obj','');DIV=null}
+  if(!DIV){if(bossSpawned)return;const i=DIV_T.findIndex((t,k)=>T>=t-3&&T<t+10&&!divDone[k]);if(i<0)return;divDone[i]=1;DIV={i,ph:0,t0:T+3};emit('divwarn');emit('sfx','warn');emit('msg','The bridges are burning!');emit('story','div',1);return}
   if(DIV.ph===0&&T>=DIV.t0){DIV.ph=1;DIV.end=T+DIV_DUR;const W=chars.find(c=>c.cls==='warden'),L=chars.find(c=>c.cls==='lamp');
     for(const [c,x,y] of [[W,200,240],[L,640,240]]){if(!c)continue;if(c.state!=='ok'){c.state='ok';c.hp=Math.max(c.hp,c.max*.35);c.out=0;c.down=0}c.leap=null;c.dash=0;c.x=x;c.y=y;c.tp=(c.tp||0)+1;
       for(const e of en){if(!alive(e))continue;const dx=e.x-x,dy=e.y-y,d=len(dx,dy)||1;if(d<55){e.x=x+dx/d*60;e.y=y+dy/d*60;if(!walkable(e.x,e.y)){e.x=x+60;e.y=y}}}
@@ -1221,6 +1224,8 @@ function hostStep(dt){
   for(let i=0;i<ELITE_T.length;i++)if(T>=ELITE_T[i]-3&&!dangerDone[i]){dangerDone[i]=1;emit('danger','DANGER','A Gatekeeper is coming')}
   if(T>=BOSS_T-3&&!dangerDone[9]){dangerDone[9]=1;emit('danger','BOSS','The Foreman approaches')}
   for(let i=0;i<ELITE_T.length;i++)if(T>=ELITE_T[i]&&!eliteDone[i]){eliteDone[i]=1;const n=i+1;for(let k=0;k<n;k++)spawnAt(4,chars[k%chars.length]);storySay(i?'gate2':'gate1',1);emit('msg',n>1?'Two Gatekeepers rise':'A Gatekeeper rises');emit('sfx','warn')}
+  // dawn: the sun comes up at 12:00 and burns the Foreman away, so holding the roof that long is a win
+  if(T>=RUN&&!endState&&!STORY.on){emit('msg','Dawn breaks');emit('big',.8,1.06,.1,8);emit('sfx','win');if(boss&&alive(boss)){emit('imp','holy',r1(boss.x),r1(boss.y),140,.8);boss.dead=true}endRun(true,true)}
   if(T>=BOSS_T&&!bossSpawned){bossSpawned=true;boss=spawnAt(5,chars[0]);emit('msg','THE FOREMAN');emit('sfx','warn');emit('big',.3,1.06,0,10);storySay('boss',0)}}
   updEnemies(dt);updHaz(dt);updProj(dt);
   if(dome){dome.t+=dt;if(dome.sanct>0)dome.sanct-=dt;if(dome.t>=dome.life){emit('puff',dome.x,dome.y-14,24,C.cyan,70,.5,true,0,1);dome=null}}
@@ -1232,8 +1237,8 @@ function hostStep(dt){
   updAltars(dt);
   if(!LV&&chestQ>0&&!endState){chestQ--;startLevel('chest');return}
   if(!LV&&xp>=need(level)&&!endState)startLevel()}
-function endRun(win){if(TUT){TUT=null;tutShow()}if(endState)return;endState={win,T:Math.floor(T),level,kills};showEnd()}
-function showEnd(){const s=endState;go('end');$('sEnd').style.backgroundImage=`linear-gradient(180deg,rgba(9,7,20,.2),rgba(9,7,20,.55) 45%,rgba(9,7,20,.92)),url(story/${s.win?'s4':'s5'}.jpg)`;if(window.DLG)setTimeout(()=>DLG.play(SCRIPT[s.win?'win':'lose'](),{bark:true}),600);$('endEye').textContent=s.win?'The city breathes again':'The fog wins tonight';$('endTitle').textContent=s.win?'Rooftops cleared':'Lost to the fog';$('endBan').className=s.win?'win':'';
+function endRun(win,dawn){if(TUT){TUT=null;tutShow()}if(endState)return;endState={win,dawn:!!dawn,T:Math.floor(T),level,kills};showEnd()}
+function showEnd(){const s=endState;go('end');$('sEnd').style.backgroundImage=`linear-gradient(180deg,rgba(9,7,20,.2),rgba(9,7,20,.55) 45%,rgba(9,7,20,.92)),url(story/${s.win?'s4':'s5'}.jpg)`;if(window.DLG)setTimeout(()=>DLG.play(SCRIPT[s.win?'win':'lose'](),{bark:true}),600);$('endEye').textContent=s.win?(s.dawn?'You held the roof until sunrise':'The Foreman falls before dawn'):'The fog wins tonight';$('endTitle').textContent=s.win?(s.dawn?'Dawn breaks':'Rooftops cleared'):'Lost to the fog';$('endBan').className=s.win?'win':'';
   const tt=s.T;$('endStats').innerHTML=`<span>Time</span><b>${String(Math.floor(tt/60)).padStart(2,'0')}:${String(tt%60).padStart(2,'0')}</b><span>Level</span><b>${s.level}</b><span>Shadows cleared</span><b>${s.kills}</b>`;
   $('bAgain').hidden=!isHost;$('endNote').textContent=isHost?'':'Waiting for the host to start another run.';if(s.win)SFX.win()}
 
@@ -1849,14 +1854,16 @@ function prepTall(im,sx=0,sw=im.width,sh=im.height){const ks=SPR_SCALE[PREP_CLS]
     if(v>.7&&s>.45){ed.data[p*4]=r;ed.data[p*4+1]=gg;ed.data[p*4+2]=b;ed.data[p*4+3]=170}if(v>.85&&r>200&&gg>120&&b<140&&r>=gg){lx+=p%TW;ly+=(p/TW)|0;ln++}}
   eg2.putImageData(ed,0,0);return{c:f,e,lan:ln>=2?[lx/ln-(TFX-FX),ly/ln-(TFY-FY)]:null,tall:1}}
 function stripFrames(im){const fh=im.height,n=Math.max(1,Math.round(im.width/fh)),o=[];for(let i=0;i<n;i++)o.push(prepTall(im,i*fh,fh,fh));return o}
-(function loadWalks(){for(const cls of ['warden','lamp']){const arr=[];let got=0;ROTS.forEach((d,i)=>{const im=new Image();im.onload=()=>{PREP_CLS=cls;arr[i]=stripFrames(im);SPR[cls].walk8=arr};im.onerror=()=>{};im.src='sprites/'+cls+'/walk/'+d+'.png'})}})();
-(function loadDirAnims(){for(const [cls,names] of [['warden',['attack','attack2','attack3','spin','hurt','down','leap','cast']],['lamp',['shoot','cast','hurt','down','twirl']]])for(const nm of names)ROTS.forEach((d,i)=>{const im=new Image();im.onload=()=>{PREP_CLS=cls;const s=SPR[cls];(s[nm+'8']=s[nm+'8']||[])[i]=stripFrames(im)};im.onerror=()=>{};im.src='sprites/'+cls+'/'+nm+'/'+d+'.png'})})();
+// sprite files that exist (requests for any other combination are skipped instead of failing)
+const SPRHAVE=new Set(["hero_reference", "lamp/rot/east", "lamp/rot/north", "lamp/rot/north-east", "lamp/rot/north-west", "lamp/rot/south", "lamp/rot/south-east", "lamp/rot/south-west", "lamp/rot/west", "lamp/shoot/east", "lamp/shoot/north", "lamp/shoot/south", "lamp/walk/east", "lamp/walk/north", "lamp/walk/south", "warden/attack/east", "warden/attack/south-east", "warden/attack2/east", "warden/attack2/south-east", "warden/attack3/east", "warden/attack3/south-east", "warden/cast/south-east", "warden/rot/east", "warden/rot/north", "warden/rot/north-east", "warden/rot/north-west", "warden/rot/south", "warden/rot/south-east", "warden/rot/south-west", "warden/rot/west", "warden/spinrot/east", "warden/spinrot/north", "warden/spinrot/north-east", "warden/spinrot/north-west", "warden/spinrot/south", "warden/spinrot/south-east", "warden/spinrot/south-west", "warden/spinrot/west", "warden/walk/east", "warden/walk/north", "warden/walk/north-east", "warden/walk/north-west", "warden/walk/south", "warden/walk/south-east", "warden/walk/south-west", "warden/walk/west"]);
+(function loadWalks(){for(const cls of ['warden','lamp']){const arr=[];let got=0;ROTS.forEach((d,i)=>{const im=new Image();im.onload=()=>{PREP_CLS=cls;arr[i]=stripFrames(im);SPR[cls].walk8=arr};im.onerror=()=>{};if(SPRHAVE.has(cls+'/walk/'+d))im.src='sprites/'+cls+'/walk/'+d+'.png'})}})();
+(function loadDirAnims(){for(const [cls,names] of [['warden',['attack','attack2','attack3','spin','hurt','down','leap','cast']],['lamp',['shoot','cast','hurt','down','twirl']]])for(const nm of names)ROTS.forEach((d,i)=>{const im=new Image();im.onload=()=>{PREP_CLS=cls;const s=SPR[cls];(s[nm+'8']=s[nm+'8']||[])[i]=stripFrames(im)};im.onerror=()=>{};if(SPRHAVE.has(cls+'/'+nm+'/'+d))im.src='sprites/'+cls+'/'+nm+'/'+d+'.png'})})();
 // pick a direction's frames; missing directions borrow the mirrored or nearest one
 function dirFrames(arr,di){if(!arr)return null;if(arr[di])return{fr:arr[di],flip:1};const mir=(12-di)%8;if(arr[mir])return{fr:arr[mir],flip:-1};
   for(let k=1;k<4;k++)for(const d of [(di+k)%8,(di+8-k)%8]){if(arr[d])return{fr:arr[d],flip:1};const m=(12-d)%8;if(arr[m])return{fr:arr[m],flip:-1}}return null}
-(function loadRots(){for(const cls of ['warden','lamp'])for(const [dir,key] of [['rot','rot'],['spinrot','spinRot']]){const arr=[];let got=0;ROTS.forEach((d,i)=>{const im=new Image();im.onload=()=>{PREP_CLS=cls;arr[i]=prepTall(im);if(++got===8)SPR[cls][key]=arr};im.onerror=()=>{};im.src='sprites/'+cls+'/'+dir+'/'+d+'.png'})}})();
+(function loadRots(){for(const cls of ['warden','lamp'])for(const [dir,key] of [['rot','rot'],['spinrot','spinRot']]){const arr=[];let got=0;ROTS.forEach((d,i)=>{const im=new Image();im.onload=()=>{PREP_CLS=cls;arr[i]=prepTall(im);if(++got===8)SPR[cls][key]=arr};im.onerror=()=>{};if(SPRHAVE.has(cls+'/'+dir+'/'+d))im.src='sprites/'+cls+'/'+dir+'/'+d+'.png'})}})();
 function dirIdx(dx,dy){return(Math.round(Math.atan2(dy,dx)/(Math.PI/4))+8)%8}
-(function loadSprites(){for(const cls in SPR_ANIMS)for(const a of SPR_ANIMS[cls]){const im=new Image();im.onload=()=>{SPR[cls][a]=prepSheet(im)};im.onerror=()=>{};im.src='sprites/'+cls+'/'+a+'.png'}})();
+(function loadSprites(){for(const cls in SPR_ANIMS)for(const a of SPR_ANIMS[cls]){const im=new Image();im.onload=()=>{SPR[cls][a]=prepSheet(im)};im.onerror=()=>{};if(SPRHAVE.has(cls+'/'+a))im.src='sprites/'+cls+'/'+a+'.png'}})();
 function spriteFor(c){const set=SPR[c.cls];if(set&&set.rot&&!set.idle){
     if(c.cls==='warden'&&(c.ww>0||c.bs>0)){c.sprAnim='spin';return(set.spinRot||set.rot)[Math.floor(tAll*(c.bs>0?24:18))%8]}
     const mov=c.moving&&(Math.abs(c.mx)>.2||Math.abs(c.my)>.2);
@@ -2311,6 +2318,9 @@ function sim(sec,opt={}){window.__DLOG={};const dt=1/30,out={downs:0,minHp:[999,
   out.boss=boss?Math.round(boss.hp/boss.max*100):-1;out.T=Math.round(T);out.level=level;out.kills=kills;out.end=endState;out.en=en.length;out.kits=chars.map(c=>c.weapons.map(w=>w.id+w.lv).join(' ')+' | '+Object.entries(c.pv).map(([k,v])=>k+v).join(' '));out.teamMods=[...teamMods];out.hp=chars.map(c=>Math.round(c.hp)+'/'+Math.round(c.max)+c.state[0]);
   const tot=Object.values(__DLOG).reduce((a,b)=>a+b,0)||1;out.dmg=Object.entries(__DLOG).sort((a,b)=>b[1]-a[1]).map(([k,v])=>k+' '+Math.round(v/tot*100)+'%');return out}
 window.__ddBlip=w=>{if(!AC||muted||AC.state!=='running')return;const t=AC.currentTime,o=AC.createOscillator(),g=AC.createGain();o.type=w==='foreman'?'sawtooth':'triangle';o.frequency.value=(w==='lamp'?700:w==='warden'?260:w==='foreman'?110:420)*(.94+Math.random()*.12);g.gain.setValueAtTime(.035,t);g.gain.exponentialRampToValueAtTime(.0001,t+.06);o.connect(g);g.connect(master);o.start(t);o.stop(t+.07)};
+// dialogue sync: the guest asks the host to advance; the host broadcasts the line index
+window.__ddDlgRemote=()=>{if(isHost||solo||mode!=='play'&&mode!=='end')return false;send({t:'dlg'});return true};
+window.__ddDlgSync=i=>{if(isHost&&!solo)emit('dlgs',i)};
 window.__ddIntroSfx=k=>{try{audioInit();if(AC&&AC.state!=='running')AC.resume();if(k==='music'||k==='unlock')titleAudio(true);else if(k==='thunder')taThunder(true);else if(k==='boom'){SFX.boom();SFX.slam&&SFX.slam()}else if(k==='chime')taUi('main');else if(k==='fizz')taUi('spark')}catch(_){}};
 $('bIntro').addEventListener('click',()=>{if(window.__ddIntro)window.__ddIntro()});
 window.__ddTitleSfx=k=>{try{audioInit();if(k==='thunder')taThunder(Math.random()<.4);else if(k==='spark')taUi('spark');else if(k==='bifrost')taBif();else if(k==='open'){titleAudio(true);taWhoosh()}}catch(_){}};

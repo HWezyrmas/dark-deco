@@ -694,6 +694,8 @@ body.inlobby #tLogo,body.inlobby #tHeroes{opacity:0!important}
 #bM{right:calc(env(safe-area-inset-right,0px) + 18px);bottom:calc(env(safe-area-inset-bottom,0px) + 250px);width:78px;height:78px;--cc:#ffe2a0;filter:drop-shadow(0 0 12px rgba(255,226,160,.8));animation:memp 1.2s ease-in-out infinite}
 #bM:not([hidden]){display:grid}@keyframes memp{50%{filter:drop-shadow(0 0 22px rgba(159,232,255,.95));transform:scale(1.06)}}
 #bM{background:url(ui/memory_btn.png) center/100% 100% no-repeat;width:84px;height:84px;padding-bottom:2px}#bM::before,#bM::after{content:none}
+#dlg.wait .dtx::after{content:'Waiting for partner…';position:absolute;right:26px;bottom:4px;font:600 9px var(--ui);letter-spacing:.14em;text-transform:uppercase;color:var(--wc);opacity:.8}
+#b3{width:72px;height:72px;right:calc(max(16px,env(safe-area-inset-right,0px)) + 106px);bottom:calc(env(safe-area-inset-bottom,0px) + 112px)}
 </style>
 </head>
 <body>
@@ -770,8 +772,8 @@ body.inlobby #tLogo,body.inlobby #tHeroes{opacity:0!important}
     </div>
     <div class="status" id="lobStatus">Waiting for your partner to join</div>
     <div class="htabs" role="tablist" aria-label="Choose your hero">
-      <button class="cls htab" data-c="warden" aria-pressed="false"><img src="portraits/warden.webp?v=1793618583" alt=""><span><b>Warden</b><small>Damage</small></span><i class="tg me">You</i><i class="tg mate">Partner</i></button>
-      <button class="cls htab" data-c="lamp" aria-pressed="false"><img src="portraits/lamp.webp?v=1793618583" alt=""><span><b>Lamplighter</b><small>Support</small></span><i class="tg me">You</i><i class="tg mate">Partner</i></button>
+      <button class="cls htab" data-c="warden" aria-pressed="false"><img src="portraits/warden.webp?v=1793631578" alt=""><span><b>Warden</b><small>Damage</small></span><i class="tg me">You</i><i class="tg mate">Partner</i></button>
+      <button class="cls htab" data-c="lamp" aria-pressed="false"><img src="portraits/lamp.webp?v=1793631578" alt=""><span><b>Lamplighter</b><small>Support</small></span><i class="tg me">You</i><i class="tg mate">Partner</i></button>
     </div>
     <div class="hstage" id="lStage">
       <div class="srays"></div><div class="splat"><i></i><i></i><i></i></div>
@@ -930,10 +932,10 @@ body.inlobby #tLogo,body.inlobby #tHeroes{opacity:0!important}
 </div>
 
 <script src="peerjs.min.js"></script>
-<script src="icons.js?v=1793618583"></script>
-<script src="dlg.js?v=1793618583"></script>
-<script src="intro.js?v=1793618583"></script>
-<script src="title.js?v=1793618583"></script>
-<script src="game.js?v=1793618583"></script>
+<script src="icons.js?v=1793631578"></script>
+<script src="dlg.js?v=1793631578"></script>
+<script src="intro.js?v=1793631578"></script>
+<script src="title.js?v=1793631578"></script>
+<script src="game.js?v=1793631578"></script>
 </body>
 </html>
