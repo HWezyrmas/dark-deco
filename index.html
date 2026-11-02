@@ -693,6 +693,7 @@ body.inlobby #tLogo,body.inlobby #tHeroes{opacity:0!important}
 #sLobby .mate{gap:6px}#sLobby .mate .spec{padding:5px 6px}#sLobby .mate .botTg{padding:6px 8px}
 #bM{right:calc(env(safe-area-inset-right,0px) + 18px);bottom:calc(env(safe-area-inset-bottom,0px) + 250px);width:78px;height:78px;--cc:#ffe2a0;filter:drop-shadow(0 0 12px rgba(255,226,160,.8));animation:memp 1.2s ease-in-out infinite}
 #bM:not([hidden]){display:grid}@keyframes memp{50%{filter:drop-shadow(0 0 22px rgba(159,232,255,.95));transform:scale(1.06)}}
+#bM{background:url(ui/memory_btn.png) center/100% 100% no-repeat;width:84px;height:84px;padding-bottom:2px}#bM::before,#bM::after{content:none}
 </style>
 </head>
 <body>
@@ -740,7 +741,7 @@ body.inlobby #tLogo,body.inlobby #tHeroes{opacity:0!important}
 <div id="combo"><span id="cnum">0</span><span id="clbl">HITS</span></div>
 <div id="msg"></div>
 <div id="learn" aria-live="polite"><div class="lt" id="learnT"></div><div class="ln" id="learnN"></div><div class="ld" id="learnD"></div></div>
-<div id="tc"><div class="tb" id="b1">LEAP</div><div class="tb" id="b2">DOME</div><div class="tb" id="b3" hidden style="--sym:url(ui/sym_dome.png)">WARD</div><div class="tb mem" id="bM" hidden style="--sym:url(ui/sym_bond.png)">HER</div></div>
+<div id="tc"><div class="tb" id="b1">LEAP</div><div class="tb" id="b2">DOME</div><div class="tb" id="b3" hidden style="--sym:url(ui/sym_dome.png)">WARD</div><div class="tb mem" id="bM" hidden>HER</div></div>
 
 <div class="scr" id="sMenu">
   <div class="card">
@@ -769,8 +770,8 @@ body.inlobby #tLogo,body.inlobby #tHeroes{opacity:0!important}
     </div>
     <div class="status" id="lobStatus">Waiting for your partner to join</div>
     <div class="htabs" role="tablist" aria-label="Choose your hero">
-      <button class="cls htab" data-c="warden" aria-pressed="false"><img src="portraits/warden.webp?v=1793614818" alt=""><span><b>Warden</b><small>Damage</small></span><i class="tg me">You</i><i class="tg mate">Partner</i></button>
-      <button class="cls htab" data-c="lamp" aria-pressed="false"><img src="portraits/lamp.webp?v=1793614818" alt=""><span><b>Lamplighter</b><small>Support</small></span><i class="tg me">You</i><i class="tg mate">Partner</i></button>
+      <button class="cls htab" data-c="warden" aria-pressed="false"><img src="portraits/warden.webp?v=1793615081" alt=""><span><b>Warden</b><small>Damage</small></span><i class="tg me">You</i><i class="tg mate">Partner</i></button>
+      <button class="cls htab" data-c="lamp" aria-pressed="false"><img src="portraits/lamp.webp?v=1793615081" alt=""><span><b>Lamplighter</b><small>Support</small></span><i class="tg me">You</i><i class="tg mate">Partner</i></button>
     </div>
     <div class="hstage" id="lStage">
       <div class="srays"></div><div class="splat"><i></i><i></i><i></i></div>
@@ -929,10 +930,10 @@ body.inlobby #tLogo,body.inlobby #tHeroes{opacity:0!important}
 </div>
 
 <script src="peerjs.min.js"></script>
-<script src="icons.js?v=1793614818"></script>
-<script src="dlg.js?v=1793614818"></script>
-<script src="intro.js?v=1793614818"></script>
-<script src="title.js?v=1793614818"></script>
-<script src="game.js?v=1793614818"></script>
+<script src="icons.js?v=1793615081"></script>
+<script src="dlg.js?v=1793615081"></script>
+<script src="intro.js?v=1793615081"></script>
+<script src="title.js?v=1793615081"></script>
+<script src="game.js?v=1793615081"></script>
 </body>
 </html>
