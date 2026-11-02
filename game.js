@@ -22,8 +22,10 @@ let evDone=[],dangerDone=[];
 /* ================= canvases ================= */
 let W=0,H=0,DPR=1,PX=3,lw=0,lh=0;
 const LOW=mk(1,1),EM=mk(1,1),B1=mk(1,1),b1=B1.getContext('2d'),B2=mk(1,1),b2=B2.getContext('2d');let lg=LOW.getContext('2d'),eg=EM.getContext('2d');
-function resize(){W=innerWidth;H=innerHeight;DPR=Math.min(2,window.devicePixelRatio||1);cv.width=Math.round(W*DPR);cv.height=Math.round(H*DPR);
-  {const s=Math.max(2,Math.round(Math.min(W,H)*DPR/300));PX=s/DPR}lw=Math.ceil(W/PX);lh=Math.ceil(H/PX);LOW.width=EM.width=lw;LOW.height=EM.height=lh;
+// Sharpness: each game pixel covers a whole number of the phone's real pixels (s). The canvas holds up to 3 pixels per game pixel and the
+// browser enlarges it without smoothing (CSS pixelated), so 3x phones stay crisp without paying for a full-resolution canvas.
+function resize(){W=innerWidth;H=innerHeight;const dd=Math.min(3,Math.round(window.devicePixelRatio||1)||1);
+  const s=Math.max(2,Math.round(Math.min(W,H)*dd/300));PX=s/dd;lw=Math.ceil(W/PX);lh=Math.ceil(H/PX);const cs=Math.min(s,3);DPR=cs/PX;cv.width=lw*cs;cv.height=lh*cs;LOW.width=EM.width=lw;LOW.height=EM.height=lh;
   B1.width=Math.ceil(lw/2);B1.height=Math.ceil(lh/2);B2.width=Math.ceil(lw/5);B2.height=Math.ceil(lh/5);lg.imageSmoothingEnabled=eg.imageSmoothingEnabled=false}
 addEventListener('resize',resize);resize();
 
@@ -256,7 +258,7 @@ let SPEC={warden:'berserk',lamp:'heal'},TUTFORCE=true;
 const SPECN={berserk:'Berserker',exec:'Executioner',heal:'Healer',fire:'Firebrand'};
 const cam={x:210,y:130};
 const meC=()=>chars.find(c=>c.idx===ME),mateC=()=>chars.find(c=>c.idx!==ME);
-const need=l=>10+l*8+Math.floor(l*l*.45);
+const need=l=>9+l*7+Math.floor(l*l*.4);
 const hpMul=()=>1+T/240+Math.pow(T/560,2);
 
 /* ================= effects (visual + sound; replicated host -> guest) ================= */
@@ -1076,12 +1078,14 @@ function rekindle(a,b){const mx=(a.x+b.x)/2,my=(a.y+b.y)/2;emit('rekindle',mx,my
 
 /* ================= host: enemies ================= */
 const EK=['shadow','brute','gunman','bomber','elite','boss'];
-function newE(kind,x,y,delay=0){const hp=[34,260,40,30,1500,5000][kind]*(kind>=4?1+T/200:hpMul())*(kind>=4&&chars.length>1?1.4:1)*(chars.length<2?.5:1);
+function newE(kind,x,y,delay=0){const hp=[34,260,40,30,1500,4200][kind]*(kind>=4?1+T/200:hpMul())*(kind>=4&&chars.length>1?1.4:1)*(chars.length<2?.5:1);
   return{id:++eid,kind,x,y,rx:x,ry:y,z:0,vz:0,kx:0,ky:0,hp,max:hp,hit:0,sq:0,spawn:(kind===1||kind>=4?1.2:.7)+delay,t:rnd()*5,f:1,dead:false,atkT:0,st:0,stt:0,ax:0,ay:1,cd:1.5+rnd()*1.5,strafe:rnd()<.5?1:-1,stun:0,burn:0,burnT:0,flyT:0,phase:0}}
-function spawnPack(){const tgt=chars.filter(c=>c.state==='ok')[0]||chars[0];let px,py,tries=0;do{const a=rnd()*TAU,r=80+rnd()*50;px=tgt.x+Math.cos(a)*r;py=tgt.y+Math.sin(a)*r*.7;tries++}while(!walkable(px,py)&&tries<30);if(!walkable(px,py))return;
+function spawnPack(){const tgt=chars.filter(c=>c.state==='ok')[0]||chars[0];let px,py,tries=0;const q=offScreen(tgt,30);if(q){[px,py]=q}else do{const a=rnd()*TAU,r=80+rnd()*50;px=tgt.x+Math.cos(a)*r;py=tgt.y+Math.sin(a)*r*.7;tries++}while(!walkable(px,py)&&tries<30);if(!walkable(px,py))return;
   const n=Math.min(16,5+Math.floor(T/75)+(rnd()*3|0));let guns=en.filter(e=>e.kind===2).length;const gunCap=3+Math.floor(T/120);for(let i=0;i<n;i++){const x=px+(rnd()-.5)*34,y=py+(rnd()-.5)*22;if(!walkable(x,y))continue;let k=0;const r=rnd();
     if(T>120&&r<.1+T/4000&&guns<gunCap){k=2;guns++}else if(T>300&&r<.3+T/4000)k=3;en.push(newE(k,x,y,i*.07))}emit('sfx','spawn')}
-function spawnAt(kind,near){let x,y,tries=0;do{const a=rnd()*TAU,r=90+rnd()*40;x=near.x+Math.cos(a)*r;y=near.y+Math.sin(a)*r*.7;tries++}while(!walkable(x,y)&&tries<40);if(!walkable(x,y)){x=220;y=240}const e=newE(kind,x,y);en.push(e);return e}
+// a point just beyond the edge of the screen around a hero (screen size from this phone, at least a phone-sized view)
+function offScreen(near,m){const hw=Math.max(lw,260)/2+m,hh=Math.max(lh,300)/2+m;for(let i=0;i<40;i++){const a=rnd()*TAU,ca=Math.abs(Math.cos(a))||1e-3,sa=Math.abs(Math.sin(a))||1e-3,t=Math.min(hw/ca,hh/sa)+rnd()*14,x=near.x+Math.cos(a)*t,y=near.y-16+Math.sin(a)*t;if(walkable(x,y))return[x,y]}return null}
+function spawnAt(kind,near){let x,y,tries=0;const q=STORY.on?null:offScreen(near,kind>=4?40:20);if(q){[x,y]=q}else do{const a=rnd()*TAU,r=90+rnd()*40;x=near.x+Math.cos(a)*r;y=near.y+Math.sin(a)*r*.7;tries++}while(!walkable(x,y)&&tries<40);if(!walkable(x,y)){x=220;y=240}const e=newE(kind,x,y);en.push(e);return e}
 // ===== telegraphed threats (Dodge or die) =====
 // tele: local warning shapes (both peers). k 'c' circle radius a | 'l' lane angle a length b width w
 let debT=45;
@@ -1132,7 +1136,7 @@ function updEnemies(dt){
       else if(d<14&&e.atkT<=0){e.atkT=1.2;hurtP(tgt,6,e.x,e.y,false)}}
     else if(e.kind===0){mv(30,ux,uy);if(d<8&&e.atkT<=0&&!inDome(tgt.x,tgt.y)){e.atkT=.9;hurtP(tgt,6,e.x,e.y,false);e.kx=-ux*60;e.ky=-uy*40}}
     else if(e.kind===2){ // gunman
-      if(e.st===0){let m=0;if(d<80)m=-1;else if(d>130)m=1;mv(34,ux*m-uy*e.strafe*.6,uy*m+ux*e.strafe*.6);if(rnd()<dt*.4)e.strafe*=-1;e.cd-=dt;if(e.cd<=0&&d<240){e.st=1;e.stt=.75}}
+      if(e.st===0){let m=0;if(d<80)m=-1;else if(d>130)m=1;mv(34,ux*m-uy*e.strafe*.6,uy*m+ux*e.strafe*.6);if(rnd()<dt*.4)e.strafe*=-1;e.cd-=dt;if(e.cd<=0&&d<240&&Math.abs(ux*d)<Math.max(lw,260)/2-10&&Math.abs(uy*d)<Math.max(lh,300)/2-10){e.st=1;e.stt=.75}}
       else if(e.st===1){e.stt-=dt;if(e.stt>.25){e.ax=ux;e.ay=uy}if(e.stt<=0){const a=Math.atan2(e.ay,e.ax);for(const o of[-.2,0,.2])eb.push({x:e.x+e.ax*8,y:e.y-10,vx:Math.cos(a+o)*112,vy:Math.sin(a+o)*112*.8,life:3});emit('sfx','shot');e.st=0;e.cd=2.4+rnd()*1.2}}}
     else if(e.kind===3){ // bomber
       if(e.st===0){mv(46,ux,uy);if(d<24){e.st=2;e.stt=.9;emit('sfx','charge');emit('tele','c',r1(e.x),r1(e.y),34,0,0,.9,'#ff7a3a')}}
@@ -1394,7 +1398,9 @@ function update(dt){tAll+=dt;beatTick(dt);if(msgT>0){msgT-=dt;if(msgT<=0)$('msg'
     for(const r of (isHost?chars.flatMap(c=>c.ravPos||[]):ravG))if(rnd()<.5)parts.push({x:r[0],y:r[1],vx:0,vy:0,life:.18,max:.18,col:'#8ff3ff',em:true});
     if(rnd()<dt*3)parts.push({x:cam.x+(rnd()-.5)*lw,y:cam.y+lh/2,vx:(rnd()-.5)*4,vy:-8-rnd()*8,life:6,max:6,col:rnd()<.5?C.cyan:C.pink,em:true,dust:1})}
   comboT-=dt;if(comboT<=0&&combo){combo=0;$('combo').classList.remove('on')}
-  {const tx=me.x,ty=me.y-16,d=len(tx-cam.x,ty-cam.y);if(d>18){const k=Math.min(1,dt*14);cam.x+=(tx-cam.x)*k;cam.y+=(ty-cam.y)*k}else{cam.x=tx;cam.y=ty}}
+  {if(cam.px===undefined){cam.px=me.x;cam.py=me.y;cam.lx=0;cam.ly=0}const mvx=(me.x-cam.px)/Math.max(dt,1e-3),mvy=(me.y-cam.py)/Math.max(dt,1e-3);cam.px=me.x;cam.py=me.y;
+   const sp=len(mvx,mvy),LA=RM?0:24,wx=sp>8?mvx/sp*LA:0,wy=sp>8?mvy/sp*LA*.85:0,kk=Math.min(1,dt*(sp>8?2.6:1.4));cam.lx+=(wx-cam.lx)*kk;cam.ly+=(wy-cam.ly)*kk;if(sp>400){cam.lx=cam.ly=0}}
+  {const tx=me.x+cam.lx,ty=me.y-16+cam.ly,d=len(tx-cam.x,ty-cam.y);if(d>18){const k=Math.min(1,dt*14);cam.x+=(tx-cam.x)*k;cam.y+=(ty-cam.y)*k}else{cam.x=tx;cam.y=ty}}
   const sd=Math.pow(.0008,dt);shk.x*=sd;shk.y*=sd;zoom=1+(zoom-1)*Math.pow(.004,dt);flashA=Math.max(0,flashA-dt*3.5);
   hud();
   if(!solo){if(isHost&&mateJoined){snapT-=dt;if(snapT<=0){snapT=1/30;snapshot()}}
@@ -2143,7 +2149,7 @@ function render(){
   if(inGame){const list=[];for(const p of PROPS)list.push({y:p.y,d:()=>drawProp(p)});for(const e of en)list.push({y:e.y,d:()=>drawEnemy(e)});for(const c of chars)list.push({y:c.y,d:()=>drawChar(c)});list.sort((a,b)=>a.y-b.y);for(const o of list)o.d();effects()}
   else for(const p of PROPS)drawProp(p);
   ctx.setTransform(1,0,0,1,0,0);ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1;ctx.imageSmoothingEnabled=false;
-  const DW=lw*PX*DPR*zoom,DH=lh*PX*DPR*zoom,DX=(W*DPR-DW)/2,DY=(H*DPR-DH)/2;ctx.fillStyle='#0d0b1c';ctx.fillRect(0,0,W*DPR,H*DPR);ctx.drawImage(LOW,DX,DY,DW,DH);
+  const DW=lw*PX*DPR*zoom,DH=lh*PX*DPR*zoom,DX=Math.round((W*DPR-DW)/2),DY=Math.round((H*DPR-DH)/2);ctx.fillStyle='#0d0b1c';ctx.fillRect(0,0,W*DPR,H*DPR);ctx.drawImage(LOW,DX,DY,DW,DH);
   b1.clearRect(0,0,B1.width,B1.height);b1.imageSmoothingEnabled=true;b1.drawImage(EM,0,0,B1.width,B1.height);b2.clearRect(0,0,B2.width,B2.height);b2.imageSmoothingEnabled=true;b2.drawImage(B1,0,0,B2.width,B2.height);
   ctx.globalCompositeOperation='lighter';ctx.globalAlpha=.32;ctx.drawImage(EM,DX,DY,DW,DH);ctx.imageSmoothingEnabled=true;ctx.globalAlpha=.42;ctx.drawImage(B1,DX,DY,DW,DH);ctx.globalAlpha=.38;ctx.drawImage(B2,DX,DY,DW,DH);
   const sc=PX*DPR*zoom,L=(wx,wy,r,col,a)=>{if(a<=.003||r<=0)return;const x=DX+(wx+ox)*sc,y=DY+(wy+oy)*sc,Rr=r*sc;ctx.globalAlpha=Math.min(1,a);ctx.drawImage(lightSpr(col),x-Rr,y-Rr,Rr*2,Rr*2);ctx.globalAlpha=1};
