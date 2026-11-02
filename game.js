@@ -35,7 +35,8 @@ addEventListener('resize',resize);resize();
 const ROOFS=[{x:0,y:0,w:440,h:470,med:1},{x:520,y:40,w:240,h:400}];
 const BRIDGE={x:440,y:115,w:80,h:28},BRIDGE2={x:440,y:335,w:80,h:28};
 const WALK=[...ROOFS,BRIDGE,BRIDGE2],FACE=120;
-function walkable(x,y){for(const r of WALK){if(DIVON&&(r===BRIDGE||r===BRIDGE2))continue;if(x>r.x+4&&x<r.x+r.w-4&&y>r.y+6&&y<r.y+r.h-3)return true}return false}
+// bridges reach a little onto both roofs, so there is no gap at the joins that small steps cannot cross
+function walkable(x,y){for(const r of WALK){const br=r===BRIDGE||r===BRIDGE2;if(br&&DIVON)continue;const m=br?-8:4;if(x>r.x+m&&x<r.x+r.w-m&&y>r.y+6&&y<r.y+r.h-3)return true}return false}
 {const R=rng(5);for(const r of ROOFS){r.win=[];for(let x=r.x+3;x<r.x+r.w-3;x+=6)for(let y=8;y<FACE-24;y+=7)if(R()<.12)r.win.push([x,y,R()<.6?C.cyan:C.pink,.3+R()*.6])}}
 const PROPS=[{k:'pylon',x:10,y:12,c:C.cyan},{k:'pylon',x:430,y:12,c:C.pink},{k:'pylon',x:10,y:466,c:C.pink},{k:'pylon',x:430,y:466,c:C.cyan},
   {k:'pylon',x:530,y:48,c:C.cyan},{k:'pylon',x:750,y:436,c:C.pink},{k:'pylon',x:530,y:436,c:C.cyan},{k:'hut',x:62,y:26},{k:'sign',x:200,y:16},{k:'tower',x:372,y:30},{k:'chimney',x:290,y:22},{k:'spire',x:132,y:14},{k:'gargoyle',x:16,y:250},{k:'gargoyle',x:426,y:300},{k:'vent',x:380,y:205},{k:'crates',x:72,y:410},{k:'planter',x:220,y:462},{k:'vent',x:340,y:440},{k:'antenna',x:700,y:66},{k:'tower',x:600,y:58},{k:'spire',x:752,y:240},{k:'chimney',x:640,y:310},{k:'crates',x:700,y:420},{k:'planter',x:600,y:432},{k:'gargoyle',x:528,y:240}];
@@ -1120,7 +1121,8 @@ function spawnPack(){let tgt=chars.filter(c=>c.state==='ok')[0]||chars[0];if(DIV
   const n=Math.min(16,5+Math.floor(T/75)+(rnd()*3|0));let guns=en.filter(e=>e.kind===2).length;const gunCap=3+Math.floor(T/120);for(let i=0;i<n;i++){const x=px+(rnd()-.5)*34,y=py+(rnd()-.5)*22;if(!walkable(x,y))continue;let k=0;const r=rnd();
     if(T>120&&r<.1+T/4000&&guns<gunCap){k=2;guns++}else if(T>300&&r<.3+T/4000)k=3;en.push(newE(k,x,y,i*.07))}emit('sfx','spawn')}
 // a point just beyond the edge of the screen around a hero (screen size from this phone, at least a phone-sized view)
-function offScreen(near,m){const hw=Math.max(lw,260)/2+m,hh=Math.max(lh,300)/2+m;for(let i=0;i<40;i++){const a=rnd()*TAU,ca=Math.abs(Math.cos(a))||1e-3,sa=Math.abs(Math.sin(a))||1e-3,t=Math.min(hw/ca,hh/sa)+rnd()*14,x=near.x+Math.cos(a)*t,y=near.y-16+Math.sin(a)*t;if(walkable(x,y))return[x,y]}return null}
+function roofOf(x){return x<442?0:x>518?1:2}
+function offScreen(near,m){const hw=Math.max(lw,260)/2+m,hh=Math.max(lh,300)/2+m,rr=roofOf(near.x);for(let i=0;i<40;i++){const a=rnd()*TAU,ca=Math.abs(Math.cos(a))||1e-3,sa=Math.abs(Math.sin(a))||1e-3,t=Math.min(hw/ca,hh/sa)+rnd()*14,x=near.x+Math.cos(a)*t,y=near.y-16+Math.sin(a)*t;if(walkable(x,y)&&(i>=30||roofOf(x)===rr||rr===2))return[x,y]}return null}
 function spawnAt(kind,near){let x,y,tries=0;const q=STORY.on?null:offScreen(near,kind>=4?40:20);if(q){[x,y]=q}else do{const a=rnd()*TAU,r=90+rnd()*40;x=near.x+Math.cos(a)*r;y=near.y+Math.sin(a)*r*.7;tries++}while(!walkable(x,y)&&tries<40);if(!walkable(x,y)){x=220;y=240}const e=newE(kind,x,y);en.push(e);return e}
 // ===== telegraphed threats (Dodge or die) =====
 // tele: local warning shapes (both peers). k 'c' circle radius a | 'l' lane angle a length b width w
@@ -1164,8 +1166,9 @@ function updEnemies(dt){
     if(!walkable(e.x,e.y)){e.x=clamp(e.x,6,754);if(!walkable(e.x,e.y)){e.x-=e.kx*dt*2;e.y-=e.ky*dt*2;e.kx*=-.3;e.ky*=-.3}if(!walkable(e.x,e.y)){e.x=clamp(e.x,8,750);e.y=clamp(e.y,12,244)}}
     if(dome&&inDome(e.x,e.y)&&e.kind<5){const dx=e.x-dome.x,dy=e.y-dome.y,d=len(dx,dy)||1;e.kx=dx/d*140;e.ky=dy/d*90;if(dome.sanct>0&&(e.burnT||0)<=0){hitE(e,8,null,{col:C.amber,crit:false});e.burnT=.3}}
     const tgt=targetFor(e);if(!tgt||e.hit>0||e.z>0||e.stun>0){if(e.st===1||e.st===3)e.stt-=dt;continue}
-    const dx=tgt.x-e.x,dy=tgt.y-e.y,d=len(dx,dy)||1,ux=dx/d,uy=dy/d;e.f=dx>0?1:-1;
-    const mv=(sp,vx,vy)=>{if(e.slowT>0)sp*=.5;const nx=e.x+vx*sp*dt,ny=e.y+vy*sp*.8*dt;if(walkable(nx,ny)&&!(e.kind<5&&inDome(nx,ny))){e.x=nx;e.y=ny}};
+    const dx=tgt.x-e.x,dy=tgt.y-e.y,d=len(dx,dy)||1;let ux=dx/d,uy=dy/d;e.f=dx>0?1:-1;
+    {const re=roofOf(e.x),rt=roofOf(tgt.x);if(re===2&&rt!==2&&!DIVON){const Bc=e.y<240?BRIDGE.y+BRIDGE.h/2:BRIDGE2.y+BRIDGE2.h/2,vy=clamp((Bc-e.y)/12,-.7,.7),vx=dx>0?1:-1,l=len(vx,vy);ux=vx/l;uy=vy/l}else if(re!==2&&rt!==2&&re!==rt&&!DIVON){const B=[BRIDGE,BRIDGE2].reduce((a,b)=>{const ya=a.y+a.h/2,yb=b.y+b.h/2;return Math.abs(ya-e.y)+Math.abs(ya-tgt.y)<=Math.abs(yb-e.y)+Math.abs(yb-tgt.y)?a:b}),wy=B.y+B.h/2,wx=Math.abs(e.y-wy)>5?(re===0?B.x-12:B.x+B.w+12):(re===0?B.x+30:B.x+B.w-30),wd=len(wx-e.x,wy-e.y)||1;ux=(wx-e.x)/wd;uy=(wy-e.y)/wd;e.f=ux>0?1:-1}}
+    const mv=(sp,vx,vy)=>{if(e.slowT>0)sp*=.5;const nx=e.x+vx*sp*dt,ny=e.y+vy*sp*.8*dt,ok=(x,y)=>walkable(x,y)&&!(e.kind<5&&inDome(x,y));if(ok(nx,ny)){e.x=nx;e.y=ny}else if(ok(nx,e.y)){e.x=nx}else if(ok(e.x,ny)){e.y=ny}};
     if(e.fear>0&&e.kind<4){e.fear-=dt;mv(e.kind===1?22:38,-ux,-uy);continue}
     if(e.kind===1){if(e.st===6){e.stt-=dt;if(e.stt<=0){e.st=0;e.cd=2.4+rnd()*1.4;e.atkT=1.4}continue}
       mv(22,ux,uy);e.cd-=dt;if(d<44&&e.cd<=0){const px=e.x+ux*14,py=e.y+uy*10;e.st=6;e.stt=.8;strike('c',px,py,30,0,0,.8,20,C.red,()=>{emit('imp','shock',r1(px),r1(py),46,.4);emit('crack',px,py,C.red);emit('sfx','slam');emit('shake',0,1,3)})}
