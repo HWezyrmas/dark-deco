@@ -259,7 +259,7 @@ input#code{border:0;border-style:solid;border-width:12px 24px;border-image:url(u
 #bondW span{display:flex;align-items:center;gap:3px}#bondW span::before{content:'';width:11px;height:11px;background:url(ui/sym_bond.png) center/cover;border-radius:2px}
 #timer{display:grid;place-items:center;width:60px;height:60px;background:url(ui/plate_timer.png) center/100% 100% no-repeat;font-size:9px;letter-spacing:0;padding-top:1px}
 #lvl{display:grid;place-items:center;width:44px;height:39px;background:url(ui/plate_level.png) center/100% 100% no-repeat;font-size:10px;color:#fff;letter-spacing:0;text-shadow:0 0 6px var(--neon);padding-top:2px}
-.mid .tl{display:flex;align-items:center;gap:2px}
+.mid .tlv{display:flex;align-items:center;gap:2px}
 #boss{width:min(420px,76vw)}
 #boss .bar{height:auto;aspect-ratio:837/124;border:0;background:url(ui/bar_boss.png) center/100% 100% no-repeat;margin-top:0}
 #boss .bar>i{position:absolute;left:8%;right:8%;top:47%;bottom:22%;display:block}
@@ -728,7 +728,7 @@ body.inlobby #tLogo,body.inlobby #tHeroes{opacity:0!important}
         <div id="kit"></div>
         <span id="net"></span>
       </div>
-      <div class="mid"><span class="tl"><span id="timer">00:00</span><span id="lvl" aria-label="Level">1</span></span><div id="bondW"><span>BOND</span><i><u><b id="bondF"></b></u></i></div><div id="track"><b id="trackF"></b></div></div>
+      <div class="mid"><span class="tlv"><span id="timer">00:00</span><span id="lvl" aria-label="Level">1</span></span><div id="bondW"><span>BOND</span><i><u><b id="bondF"></b></u></i></div><div id="track"><b id="trackF"></b></div></div>
       <div class="tr"><button class="hb sym" id="skillsBtn" aria-label="Skills">Skills</button><button class="hb sym" id="mute" aria-pressed="false" aria-label="Sound">Sound</button><button class="hb sym" id="swap" hidden aria-label="Swap">Swap</button><button class="hb sym" id="leave" aria-label="Leave">Leave</button></div>
     </div>
   </div>
@@ -770,8 +770,8 @@ body.inlobby #tLogo,body.inlobby #tHeroes{opacity:0!important}
     </div>
     <div class="status" id="lobStatus">Waiting for your partner to join</div>
     <div class="htabs" role="tablist" aria-label="Choose your hero">
-      <button class="cls htab" data-c="warden" aria-pressed="false"><img src="portraits/warden.webp?v=1793615081" alt=""><span><b>Warden</b><small>Damage</small></span><i class="tg me">You</i><i class="tg mate">Partner</i></button>
-      <button class="cls htab" data-c="lamp" aria-pressed="false"><img src="portraits/lamp.webp?v=1793615081" alt=""><span><b>Lamplighter</b><small>Support</small></span><i class="tg me">You</i><i class="tg mate">Partner</i></button>
+      <button class="cls htab" data-c="warden" aria-pressed="false"><img src="portraits/warden.webp?v=1793616617" alt=""><span><b>Warden</b><small>Damage</small></span><i class="tg me">You</i><i class="tg mate">Partner</i></button>
+      <button class="cls htab" data-c="lamp" aria-pressed="false"><img src="portraits/lamp.webp?v=1793616617" alt=""><span><b>Lamplighter</b><small>Support</small></span><i class="tg me">You</i><i class="tg mate">Partner</i></button>
     </div>
     <div class="hstage" id="lStage">
       <div class="srays"></div><div class="splat"><i></i><i></i><i></i></div>
@@ -930,10 +930,10 @@ body.inlobby #tLogo,body.inlobby #tHeroes{opacity:0!important}
 </div>
 
 <script src="peerjs.min.js"></script>
-<script src="icons.js?v=1793615081"></script>
-<script src="dlg.js?v=1793615081"></script>
-<script src="intro.js?v=1793615081"></script>
-<script src="title.js?v=1793615081"></script>
-<script src="game.js?v=1793615081"></script>
+<script src="icons.js?v=1793616617"></script>
+<script src="dlg.js?v=1793616617"></script>
+<script src="intro.js?v=1793616617"></script>
+<script src="title.js?v=1793616617"></script>
+<script src="game.js?v=1793616617"></script>
 </body>
 </html>
