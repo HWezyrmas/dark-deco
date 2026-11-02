@@ -686,6 +686,10 @@ body.inlobby #tLogo,body.inlobby #tHeroes{opacity:0!important}
 @media (prefers-reduced-motion:reduce){#sLobby *{animation:none!important}}
 #sLobby .eyebrow::before,#sLobby .eyebrow::after{content:none!important;display:none!important}#sLobby .eyebrow{background:none!important;padding:0!important}
 #sLobby .cls.htab::before,#sLobby .cls.htab::after{content:none!important;display:none!important}
+#sLobby .mate .botTg{all:unset;cursor:pointer;font:700 9px var(--ui);letter-spacing:.12em;text-transform:uppercase;padding:6px 10px;border-radius:12px;background:#ff6fd8;color:#2a0520;white-space:nowrap}
+#sLobby .mate .botTg[aria-pressed="false"]{background:none;color:#cfc4e2;border:1px solid rgba(255,255,255,.25)}
+#sLobby .mate.alone>img,#sLobby .mate.alone .mt{opacity:.4;filter:grayscale(1)}#sLobby .mate.alone .specrow{display:none}#sLobby .mate .botTg{order:3}#sLobby .mate .specrow{order:2}#sLobby .mate{min-width:0;max-width:100%;box-sizing:border-box}#sLobby .mate .mt{flex:1 1 auto}
+#sLobby .mate{gap:6px}#sLobby .mate .spec{padding:5px 6px}#sLobby .mate .botTg{padding:6px 8px}
 </style>
 </head>
 <body>
@@ -762,8 +766,8 @@ body.inlobby #tLogo,body.inlobby #tHeroes{opacity:0!important}
     </div>
     <div class="status" id="lobStatus">Waiting for your partner to join</div>
     <div class="htabs" role="tablist" aria-label="Choose your hero">
-      <button class="cls htab" data-c="warden" aria-pressed="false"><img src="portraits/warden.webp?v=1793549977" alt=""><span><b>Warden</b><small>Damage</small></span><i class="tg me">You</i><i class="tg mate">Partner</i></button>
-      <button class="cls htab" data-c="lamp" aria-pressed="false"><img src="portraits/lamp.webp?v=1793549977" alt=""><span><b>Lamplighter</b><small>Support</small></span><i class="tg me">You</i><i class="tg mate">Partner</i></button>
+      <button class="cls htab" data-c="warden" aria-pressed="false"><img src="portraits/warden.webp?v=1793609701" alt=""><span><b>Warden</b><small>Damage</small></span><i class="tg me">You</i><i class="tg mate">Partner</i></button>
+      <button class="cls htab" data-c="lamp" aria-pressed="false"><img src="portraits/lamp.webp?v=1793609701" alt=""><span><b>Lamplighter</b><small>Support</small></span><i class="tg me">You</i><i class="tg mate">Partner</i></button>
     </div>
     <div class="hstage" id="lStage">
       <div class="srays"></div><div class="splat"><i></i><i></i><i></i></div>
@@ -922,10 +926,10 @@ body.inlobby #tLogo,body.inlobby #tHeroes{opacity:0!important}
 </div>
 
 <script src="peerjs.min.js"></script>
-<script src="icons.js?v=1793549977"></script>
-<script src="dlg.js?v=1793549977"></script>
-<script src="intro.js?v=1793549977"></script>
-<script src="title.js?v=1793549977"></script>
-<script src="game.js?v=1793549977"></script>
+<script src="icons.js?v=1793609701"></script>
+<script src="dlg.js?v=1793609701"></script>
+<script src="intro.js?v=1793609701"></script>
+<script src="title.js?v=1793609701"></script>
+<script src="game.js?v=1793609701"></script>
 </body>
 </html>

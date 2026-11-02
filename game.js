@@ -246,7 +246,7 @@ function mkChar(idx,cls,x,y){const D=CL[cls],SZ=S;const c={idx,cls,x,y,tx:x,ty:y
   spr:mk(SZ,SZ),sem:mk(SZ,SZ),fin:mk(SZ,SZ),tint:mk(SZ,SZ),ol:mk(SZ,SZ)};c.g=c.spr.getContext('2d');c.m=c.sem.getContext('2d');return c}
 
 /* ================= state ================= */
-let mode='menu',isHost=true,solo=false,ME=0,chars=[];
+let mode='menu',isHost=true,solo=false,alone=false,ME=0,chars=[];
 let alt=[],altT=35,chestT=75,altN=0,HEALER=null,tele=[],ehz=[],puds=[],spx=[],en=[],parts=[],slashes=[],ghosts=[],decals=[],waves=[],pools=[],proj=[],rays=[],dn=[],bolts=[],eb=[],gems=[],zones=[],later=[],dome=null;
 let fiss=[],hooks=[],krays=[];let tAll=0,hitstop=0,eid=0,T=0,kills=0,level=1,xp=0,packT=1.5,bruteT=60,eliteDone=[],bossSpawned=false,boss=null,LV=null,lid=0,endState=null,teamMods=new Set();
 let shk={x:0,y:0},zoom=1,flashA=0,combo=0,comboT=0,tintA=0,tintC='255,200,97',banners=[],learnQ=null,learnT=0;
@@ -421,7 +421,7 @@ function go(m){mode=m;{const it=m==='menu'||m==='lobby';titleAudio(it&&(document
 function menuStatus(t,c){const s=$('menuStatus');s.textContent=t||'';s.className='status'+(c?' '+c:'')}
 function lobStatus(t,c){const s=$('lobStatus');s.textContent=t;s.className='status'+(c?' '+c:'')}
 function showCode(){menuStatus('');enterLobby();$('roomCode').textContent=roomCode;lobStatus('Waiting for your partner to join');updLobby()}
-function enterLobby(){go('lobby');$('lobEyebrow').textContent=isHost?(solo?'Practice with a bot':'Room code · share it with your partner'):'Joined room';$('roomCode').hidden=solo;$('roomCode').textContent=roomCode;
+function enterLobby(){go('lobby');$('lobEyebrow').textContent=isHost?(solo?'Practice':'Room code · share it with your partner'):'Joined room';$('roomCode').hidden=solo;$('roomCode').textContent=roomCode;
   if(!isHost)lobStatus('Connected. The host starts the game','ok');if(solo)lobStatus('A bot plays the other class','ok')}
 // ===== hero select rendering =====
 const HSEL={warden:{role:'The protector',name:'Warden',art:'lobby/warden.webp',face:'portraits/warden.webp?v=3'},lamp:{role:'The light',name:'Lamplighter',art:'lobby/lamp.webp',face:'portraits/lamp.webp?v=3'}};
@@ -440,9 +440,10 @@ function lobbyRender(){document.body.classList.toggle('solo',!!solo);const L=$('
     const k=U.kit[0];$('lInfo').innerHTML=`<b>${k[2]}</b> · ${k[3]}`}
   document.querySelectorAll('#lSpecs .specrow').forEach(r=>r.classList.toggle('cur',r.dataset.c===myCls));
   const M=$('lMate'),showMate=solo||(mateJoined&&mateCls);M.hidden=!showMate;if(showMate){const oc=solo?other:mateCls,row=document.querySelector('#lSpecs .specrow[data-c="'+oc+'"]'),O=HSEL[oc];
-    if(M.dataset.k!==oc){M.dataset.k=oc;M.innerHTML=`<img src="${O.face}" alt=""><div class="mt"><b>${solo?'Partner (bot)':'Your partner'}</b>${O.name}</div>`;const mr=document.createElement('div');mr.className='specrow';mr.dataset.c=oc;
+    if(M.dataset.k!==oc){M.dataset.k=oc;M.innerHTML=`<img src="${O.face}" alt=""><div class="mt"><b>${solo?'Bot':'Your partner'}</b>${O.name}</div>${solo?'<button class="botTg" id="botTg"></button>':''}`;{const bt=M.querySelector('#botTg');if(bt)bt.addEventListener('click',()=>{audioInit();alone=!alone;updLobby()})}const mr=document.createElement('div');mr.className='specrow';mr.dataset.c=oc;
       mr.innerHTML=(oc==='warden'?[['berserk','Berserker'],['exec','Executioner']]:[['heal','Healer'],['fire','Firebrand']]).map(([s2,n])=>`<button class="spec" data-s="${s2}">${n}</button>`).join('');M.appendChild(mr);
       mr.querySelectorAll('.spec').forEach(b=>b.addEventListener('click',()=>{if(!solo)return;audioInit();SPEC[oc]=b.dataset.s;updLobby()}))}
+    {const bt=M.querySelector('#botTg');if(bt){bt.textContent=alone?'Bot off':'Bot on';bt.setAttribute('aria-pressed',!alone)}M.classList.toggle('alone',solo&&alone);const to=document.querySelector('#sLobby .tutopt');if(to)to.hidden=!isHost||(solo&&alone)}
     M.querySelectorAll('.specrow .spec').forEach(b=>b.setAttribute('aria-pressed',SPEC[oc]===b.dataset.s));M.querySelector('.specrow').classList.toggle('locked',!solo)}}
 function updLobby(){document.querySelectorAll('.cls').forEach(b=>{b.setAttribute('aria-pressed',b.dataset.c===myCls);b.classList.toggle('mate',b.dataset.c===mateCls)});
   const SPD={berserk:'Two axes and Rage. Leap and Charge into the crowd; hits heal him, but he is fragile.',exec:'One greataxe. Slow crushing swings that Execute the weak. Verdict cleaves; the Dome holds the line.',heal:'Ward him from big hits, charge piercing beams by standing still, mark enemies for him to blow up. Full Spark: Sunburst.',fire:'Ward him, charge cinder bombs, mark enemies for him to blow up. Kindle sets his weapons ablaze. Full Spark: Meteor.'};
@@ -457,7 +458,7 @@ document.querySelectorAll('.spec').forEach(b=>b.addEventListener('click',()=>{au
 $('bHost').addEventListener('click',()=>{audioInit();netClose();myCls='warden';hostNet()});
 $('bJoin').addEventListener('click',()=>{audioInit();const c=$('code').value.trim().toUpperCase();if(c.length!==4){menuStatus('Enter the 4-letter code from the host.','err');return}netClose();myCls='lamp';joinNet(c)});
 $('code').addEventListener('keydown',e=>{if(e.key==='Enter')$('bJoin').click()});
-$('bSolo').addEventListener('click',()=>{audioInit();netClose();isHost=true;solo=true;myCls='warden';enterLobby();updLobby()});
+$('bSolo').addEventListener('click',()=>{audioInit();netClose();isHost=true;solo=true;alone=false;myCls='warden';enterLobby();updLobby()});
 $('bStart').addEventListener('click',()=>{audioInit();startHost()});
 $('bLeave').addEventListener('click',()=>{netClose();go('menu');menuStatus('')});
 $('bAgain').addEventListener('click',()=>{if(isHost)startHost()});
@@ -550,7 +551,7 @@ function storyEnd(){STORY.on=false;objSet('');T=0;BT=0;packT=1.5;bruteT=60;debT=
 function drawWP(){if(!WP)return;const x=Math.round(WP[0]+ox),y=Math.round(WP[1]+oy),pu=.6+.4*Math.sin(tAll*5);eg.globalAlpha=.25*pu;eg.fillStyle='#ffd27a';eg.fillRect(x-5,y-80,10,80);eg.globalAlpha=1;strokeE(eg,x,y,22,10,'#ffd27a',2,.8*pu);strokeE(lg,x,y,14,6,'#fff1c4',1,.9);
   R(lg,x-1,y-26,3,26,'#3a2a18');R(lg,x-3,y-34,7,8,'#2a1a10');fillE(eg,x,y-30,5,5,'#ffd27a',.5+.3*pu)}
 function startHost(){ME=0;resetWorld();const other=myCls==='warden'?'lamp':'warden';
-  chars=[mkChar(0,myCls,220,240)];if(solo)chars.push(mkChar(1,other,196,248));else if(mateJoined&&mateCls)chars.push(mkChar(1,mateCls,196,248));
+  chars=[mkChar(0,myCls,220,240)];if(solo&&!alone)chars.push(mkChar(1,other,196,248));if(solo&&alone)PROLOGUE=false;else if(mateJoined&&mateCls)chars.push(mkChar(1,mateCls,196,248));
   for(let i=0;i<6;i++)en.push(newE(0,140+rnd()*160,80+rnd()*110,i*.05));
   cam.x=chars[0].x;cam.y=chars[0].y;if(PROLOGUE)storyStart();else STORY={on:false};go('play');setHud();wake();arriveFx();if(!solo&&chars.length>1)send({t:'start',h:myCls,g:mateCls,sp:SPEC})}
 function startGuest(m){ME=1;resetWorld();myCls=m.g;mateCls=m.h;if(m.sp)SPEC=Object.assign({},m.sp);chars=[mkChar(0,m.h,220,240),mkChar(1,m.g,196,248)];cam.x=chars[1].x;cam.y=chars[1].y;go('play');setHud();wake();arriveFx()}
@@ -567,7 +568,7 @@ $('skillsBtn').addEventListener('click',()=>{openSkills();$('skillsBtn').blur()}
 function setHud(){const c=meC();if(!c)return;
   $('track').querySelectorAll('i').forEach(n=>n.remove());for(const [t,cl] of [[ELITE_T[0],''],[ELITE_T[1],''],[BOSS_T,'boss']]){const i=document.createElement('i');i.className=cl;i.style.left=(t/RUN*100)+'%';i.dataset.t=t;$('track').appendChild(i)}const D=CL[c.cls],t=document.body.classList.contains('touch');$('name').textContent=D.name;$('name').style.color=D.color;
   const m=mateC();$('rowMate').hidden=!m;if(m){$('mateName').textContent=CL[m.cls].name;$('mateName').style.color=CL[m.cls].color}
-  $('swap').hidden=!solo;$('b3').hidden=c.cls!=='lamp';$('rowRage').classList.toggle('spark',c.cls==='lamp');{const rg=$('rowRage').querySelector('.rgn');if(rg)rg.textContent=c.cls==='lamp'?'SPARK':'RAGE'}const SN=skillN(c);$('b1').textContent=SN[0].toUpperCase();$('b2').textContent=SN[1].toUpperCase();{const SY=c.spec==='exec'?['verdict','dome']:c.spec==='berserk'?['leap','stride']:c.spec==='fire'?['flashfire','kindle']:{warden:['leap','dome'],lamp:['step','lance']}[c.cls]||['leap','dome'];$('b1').style.setProperty('--sym','url(ui/sym_'+SY[0]+'.png)');$('b2').style.setProperty('--sym','url(ui/sym_'+SY[1]+'.png)');$('tc').style.setProperty('--cc',D.color)}$('n1').textContent=(t?'':'Q · ')+SN[0];$('n2').textContent=(t?'':'E · ')+SN[1];$('cd1').style.color=$('cd2').style.color=D.color;kitKey=''}
+  $('swap').hidden=!solo||chars.length<2;$('b3').hidden=c.cls!=='lamp';$('rowRage').classList.toggle('spark',c.cls==='lamp');{const rg=$('rowRage').querySelector('.rgn');if(rg)rg.textContent=c.cls==='lamp'?'SPARK':'RAGE'}const SN=skillN(c);$('b1').textContent=SN[0].toUpperCase();$('b2').textContent=SN[1].toUpperCase();{const SY=c.spec==='exec'?['verdict','dome']:c.spec==='berserk'?['leap','stride']:c.spec==='fire'?['flashfire','kindle']:{warden:['leap','dome'],lamp:['step','lance']}[c.cls]||['leap','dome'];$('b1').style.setProperty('--sym','url(ui/sym_'+SY[0]+'.png)');$('b2').style.setProperty('--sym','url(ui/sym_'+SY[1]+'.png)');$('tc').style.setProperty('--cc',D.color)}$('n1').textContent=(t?'':'Q · ')+SN[0];$('n2').textContent=(t?'':'E · ')+SN[1];$('cd1').style.color=$('cd2').style.color=D.color;kitKey=''}
 let msgT=0;function say(t,d=1.8){$('msg').textContent=t;$('msg').style.opacity=1;msgT=d}
 let kitKey='';
 function hud(){const me=meC();if(!me)return;rotHud(me);
@@ -607,7 +608,7 @@ const QUIETW=new Set(['wyrm','bloodmoon','phoenix','starwell','vortex','aurora',
 const ROLE_DMG={warden:1.1,lamp:.5};
 function hitE(e,base,src,o={}){if(!alive(e))return false;if(o.w&&QUIETW.has(o.w)&&!o.exec)o.quiet=1;
   if(o.exec&&teamMods.has('witness')){const L=chars.find(q=>q.cls==='lamp'&&q.state==='ok');if(L){healP(L,2,false);addSpark(L,2)}}
-  const crit=o.crit??(rnd()<.15);if(src)e.ls=src;if(!o.det&&src){if(src.cls==='lamp'){if(!(e.detT>T))e.mark=4}else if(src.cls==='warden'&&e.mark>0&&!((src.detCd||0)>T)){src.detCd=T+.5;e.mark=0;e.detT=T+1.5;later.push({t:0,f:()=>detonate(e,src)})}}if(src&&src.kd>0)base*=1.3;e.lw=o.w||null;let a=Math.round(base*(src?src.st.dmg:1)*(src&&src.shoutT>0?1.2:1)*(src&&src.pow>0?1.5:1)*(src&&chars.length>1?1+.25*bond:1)*(src?ROLE_DMG[src.cls]||1:1)*(.85+rnd()*.3));if(crit)a*=2;
+  const crit=o.crit??(rnd()<.15);if(src)e.ls=src;if(!o.det&&src){if(src.cls==='lamp'){if(!(e.detT>T))e.mark=4}else if(src.cls==='warden'&&e.mark>0&&!((src.detCd||0)>T)){src.detCd=T+.5;e.mark=0;e.detT=T+1.5;later.push({t:0,f:()=>detonate(e,src)})}}if(src&&src.kd>0)base*=1.3;e.lw=o.w||null;let a=Math.round(base*(src?src.st.dmg:1)*(src&&src.shoutT>0?1.2:1)*(src&&src.pow>0?1.5:1)*(src&&chars.length>1?1+.25*bond:1)*(src?(chars.length<2&&src.cls==='lamp'?(src.spec==='fire'?1.5:1.1):ROLE_DMG[src.cls]||1):1)*(.85+rnd()*.3));if(crit)a*=2;
   if(window.__DLOG&&src)__DLOG[(src.cls==='lamp'?'L:':'W:')+(o.w||'other')]=(__DLOG[(src.cls==='lamp'?'L:':'W:')+(o.w||'other')]||0)+a;
   e.hp-=a;e.hit=.1;e.sq=.4;if(o.frz)e.frz=Math.max(e.frz||0,o.frz);const kr=e.kind>=4?0:e.kind===1?.35:1;e.kx+=(o.kx||0)*kr;e.ky+=(o.ky||0)*kr;if(o.up&&e.kind!==1&&e.kind<4)e.vz=Math.max(e.vz,o.up);if(o.stun)e.stun=Math.max(e.stun||0,o.stun);
   if(src&&src.cls==='warden'&&((src.pow>0&&teamMods.has('litsteel'))||src.lit>0))e.burn=Math.max(e.burn||0,2);
@@ -1048,7 +1049,7 @@ function updProj2(p,dt){
     if(p.evo&&!p.healed){const m=partnerOf(p.src);if(m&&m.state==='ok'&&Math.abs(len(m.x-p.x,(m.y-p.y)*1.4)-r)<12){p.healed=true;healP(m,8);emit('heal',m.idx)}}return true}
   return false}
 
-function hurtP(c,dmg,sx,sy,heavy){if(STORY.on)dmg*=.5;if(c.spec==='exec'&&false)0;else if(c.spec==='exec'&&!c.moving)dmg*=.75;if(c.kd>0&&teamMods.has('kindred'))dmg*=.8;if(c.state==='ok'&&c.ward>0){parry(c,sx,sy);return}if(c.state!=='ok'||c.dash>0||c.strideT>0||c.inv>0||c.fall||c.leapT>0||c.bs>0)return;addRage(c,8);if(inDome(c.x,c.y))dmg*=.7;dmg*=(1+T/420)*(1-Math.min(.5,c.st.arm||0));
+function hurtP(c,dmg,sx,sy,heavy){if(STORY.on)dmg*=.5;if(chars.length<2)dmg*=c.cls==='lamp'?(c.spec==='fire'?.25:.3):.55;if(c.spec==='exec'&&false)0;else if(c.spec==='exec'&&!c.moving)dmg*=.75;if(c.kd>0&&teamMods.has('kindred'))dmg*=.8;if(c.state==='ok'&&c.ward>0){parry(c,sx,sy);return}if(c.state!=='ok'||c.dash>0||c.strideT>0||c.inv>0||c.fall||c.leapT>0||c.bs>0)return;addRage(c,8);if(inDome(c.x,c.y))dmg*=.7;dmg*=(1+T/420)*(1-Math.min(.5,c.st.arm||0));
   if(c.skin>0){const rp=c.weapons.find(w=>w.id==='riposte');c.skin--;c.inv=.45;emit('skinbreak',c.idx);if(rp){const L=lvm(rp),R=40*L.a*(c.st.area||1);emit('slash',c.x,c.y-12,0,R,1,TAU,'#ffffff');
     for(const e of en){if(!alive(e))continue;const ex=e.x-c.x,ey=e.y-c.y,ed=len(ex,ey*1.4)||1;if(ed<R)hitE(e,30*L.d,c,{w:'riposte',kx:ex/ed*220,ky:ey/ed*150,col:WCOL.riposte,stun:rp.lv>=5?.8:0,dir:Math.atan2(ey,ex)})}if(rp.lv>=5)healP(c,8)}return}
   c.hp-=dmg;c.inv=.45;const dx=c.x-sx,dy=c.y-sy,d=len(dx,dy)||1;emit('ouch',c.idx,Math.round(dmg),-dx/d,-dy/d,heavy?1:0);
@@ -1075,7 +1076,7 @@ function rekindle(a,b){const mx=(a.x+b.x)/2,my=(a.y+b.y)/2;emit('rekindle',mx,my
 
 /* ================= host: enemies ================= */
 const EK=['shadow','brute','gunman','bomber','elite','boss'];
-function newE(kind,x,y,delay=0){const hp=[34,260,40,30,1500,5000][kind]*(kind>=4?1+T/200:hpMul())*(kind>=4&&chars.length>1?1.4:1);
+function newE(kind,x,y,delay=0){const hp=[34,260,40,30,1500,5000][kind]*(kind>=4?1+T/200:hpMul())*(kind>=4&&chars.length>1?1.4:1)*(chars.length<2?.5:1);
   return{id:++eid,kind,x,y,rx:x,ry:y,z:0,vz:0,kx:0,ky:0,hp,max:hp,hit:0,sq:0,spawn:(kind===1||kind>=4?1.2:.7)+delay,t:rnd()*5,f:1,dead:false,atkT:0,st:0,stt:0,ax:0,ay:1,cd:1.5+rnd()*1.5,strafe:rnd()<.5?1:-1,stun:0,burn:0,burnT:0,flyT:0,phase:0}}
 function spawnPack(){const tgt=chars.filter(c=>c.state==='ok')[0]||chars[0];let px,py,tries=0;do{const a=rnd()*TAU,r=80+rnd()*50;px=tgt.x+Math.cos(a)*r;py=tgt.y+Math.sin(a)*r*.7;tries++}while(!walkable(px,py)&&tries<30);if(!walkable(px,py))return;
   const n=Math.min(16,5+Math.floor(T/75)+(rnd()*3|0));let guns=en.filter(e=>e.kind===2).length;const gunCap=3+Math.floor(T/120);for(let i=0;i<n;i++){const x=px+(rnd()-.5)*34,y=py+(rnd()-.5)*22;if(!walkable(x,y))continue;let k=0;const r=rnd();
