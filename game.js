@@ -1199,6 +1199,7 @@ function updEnemies(dt){
     if(e.spawn>0){e.spawn-=dt;continue}
     if(e.frz>0){e.frz-=dt;continue}
     if(e.burn>0){e.burn-=dt;e.burnT-=dt;if(e.burnT<=0){e.burnT=.4;hitE(e,5,null,{col:'#ff7a3a',crit:false})}if(e.dead)continue}
+    if(e.dummy){const fr=Math.pow(.02,dt);e.x+=e.kx*dt*.25;e.y+=e.ky*dt*.25;e.kx*=fr;e.ky*=fr;e.z=e.vz=0;const k=Math.min(1,dt*5);e.x+=(e.hx-e.x)*k;e.y+=(e.hy-e.y)*k;continue}
     if(e.z>0||e.vz>0){e.vz-=420*dt;e.z+=e.vz*dt;if(e.z<=0){e.z=0;e.vz=e.vz<-120?-e.vz*.35:0}}
     e.x+=e.kx*dt;e.y+=e.ky*dt;const fr=Math.pow(.015,dt);e.kx*=fr;e.ky*=fr;
     if(!walkable(e.x,e.y)){e.x=clamp(e.x,6,754);if(!walkable(e.x,e.y)){e.x-=e.kx*dt*2;e.y-=e.ky*dt*2;e.kx*=-.3;e.ky*=-.3}if(!walkable(e.x,e.y)){e.x=clamp(e.x,8,750);e.y=clamp(e.y,12,244)}}
@@ -1836,7 +1837,7 @@ function drawESpr(e,x,yb,sq,hitc,kind){const S=ESPR[kind],G=GAIT[kind];let img=S
 // death pop: the painted sprite flashes white, bursts wide and fades (local only, from the replicated kill event)
 function drawEDie(s){const S=ESPR[s.kind];if(!S)return;const k=s.t/s.life,x=Math.round(s.x+ox),y=Math.round(s.y+oy);lg.save();lg.globalAlpha=Math.max(0,1-k);lg.translate(x,y);lg.scale((s.f<0?-1:1)*(1+k*.5),1-k*.55);lg.drawImage(S.wh,-(S.w>>1),-S.h+1);lg.restore();
   eg.save();eg.globalAlpha=Math.max(0,.6-k);eg.translate(x,y);eg.scale((s.f<0?-1:1)*(1+k*.7),1-k*.5);eg.drawImage(S.wh,-(S.w>>1),-S.h+1);eg.restore()}
-function drawEnemy(e){const x=Math.round(e.x+ox)+(e.hit>0.04?(Math.floor(tAll*60)%2?1:-1):0),y=Math.round(e.y+oy),z=Math.round(e.z);const kind=e.kind,big=kind===1||kind>=4;
+function drawEnemy(e){if(e.dummy){drawDummy(e);return}const x=Math.round(e.x+ox)+(e.hit>0.04?(Math.floor(tAll*60)%2?1:-1):0),y=Math.round(e.y+oy),z=Math.round(e.z);const kind=e.kind,big=kind===1||kind>=4;
   if(e.spawn>0){const k=clamp(1-e.spawn/(big?1.2:.7),0,1),s=kind===5?3:kind===4?2.2:big?2:1;lg.fillStyle='rgba(8,6,15,'+(.4+.5*k)+')';lg.beginPath();lg.ellipse(x,y,(3+6*k)*s,(1+2*k)*s,0,0,TAU);lg.fill();for(let i=0;i<3*s;i++)lg.fillRect(x-3*s+i*3,y-Math.round(k*7*s*Math.abs(Math.sin(tAll*9+i))),1,Math.round(k*7*s));if(rnd()<.3){eg.fillStyle=C.red;eg.fillRect(x+(rnd()*6|0)-3,y-2,1,1)}return}
   const w=Math.sin(e.t*10)>0?1:0,sq=e.sq||0,hitc=e.hit>0,EP=kind===0?STAGEPAL[Math.min(STAGEPAL.length-1,Math.floor(T/150))]:EPAL[kind];const body=hitc?'#ffffff':EP.m,edge=hitc?'#ffffff':EP.o;const sc=kind===5?3.2:kind===4?2.4:kind===1?2:1;
   const ES=ESPR[kind];if(ES){lg.fillStyle='rgba(0,0,0,.4)';lg.beginPath();lg.ellipse(x,y+1,Math.round(ES.w*.38),2+(kind>=4?1:0),0,0,TAU);lg.fill()}else{lg.fillStyle='rgba(0,0,0,.45)';lg.fillRect(x-5*sc,y,11*sc,2)}
@@ -2276,6 +2277,19 @@ function drawBeamsAndLances(){
 }
 function drawFly(fx,fy,lv=1){const x=Math.round(fx+ox),y=Math.round(fy+oy),evo=lv>=5;circ(eg,x,y,evo?7:5+(lv>=3?1:0),WCOL.flies);const wg=Math.sin(tAll*40+fx)>0;lg.fillStyle='rgba(230,255,200,.8)';lg.fillRect(x-2,y-(wg?2:1),2,1);lg.fillRect(x+1,y-(wg?2:1),2,1);lg.fillStyle=evo?'#ffffff':'#f4ffcf';lg.fillRect(x-1,y-1,evo?3:2,evo?3:2);lg.fillStyle=WCOL.flies;lg.fillRect(x,y+1,1,1);if(rnd()<.3)parts.push({x:fx,y:fy,vx:0,vy:4,life:.3,max:.3,col:WCOL.flies,em:true})}
 const LSPR={};function lightSpr(col){let c=LSPR[col];if(c)return c;c=mk(64,64);const g=c.getContext('2d'),gr=g.createRadialGradient(32,32,0,32,32,32);gr.addColorStop(0,col.replace('A',1));gr.addColorStop(1,col.replace('A',0));g.fillStyle=gr;g.fillRect(0,0,64,64);LSPR[col]=c;return c}
+// training-ground scarecrow: a post, a crossbar with burlap rags, a sack head under a tall hat, a target on the chest; leans when struck
+function drawDummy(e){const x=Math.round(e.x+ox),y=Math.round(e.y+oy),hit=e.hit>0,sp=e.spawn>0?clamp(1-e.spawn/.25,0,1):1,lean=clamp((e.x-e.hx)*.06+Math.sin(e.t*2)*.03+(hit?Math.sin(tAll*50)*.06:0),-.35,.35);
+  fillE(lg,x,y,11,3,'#000000',.45);lg.save();lg.globalAlpha=sp;lg.translate(x,y);lg.rotate(lean);const W=hit?'#ffffff':null;
+  const r=(X,Y,w,h,c)=>{lg.fillStyle=W||c;lg.fillRect(X,Y,w,h)};
+  r(-1,-30,3,30,'#5a3a22');r(0,-30,1,30,'#7a5232');r(-12,-24,25,2,'#5a3a22');r(-12,-24,25,1,'#8a6240');
+  r(-8,-22,17,13,'#8a6a42');r(-7,-22,15,12,'#a8865a');for(let i=-8;i<9;i+=3)r(i,-10+((i+9)%2),2,2,'#8a6a42');
+  r(-13,-23,3,8,'#a8865a');r(11,-23,3,8,'#a8865a');r(-13,-16,1,2,'#8a6a42');r(13,-16,1,2,'#8a6a42');
+  r(-3,-19,7,7,'#f3e6c8');r(-2,-18,5,5,'#d8344a');r(-1,-17,3,3,'#f3e6c8');r(0,-16,1,1,'#d8344a');
+  r(-5,-35,11,10,'#c9a878');r(-5,-35,11,1,'#e0c494');r(-3,-31,2,2,'#2a1a10');r(2,-31,2,2,'#2a1a10');r(-2,-27,5,1,'#5a3a22');r(-1,-27,1,2,'#5a3a22');r(1,-27,1,2,'#5a3a22');
+  r(-8,-37,17,2,'#1e1828');r(-4,-45,9,8,'#2a2236');r(-4,-39,9,1,C.gold);r(-3,-45,1,7,'#3a3048');
+  lg.restore();if(!hit){eg.globalAlpha=.25*sp;eg.fillStyle='#d8344a';eg.fillRect(x-2,y-18,5,5);eg.globalAlpha=1}
+  if(e.burn){if(!(pfxBN++<16&&pfxLoop('burnS',x,y+1,.32,0,.8,e.id*.13))){eg.fillStyle='#ff7a3a';eg.fillRect(x-1,y-20,2,2)}}
+  const f=clamp(e.hp/e.max,0,1);lg.fillStyle='#120a1e';lg.fillRect(x-11,y-52,22,4);lg.fillStyle=f>.5?'#6fdc8c':f>.22?'#ffd27a':'#ff4a5a';lg.fillRect(x-10,y-51,Math.round(20*f),2)}
 let pfxBN=0;
 // PixelFX atmosphere, drawn over the world in screen space: thin fog all night, shooting stars early on, a storm while the Foreman lives, god rays as dawn nears, the odd bat crossing, an iris opening at the start of a run
 let bats=[],batT=12,irisT=-9;
@@ -2508,5 +2522,60 @@ window.__dd={FXF,iceConfig,get bond(){return bond},get shk(){return shk},get DIV
     if(performance.now()>=next){if(plays>=2){i=(i+1)%L.length;plays=0}plays++;next=performance.now()+2500;const [name,fn]=L[i];lab.querySelector('b').textContent=(i+1)+' / '+L.length+' · '+name;
       const was=NEWFX;NEWFX=false;fn(me.x-62,me.y+34);NEWFX=true;pfxLoad();fn(me.x+62,me.y+34);NEWFX=was||true;
       }},120);
+})();
+// ===== Training ground (open the game with ?dummy): a scarecrow dummy in the middle; pick a hero, a spec, the abilities and their level, and try them on it =====
+(function(){if(!/[?&]dummy/.test(location.search))return;
+  try{localStorage.setItem('dd_intro_seen','1')}catch(_){}
+  const CN={warden:'Warden',lamp:'Lamplighter'},SP={warden:['berserk','exec'],lamp:['heal','fire']},BASIC={berserk:['cleave','whirl'],exec:['reaper'],heal:['beam'],fire:['cinder']};
+  const S={cls:'warden',spec:'berserk',on:new Set(['cleave','whirl']),lv:1,n:1,hp:'normal',nocd:true,rage:true,hitback:false,open:true};
+  try{const o=JSON.parse(localStorage.getItem('dd_tg')||'null');if(o&&CN[o.cls]&&SP[o.cls].includes(o.spec)){Object.assign(S,o);S.on=new Set(o.on||BASIC[o.spec])}}catch(_){}
+  const save=()=>{try{localStorage.setItem('dd_tg',JSON.stringify(Object.assign({},S,{on:[...S.on]})))}catch(_){}};
+  const HPV={weak:120,normal:600,tough:2500,endless:5000};
+  let started=false,home=null,deadT=0,tgHit=0;
+  const me=()=>chars[0];
+  function spots(n){const h=home;if(n===1)return [[h[0],h[1]]];const r=n<=3?26:n<=6?34:44,o=[];for(let i=0;i<n;i++){const a=i/n*TAU-Math.PI/2;o.push([h[0]+Math.cos(a)*r,h[1]+Math.sin(a)*r*.7])}return o}
+  function mkDummy(x,y){const e=newE(0,x,y,0);e.dummy=1;e.hp=e.max=HPV[S.hp];e.spawn=.25;e.hx=x;e.hy=y;return e}
+  function placeDummies(){en=en.filter(e=>!e.dummy);for(const [x,y] of spots(S.n))en.push(mkDummy(x,y))}
+  function arm(){const c=me();if(!c)return;c.weapons=[...S.on].filter(id=>WDEF[id]).map(id=>({id,lv:S.lv,cd:.4}));c.hp=c.max;c.rage=0;c.cd1=c.cd2=0}
+  function begin(){myCls=S.cls;SPEC[S.cls]=S.spec;solo=true;alone=true;isHost=true;PROLOGUE=false;
+    {const it=document.getElementById('intro');if(it){it.classList.remove('on','playing');it.style.display='none'}document.body.classList.remove('inintro');document.body.classList.add('titled','tground')}
+    startHost();started=true;T=30;bossSpawned=true;const c=me();c.x=222;c.y=258;home=[262,248];placeDummies();arm();ui()}
+  // panel
+  const P=document.createElement('div');P.id='tg';document.body.appendChild(P);
+  const st=document.createElement('style');st.textContent=`
+#tg{position:fixed;left:8px;right:8px;top:calc(env(safe-area-inset-top,0px) + 8px);z-index:95;font-family:system-ui,sans-serif;color:#f3e6c8;background:rgba(14,10,26,.86);border:1px solid #6a5226;border-radius:10px;padding:8px 8px 6px;box-shadow:0 4px 18px rgba(0,0,0,.5);max-height:46vh;overflow-y:auto;-webkit-user-select:none;user-select:none}
+#tg.min{max-height:none;padding:4px 8px}#tg.min .bd{display:none}
+#tg .hd{display:flex;align-items:center;gap:6px;font:700 11px/1.2 system-ui;letter-spacing:.12em;text-transform:uppercase;color:#ffd27a}
+#tg .hd span{flex:1}#tg .row{display:flex;flex-wrap:nowrap;gap:5px;margin-top:6px;align-items:center;overflow-x:auto;scrollbar-width:none}#tg .row::-webkit-scrollbar{display:none}#tg .row>*{flex:none}
+#tg .lb{font-size:10px;opacity:.7;letter-spacing:.1em;text-transform:uppercase;margin-right:2px}
+#tg button{font:600 12px/1 system-ui;color:#f3e6c8;background:#241a38;border:1px solid #4a3a60;border-radius:7px;padding:6px 8px;touch-action:manipulation;white-space:nowrap}
+#tg button.on{background:#6a4a10;border-color:#ffd27a;color:#fff}#tg button.ab.on{background:#123a48;border-color:#4ff0ff}
+#tg button.sm{padding:5px 8px;font-size:11px}#tg .ab small{display:block;font-size:9px;opacity:.65;margin-top:2px;font-weight:400}
+#tg .note{font-size:10px;opacity:.6;margin-top:6px}
+body.tground #obj,body.tground #dlg,body.tground #xpbar,body.tground #timer{display:none!important}`;document.head.appendChild(st);
+  const bt=(t,on,f,cls)=>{const b=document.createElement('button');b.innerHTML=t;if(on)b.classList.add('on');if(cls)b.className+=' '+cls;b.addEventListener('click',e=>{e.stopPropagation();f();save();ui()});return b};
+  function ui(){P.innerHTML='';P.classList.toggle('min',!S.open);
+    const hd=document.createElement('div');hd.className='hd';hd.innerHTML='<span>Training ground</span>';hd.appendChild(bt(S.open?'Hide':'Show',false,()=>{S.open=!S.open},'sm'));P.appendChild(hd);
+    const bd=document.createElement('div');bd.className='bd';P.appendChild(bd);
+    const row=(lab)=>{const r=document.createElement('div');r.className='row';if(lab){const l=document.createElement('span');l.className='lb';l.textContent=lab;r.appendChild(l)}bd.appendChild(r);return r};
+    let r=row('Hero');for(const k of ['warden','lamp'])r.appendChild(bt(CN[k],S.cls===k,()=>{if(S.cls===k)return;S.cls=k;S.spec=SP[k][0];S.on=new Set(BASIC[S.spec]);begin()}));
+    r=row('Spec');for(const k of SP[S.cls])r.appendChild(bt(SPECN[k],S.spec===k,()=>{if(S.spec===k)return;S.spec=k;S.on=new Set(BASIC[k]);begin()}));
+    r=row('Abilities');r.style.flexWrap='wrap';r.style.maxHeight='92px';r.style.overflowY='auto';const ids=Object.keys(WDEF).filter(id=>WDEF[id].cls===S.cls&&WDEF[id].spec===S.spec);ids.sort((a,b)=>(BASIC[S.spec].includes(b)?1:0)-(BASIC[S.spec].includes(a)?1:0));
+    for(const id of ids)r.appendChild(bt(WDEF[id].name.replace(/\\/g,'')+(BASIC[S.spec].includes(id)?'<small>basic attack</small>':''),S.on.has(id),()=>{S.on.has(id)?S.on.delete(id):S.on.add(id);arm()},'ab'));
+    r=row('Level');for(let l=1;l<=5;l++)r.appendChild(bt(l===5?'5 · evolved':l===3?'3 · +effect':String(l),S.lv===l,()=>{S.lv=l;arm()},'sm'));
+    r=row('Dummies');for(const n of [1,3,6,10])r.appendChild(bt(String(n),S.n===n,()=>{S.n=n;placeDummies()},'sm'));
+    r=row('Dummy HP');for(const k of ['weak','normal','tough','endless'])r.appendChild(bt(k[0].toUpperCase()+k.slice(1),S.hp===k,()=>{S.hp=k;placeDummies()},'sm'));
+    r=row();r.appendChild(bt('Skills without cooldown',S.nocd,()=>{S.nocd=!S.nocd},'sm'));r.appendChild(bt('Full Rage',S.rage,()=>{S.rage=!S.rage},'sm'));r.appendChild(bt('Dummies hit back',S.hitback,()=>{S.hitback=!S.hitback},'sm'));r=row();r.appendChild(bt('Only this ability',false,()=>{const a=[...S.on].filter(id=>!BASIC[S.spec].includes(id));S.on=new Set(a.length?[a[a.length-1]]:BASIC[S.spec]);arm()},'sm'));r.appendChild(bt('Clear all',false,()=>{S.on=new Set();arm()},'sm'));
+    const n=document.createElement('div');n.className='note';n.textContent='Tap abilities to turn them on or off; skill buttons work as usual. Crowd abilities (Whirlwind, Battle Shout, War Banner, Death Knell) need you standing among 6 to 10 dummies. Bloodthirst, Carnage and Last Rites feed on kills and low dummies, so pair them with a damage ability. Iron Skin needs Dummies hit back.';bd.appendChild(n)}
+  // drive the run: no spawns, no level-ups, no clock, the hero never dies
+  setInterval(()=>{
+    if(!started){if(typeof startHost!=='function')return;begin();return}
+    if(mode!=='play'){if(LV){LV=null;go('play')}return}
+    const c=me();if(!c)return;if(c.state!=='ok'){c.state='ok';c.down=0}c.hp=c.max;xp=0;bossSpawned=true;if(T>600)T=40;packT=bruteT=altT=chestT=debT=1e9;LV=null;
+    if(S.rage&&c.cls==='warden')c.rage=100;if(S.hitback&&tAll>=(tgHit||0)){const e=en.find(q=>q.dummy&&alive(q)&&len(q.x-c.x,q.y-c.y)<70);if(e){tgHit=tAll+1.3;hurtP(c,6,e.x,e.y,false);c.hp=c.max}}if(S.nocd){c.cd1=Math.min(c.cd1||0,.3);c.cd2=Math.min(c.cd2||0,.3);c.cd3=Math.min(c.cd3||0,.3)}
+    for(const e of en)if(!e.dummy)e.dead=true;
+    for(const e of en)if(e.dummy&&S.hp==='endless'&&e.hp<e.max*.5)e.hp=e.max;
+    const live=en.filter(e=>e.dummy&&!e.dead).length;if(live<S.n){if(!deadT)deadT=tAll+1.1;else if(tAll>=deadT){deadT=0;const have=en.filter(e=>e.dummy&&!e.dead);en=en.filter(e=>!e.dummy||!e.dead);for(const [x,y] of spots(S.n))if(!have.some(e=>Math.abs(e.hx-x)<2&&Math.abs(e.hy-y)<2))en.push(mkDummy(x,y))}}
+    gems.length=0},100);
 })();
 })();
