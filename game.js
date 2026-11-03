@@ -2565,7 +2565,7 @@ window.__dd={FXF,iceConfig,get bond(){return bond},get shk(){return shk},get DIV
 body.tground #obj,body.tground #dlg,body.tground #xpbar,body.tground #timer{display:none!important}`;document.head.appendChild(st);
   const bt=(t,on,f,cls)=>{const b=document.createElement('button');b.innerHTML=t;if(on)b.classList.add('on');if(cls)b.className+=' '+cls;b.addEventListener('click',e=>{e.stopPropagation();f();save();ui()});return b};
   function ui(){P.innerHTML='';P.classList.toggle('min',!S.open);
-    const hd=document.createElement('div');hd.className='hd';hd.innerHTML='<span>Training ground</span>';hd.appendChild(bt(S.open?'Hide':'Show',false,()=>{S.open=!S.open},'sm'));P.appendChild(hd);
+    const hd=document.createElement('div');hd.className='hd';hd.innerHTML='<span>Training ground</span>';hd.appendChild(bt('Menu',false,()=>{location.href=location.pathname},'sm'));hd.appendChild(bt(S.open?'Hide':'Show',false,()=>{S.open=!S.open},'sm'));P.appendChild(hd);
     const bd=document.createElement('div');bd.className='bd';P.appendChild(bd);
     const row=(lab)=>{const r=document.createElement('div');r.className='row';if(lab){const l=document.createElement('span');l.className='lb';l.textContent=lab;r.appendChild(l)}bd.appendChild(r);return r};
     let r=row('Hero');for(const k of ['warden','lamp'])r.appendChild(bt(CN[k],S.cls===k,()=>{if(S.cls===k)return;S.cls=k;S.spec=SP[k][0];S.on=new Set(BASIC[S.spec]);begin()}));
