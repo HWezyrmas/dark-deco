@@ -1838,7 +1838,7 @@ function queueHead(c,x,y,F,sx,sy,al,rot){if(!c.hc)c.hc=mk(S*2,S*2);const h=c.hc.
   h.restore();if(c.hit>0){h.globalCompositeOperation='source-atop';h.fillStyle='rgba(255,255,255,.85)';h.fillRect(0,0,S*2,S*2);h.globalCompositeOperation='source-over'}
   hiQ.push([c.hc,x,y,F,sx,sy,al,rot]);hiQ.ys=c.y}
 // ===== Executioner: a holographic greataxe held in one hand. It rests on his shoulder, winds up slowly and sweeps wide, leaving afterimages =====
-const HOLO=[];
+const HOLO=[],HOLO_ON=false;
 function axePath(g,f){g.beginPath();g.moveTo(0,5);g.lineTo(0,-36);g.moveTo(f*1,-37);g.lineTo(f*9,-43);g.quadraticCurveTo(f*17,-33,f*15,-21);g.lineTo(f*9,-14);g.lineTo(f*1,-20);g.closePath();g.moveTo(-f*1,-31);g.lineTo(-f*7,-29);g.lineTo(-f*1,-25)}
 function drawHoloAxe(g,x,y,ang,f,al,trail){
   const flick=.82+.18*Math.sin(tAll*41)*Math.sin(tAll*13),gl=(Math.sin(tAll*3.1)>.96)?(Math.sin(tAll*90)>0?1.2:-1.2):0;
@@ -1940,7 +1940,7 @@ function drawChar(c){c.snapN=0;if(c.state==='out')return;const sp=spriteFor(c);
     eg.strokeStyle=C.red;eg.lineWidth=2;eg.beginPath();eg.arc(rx,ry-26,6,-Math.PI/2,-Math.PI/2+TAU*clamp(c.down/20,0,1));eg.stroke();
     if(c.rev>0){eg.strokeStyle=C.heal;eg.beginPath();eg.ellipse(rx,ry,30,13,0,-Math.PI/2,-Math.PI/2+TAU*clamp(c.rev/revT(c),0,1));eg.stroke()}eg.lineWidth=1}
   if(c.skin>0&&c.state==='ok'){const hh=c.spr.height>S?22:18,rx=14,ry=hh+2,cx=Math.round(x),cy=Math.round(y-hh);for(let k=0;k<c.skin;k++){eg.globalAlpha=.35+.2*Math.sin(tAll*6+k);eg.strokeStyle=k?'#ffffff':C.cyan;eg.beginPath();eg.ellipse(cx,cy,rx+k*3,ry+k*3,0,0,TAU);eg.stroke()}eg.globalAlpha=.9;for(let i=0;i<6;i++){const an=i/6*TAU+tAll*1.5;R(eg,cx+Math.cos(an)*rx,cy+Math.sin(an)*ry,1,1,'#ffffff')}eg.globalAlpha=1}
-  if(c.cls==='warden')holoAxe(c,x,y);
+  if(c.cls==='warden'&&HOLO_ON)holoAxe(c,x,y);
   if(c.idx===ME&&c.state==='ok'){const col=CL[c.cls].color,yy=Math.round(y-(c.spr.height>S?64:c.cls==='warden'?48:42)+Math.sin(tAll*4));lg.fillStyle=col;lg.fillRect(Math.round(x)-1,yy,3,1);lg.fillRect(Math.round(x),yy+1,1,1);eg.fillStyle=col;eg.fillRect(Math.round(x)-1,yy,3,1)}}
 function x2(x,y,fn,k=2){x=Math.round(x);y=Math.round(y);for(const g of [lg,eg]){g.save();g.translate(x,y);g.scale(k,k);g.translate(-x,-y)}fn();lg.restore();eg.restore()}
 function crescent(g,cx,cy,r0,rr,a0,a1,col,al){const n=24;g.globalAlpha=al;g.fillStyle=col;g.beginPath();for(let i=0;i<=n;i++){const a=a0+(a1-a0)*i/n;g.lineTo(cx+Math.cos(a)*rr,cy+Math.sin(a)*rr*.62)}for(let i=n;i>=0;i--){const t=i/n,a=a0+(a1-a0)*t,ri=rr-(rr-r0)*Math.sin(Math.PI*t);g.lineTo(cx+Math.cos(a)*ri,cy+Math.sin(a)*ri*.62)}g.closePath();g.fill();g.globalAlpha=1}
