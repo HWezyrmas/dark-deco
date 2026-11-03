@@ -693,7 +693,7 @@ body.inlobby #tLogo,body.inlobby #tHeroes{opacity:0!important}
 #sLobby .mate{gap:6px}#sLobby .mate .spec{padding:5px 6px}#sLobby .mate .botTg{padding:6px 8px}
 #bM{right:calc(env(safe-area-inset-right,0px) + 18px);bottom:calc(env(safe-area-inset-bottom,0px) + 250px);width:78px;height:78px;--cc:#ffe2a0;filter:drop-shadow(0 0 12px rgba(255,226,160,.8));animation:memp 1.2s ease-in-out infinite}
 #bM:not([hidden]){display:grid}@keyframes memp{50%{filter:drop-shadow(0 0 22px rgba(159,232,255,.95));transform:scale(1.06)}}
-#bM{background:url(ui/memory_btn.png) center/100% 100% no-repeat;width:84px;height:84px;padding-bottom:2px}#bM::before,#bM::after{content:none}
+#bM{background:url(ui/memory_btn.png) center/100% 100% no-repeat;width:64px;height:64px;padding-bottom:2px;pointer-events:none;animation:memGlow 1.6s ease-in-out infinite}@keyframes memGlow{50%{filter:drop-shadow(0 0 8px #ffe2a0) brightness(1.15)}}#bM::before,#bM::after{content:none}
 #dlg.wait .dtx::after{content:'Waiting for partner…';position:absolute;right:26px;bottom:4px;font:600 9px var(--ui);letter-spacing:.14em;text-transform:uppercase;color:var(--wc);opacity:.8}
 #b3{width:72px;height:72px;right:calc(max(16px,env(safe-area-inset-right,0px)) + 106px);bottom:calc(env(safe-area-inset-bottom,0px) + 112px)}
 #away{position:fixed;inset:0;z-index:80;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:rgba(8,6,18,.78);backdrop-filter:blur(2px);text-align:center;padding:24px}#away[hidden]{display:none}#away b{font:400 24px var(--display,Georgia),serif;color:#ffe2a0;letter-spacing:.04em}#away span{font:600 11px var(--ui);letter-spacing:.16em;text-transform:uppercase;color:#cfc4e2}
@@ -924,7 +924,7 @@ body.inlobby #tLogo,body.inlobby #tHeroes{opacity:0!important}
         <span class="kick">Special report</span>
         <h2 class="hed">When the bridges burn</h2>
         <div class="qa"><p class="q">The Divide.</p><p class="a">Twice a night, at 4:50 and again at 8:35, the Foreman sets the bridges on fire. The bridges flash red for three seconds, then the Warden is pulled to the main roof and the Lamplighter to the east roof. For 35 seconds you fight alone: no healing reaches across, and the shadows on each roof hunt only the hero standing there.</p></div>
-        <div class="qa"><p class="q">Call the Memory.</p><p class="a">While you are apart, a glowing button with two reaching hands appears (HER for him, HIM for her; G on a keyboard). Use it once per Divide to summon an echo of your partner for 8 seconds. It is also half a Rekindle: your Bond jumps to 50% and stays there while the echo lasts, you heal a little, nearby shadows are knocked back, and you are Empowered for 4 seconds. Her echo fires bolts and heals him; his echo fights beside her and takes some of the hits.</p></div>
+        <div class="qa"><p class="q">Not without you.</p><p class="a">When the bridges burn, each of you carries one Memory of the other, shown by the glowing icon with two reaching hands (HER for him, HIM for her). You never press it. If your partner would fall while you are apart, your Memory spends itself: they hold on at 30% health, cannot be hurt for 2 seconds, and a burst of light throws the shadows off them. One save each per Divide, gone once you are together again.</p></div>
         <div class="qa"><p class="q">Find each other.</p><p class="a">When the fire dies, an arrow points to your partner. Cross a bridge and meet up: Reunited heals you both, blasts the crowd away and Empowers you for 8 seconds. If you go down while apart, you stay down instead of being knocked out, so your partner can lift you up after the reunion.</p></div>
         <div class="qa"><p class="q">Hold until dawn.</p><p class="a">The Foreman arrives at 11:00. Bring him down for the best ending, or simply survive: at 12:00 the sun rises and burns him away. If a phone locks or switches app, the run pauses until both of you are back.</p></div>
       </section>
@@ -969,6 +969,6 @@ body.inlobby #tLogo,body.inlobby #tHeroes{opacity:0!important}
 <script src="dlg.js?v=1793704285"></script>
 <script src="intro.js?v=1793704285"></script>
 <script src="title.js?v=1793704285"></script>
-<script src="game.js?v=1793710955"></script>
+<script src="game.js?v=1793719546"></script>
 </body>
 </html>
