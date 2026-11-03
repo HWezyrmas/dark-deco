@@ -2374,4 +2374,40 @@ $('bIntro').addEventListener('click',()=>{if(window.__ddIntro)window.__ddIntro()
 window.__ddTitleSfx=k=>{try{audioInit();if(k==='thunder')taThunder(Math.random()<.4);else if(k==='spark')taUi('spark');else if(k==='bifrost')taBif();else if(k==='open'){titleAudio(true);taWhoosh()}}catch(_){}};
 window.__ddData=()=>({WDEF,MODS,PAIRS,DUOS,PAS,WBASE,CL,SPECN,ROT:[...rotElig()]});
 window.__dd={FXF,iceConfig,get bond(){return bond},get shk(){return shk},get DIV(){return DIV},get DIVON(){return DIVON},get echoes(){return echoes},get STORY(){return STORY},get WP(){return WP},get alt2(){return alt},get rot(){return [...rotElig()]},rotState:c=>rotState(c),get edge(){return edge},get TA(){return TA},get AC(){return AC},get spx(){return spx},sim,get chars(){return chars},get en(){return en},get mode(){return mode},get code(){return roomCode},get dome(){return dome},get combo(){return combo},get T(){return T},set T(v){T=v},get level(){return level},get xp(){return xp},set xp(v){xp=v},get LV(){return LV},get end(){return endState},get gems(){return gems},get kills(){return kills},applyCard,startLevel,spawnAt,get boss(){return boss},get alt(){return alt},set spec(v){SPEC=v},set altT(v){altT=v},set debT(v){debT=v},set chestT(v){chestT=v}};
+// ===== Effects lab (open the game with ?fxlab): every effect plays side by side, Classic on the left and New on the right =====
+(function(){if(!/[?&]fxlab/.test(location.search))return;
+  try{localStorage.setItem('dd_intro_seen','1')}catch(_){}
+  const L=[
+    ['Shockwave (Thunder Clap, Verdict, drops)',(x,y)=>{emit('imp','shock',x,y,96,.45);emit('crack',x,y,C.cyan);emit('wave',x,y,.4,50,C.cyan,4,0)}],
+    ['Fire burst (firebomb, Pyre)',(x,y)=>{emit('imp','fire',x,y,110,.5);emit('puff',x,y-4,14,'#ff8a2a',90,.35,true,18,2)}],
+    ['Holy burst (lamp lit, Ward block)',(x,y)=>{emit('imp','holy',x,y,100,.5)}],
+    ['Critical hit',(x,y)=>{FXF.hit(x,y-8,'128!','#ffd27a',1.3,0,'#ffffff',true)}],
+    ['Executioner sweep',(x,y)=>{emit('slash',x-14,y-12,0,50,2,0,'#ff7a8a');emit('pfx','reap',x+4,y-10,.55,false)}],
+    ['Executioner drop',(x,y)=>{emit('imp','shock',x,y,76,.4);emit('pfx','cleave',x,y,.5,false,.25);emit('crack',x,y,'#ff5a6a');emit('wave',x,y,.35,44,'#ff5a6a',4,0)}],
+    ['Berserker slash',(x,y)=>{emit('slash',x-10,y-12,0,44,0,0,C.cyan);emit('pfx','slash',x+6,y-10,.42,false)}],
+    ['Berserker overhead slam',(x,y)=>{emit('wave',x,y,.32,40,C.cyan,3,0);emit('crack',x,y,C.cyan);emit('pfx','slam',x,y,.28)}],
+    ['Whirlwind and Bladestorm',(x,y)=>{emit('slash',x,y-12,0,46,1,TAU,C.cyan);emit('wave',x,y,.3,46,C.cyan,2,0);emit('pfx','spin',x,y-4,.5)}],
+    ['Heroic Leap landing',(x,y)=>{emit('wave',x,y,.4,44,C.cyan,4,0);emit('crack',x,y,C.cyan);emit('pfx','land',x,y,.55)}],
+    ['The Dome',(x,y)=>{emit('wave',x,y,.5,60,C.cyan,4,0);emit('pfx','dome',x,y,.62)}],
+    ['Guardian Ward',(x,y)=>{emit('wave',x,y,.4,30,'#ffe08a',3,0);emit('star',x,y-18,'#ffe08a');emit('pfx','ward',x,y,.6)}],
+    ['Perfect Ward block',(x,y)=>{emit('star',x,y-18,'#ffe08a');emit('imp','holy',x,y,70,.45);emit('pfx','parry',x,y-14,.45)}],
+    ['Meteor',(x,y)=>{emit('pfx','meteor',x,y,.55);const nf=NEWFX;later.push({t:.7,f:()=>{const w=NEWFX;NEWFX=nf;emit('imp','fire',x,y,140,.6);emit('imp','shock',x,y,120,.5);emit('crack',x,y,'#ff8a2a');NEWFX=w}})}],
+    ['Sunburst',(x,y)=>{emit('imp','holy',x,y,150,.7);emit('pfx','sun',x,y-20,.9)}],
+    ['Revive',(x,y)=>{emit('star',x,y-14,C.heal);emit('pfx','revive',x,y,.5)}],
+    ['Rekindle and Reunited',(x,y)=>{emit('rekindle',x,y);emit('pfx','healring',x,y,.6)}],
+    ['Level up',(x,y)=>{emit('star',x,y-18,C.gold);emit('pfx','levelup',x,y-18,.55)}],
+    ['Bomber explosion',(x,y)=>{emit('imp','fire',x,y,90,.5);emit('wave',x,y,.4,46,C.red,4,0);emit('puff',x,y-6,24,'#ff7a3a',100,.5,true,20,1);emit('pfx','boom',x,y,.3)}],
+    ['Gatekeeper death',(x,y)=>{emit('wave',x,y,.5,60,C.red,4,0);emit('puff',x,y-6,24,'#3a3660',80,.6,false,20,2);emit('pfx','darkexp',x,y,.4)}],
+  ];
+  let i=0,started=false,next=0,plays=0;const lab=document.createElement('div');lab.id='fxlab';lab.innerHTML='<b></b><span><i>CLASSIC</i><i>NEW</i></span><small>Each effect plays twice, then the next one · tap the left or right edge to go back or skip</small>';document.body.appendChild(lab);
+  const st=document.createElement('style');st.textContent='#fxlab{position:fixed;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + 14px);z-index:90;text-align:center;pointer-events:none;font-family:system-ui,sans-serif;color:#fff}#fxlab b{display:block;font:600 17px Georgia,serif;letter-spacing:.04em;text-shadow:0 2px 6px #000}#fxlab span{display:flex;justify-content:space-around;margin-top:46vh}#fxlab i{font:700 11px system-ui;letter-spacing:.3em;padding:4px 10px;border-radius:10px;background:rgba(0,0,0,.55)}#fxlab i:last-child{color:#ffd27a}#fxlab small{position:fixed;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 18px);font-size:11px;opacity:.75}body.fxlab #hud,body.fxlab #tc,body.fxlab #dlg,body.fxlab #obj{display:none!important}';document.head.appendChild(st);
+  addEventListener('pointerdown',e=>{if(!started)return;if(e.clientX<innerWidth*.3){i=(i-1+L.length)%L.length;next=0;plays=0}else if(e.clientX>innerWidth*.7){i=(i+1)%L.length;next=0;plays=0}},true);
+  setInterval(()=>{
+    if(!started){if(typeof startHost!=='function')return;{const it=document.getElementById('intro');if(it){it.classList.remove('on','playing');it.style.display='none'}document.body.classList.remove('inintro');document.body.classList.add('titled')}solo=true;alone=true;isHost=true;myCls='warden';PROLOGUE=false;startHost();started=true;document.body.classList.add('fxlab');next=0;return}
+    if(mode!=='play'){if(LV){LV=null;go('play')}return}
+    const me=chars[0];me.hp=me.max=99999;me.x=220;me.y=300;xp=0;T=30;packT=bruteT=altT=chestT=debT=1e9;for(const e of en)e.dead=true;LV=null;
+    if(performance.now()>=next){if(plays>=2){i=(i+1)%L.length;plays=0}plays++;next=performance.now()+2500;const [name,fn]=L[i];lab.querySelector('b').textContent=(i+1)+' / '+L.length+' · '+name;
+      const was=NEWFX;NEWFX=false;fn(me.x-62,me.y+34);NEWFX=true;pfxLoad();fn(me.x+62,me.y+34);NEWFX=was||true;
+      }},120);
+})();
 })();
