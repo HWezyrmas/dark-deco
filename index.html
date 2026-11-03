@@ -43,6 +43,7 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:
 .hp.rage{height:6px;border-color:#5a1a2e}.hp.rage b{background:linear-gradient(90deg,#7a0f2a,#ff2a5c);width:0;transition:width .1s}
 #rowRage.full .hp b{background:linear-gradient(90deg,#ff2a5c,#fff0f4,#ff2a5c);box-shadow:0 0 10px #ff2a5c;animation:rgp .5s infinite alternate}
 #rowRage.full .rgn{color:#fff;text-shadow:0 0 8px #ff2a5c}
+.bbn{font:700 9px/1 'Press Start 2P',monospace;color:#ff5a6a;margin:3px 0 0 2px;letter-spacing:.04em;text-shadow:0 0 calc(2px + var(--k,0)*8px) #ff2a3a;opacity:calc(.55 + var(--k,0)*.45)}.bbn i{font-style:normal;font-size:7px;opacity:.8}.bbn.max{color:#fff;animation:rgp .45s infinite alternate}
 @keyframes rgp{from{filter:brightness(1)}to{filter:brightness(1.6)}}
 .tb.storm{border-color:#ff2a5c;color:#fff;box-shadow:0 0 18px #ff2a5c,inset 0 0 14px rgba(255,42,92,.6);animation:rgp .4s infinite alternate}
 .mid{display:flex;flex-direction:column;align-items:center;gap:4px}
@@ -748,7 +749,7 @@ body.inlobby #tLogo,body.inlobby #tHeroes{opacity:0!important}
     <div class="top">
       <div class="who">
         <div class="hprow" id="rowMe"><span class="hpname" id="name">Warden</span><span class="hp"><i><b id="hpMe"></b></i></span><span class="hptxt" id="hpMeT"></span></div>
-        <div class="hprow" id="rowRage" hidden><span class="hpname rgn">RAGE</span><span class="hp rage"><i><b id="rageB"></b></i></span></div>
+        <div class="hprow" id="rowRage" hidden><span class="hpname rgn">RAGE</span><span class="hp rage"><i><b id="rageB"></b></i></span></div><div class="bbn" id="bbN" hidden></div>
         <div class="hprow" id="rowMate"><span class="hpname" id="mateName" style="font-size:14px">Partner</span><span class="hp mate"><i><b id="hpMate"></b></i></span></div>
         <div id="kit"></div>
         <span id="net"></span>
@@ -906,7 +907,7 @@ body.inlobby #tLogo,body.inlobby #tHeroes{opacity:0!important}
       <section class="pg paper" style="--gc:#b0303f">
         <span class="kick">Two paths each</span>
         <h2 class="hed">Pick your spec</h2>
-        <div class="qa"><p class="q">Warden · Executioner</p><p class="a"><span class="spicons"><span><img src="icons/reaper.png" alt=""><em>Headsman</em></span><span><img src="icons/verdict.png" alt=""><em>Verdict</em></span><span><img src="icons/grandverdict.png" alt=""><em>Grand Verdict</em></span><span><img src="ui/sym_dome.png" alt=""><em>Dome</em></span></span>Trades the axe flurry for one huge greataxe. Each swing is slow but crushing, only hits what is in front of you, and Executes anything under 22% health. <b>Verdict</b> (Q): plant your feet and cleave a wide arc that Executes under 35%. At full Rage it becomes the Grand Verdict, all the way around you. <b>The Dome</b> (E): the shield the Berserker gave up. He is the sturdy one: 40 more health, and 25% less damage while standing still. The Berserker gets <b>Reckless Charge</b> instead: a dash that resets on every kill, with hits that heal him; the crowd goes for him first, so he lives by staying in the fight.</p></div>
+        <div class="qa"><p class="q">Warden · Executioner</p><p class="a"><span class="spicons"><span><img src="icons/reaper.png" alt=""><em>Headsman</em></span><span><img src="icons/verdict.png" alt=""><em>Verdict</em></span><span><img src="icons/grandverdict.png" alt=""><em>Grand Verdict</em></span><span><img src="ui/sym_dome.png" alt=""><em>Dome</em></span></span>Trades the axe flurry for one huge greataxe. Each swing is slow but crushing, only hits what is in front of you, and Executes anything under 22% health. <b>Verdict</b> (Q): plant your feet and cleave a wide arc that Executes under 35%. At full Rage it becomes the Grand Verdict, all the way around you. Every kill heats his <b>Blood Boil</b> (Executes and big enemies count more, up to 50; it cools after 6 seconds without a kill). The Grand Verdict spends it all: up to 2.5× damage and a wider slam, with earth spikes at 15, a dark blast at 35 and a burning explosion at 50. <b>The Dome</b> (E): the shield the Berserker gave up. He is the sturdy one: 40 more health, and 25% less damage while standing still. The Berserker gets <b>Reckless Charge</b> instead: a dash that resets on every kill, with hits that heal him; the crowd goes for him first, so he lives by staying in the fight.</p></div>
         <div class="qa"><p class="q">Lamplighter · Firebrand</p><p class="a"><span class="spicons"><span><img src="icons/cinder.png" alt=""><em>Cinders</em></span><span><img src="icons/flashfire.png" alt=""><em>Flashfire</em></span><span><img src="icons/kindle.png" alt=""><em>Kindle</em></span><span><img src="icons/inferno.png" alt=""><em>Inferno</em></span></span>Swaps light for fire. <b>Cinders</b> lob burning splashes that set enemies alight. <b>Flashfire</b> (Q) blinks and leaves a line of fire behind her. <b>Kindle</b> (E) sets him ablaze for 8 seconds: his hits burn and do 30% more damage. If he is too far away it bursts around her instead. Her heals are 25% weaker, but burning enemies that die near either of you heal you both.</p></div>
         <div class="qa"><p class="q">Lamplighter · both specs</p><p class="a"><b>Guardian Ward</b> (R, or the small shield button): throw a light shield over him. If anything hits him while it is up, the hit is blocked, blasted back at the enemies around him, and half the cooldown comes back. Watch for red on the floor under him and time it. <b>Charged shots</b>: stand still and your lantern charges; a full charge fires a piercing beam (Healer) or a big cinder bomb (Firebrand). Moving fires quick small shots instead. <b>Marks</b>: everything she hits gets a lantern mark, and when he hits a marked enemy it explodes. <b>Spark</b>: fill it by stepping through danger, perfect Wards, healing him and setting up explosions. When it is full, Q becomes <b>Sunburst</b> (heal you both, revive him, three blasts) or <b>Meteor</b> (a huge burning impact where you are heading).</p></div>
         <div class="qa"><p class="q">Choose in the lobby.</p><p class="a">Under the two heroes, pick a spec for your own hero. In practice mode you choose the bot's spec too.</p></div>
@@ -970,6 +971,6 @@ body.inlobby #tLogo,body.inlobby #tHeroes{opacity:0!important}
 <script src="dlg.js?v=1793704285"></script>
 <script src="intro.js?v=1793704285"></script>
 <script src="title.js?v=1793704285"></script>
-<script src="game.js?v=1793733209"></script>
+<script src="game.js?v=1793734073"></script>
 </body>
 </html>
