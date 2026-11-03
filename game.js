@@ -1837,6 +1837,27 @@ function queueHead(c,x,y,F,sx,sy,al,rot){if(!c.hc)c.hc=mk(S*2,S*2);const h=c.hc.
   const lids=(c.blink>0||c.state==='down')?[LAMP.eyeL,LAMP.eyeR]:c.wink>0?[LAMP.eyeR]:[];for(const e of lids){const ex=e[0]-p.pv[0],ey=e[1]-p.pv[1];h.fillStyle=LAMP.skin;h.fillRect(Math.round(ex-3),Math.round(ey-3),6,6);h.fillStyle='#3a1a10';h.fillRect(Math.round(ex-3),Math.round(ey+1),6,1)}
   h.restore();if(c.hit>0){h.globalCompositeOperation='source-atop';h.fillStyle='rgba(255,255,255,.85)';h.fillRect(0,0,S*2,S*2);h.globalCompositeOperation='source-over'}
   hiQ.push([c.hc,x,y,F,sx,sy,al,rot]);hiQ.ys=c.y}
+// ===== Executioner: a holographic greataxe held in one hand. It rests on his shoulder, winds up slowly and sweeps wide, leaving afterimages =====
+const HOLO=[];
+function axePath(g,f){g.beginPath();g.moveTo(0,5);g.lineTo(0,-36);g.moveTo(f*1,-37);g.lineTo(f*9,-43);g.quadraticCurveTo(f*17,-33,f*15,-21);g.lineTo(f*9,-14);g.lineTo(f*1,-20);g.closePath();g.moveTo(-f*1,-31);g.lineTo(-f*7,-29);g.lineTo(-f*1,-25)}
+function drawHoloAxe(g,x,y,ang,f,al,trail){
+  const flick=.82+.18*Math.sin(tAll*41)*Math.sin(tAll*13),gl=(Math.sin(tAll*3.1)>.96)?(Math.sin(tAll*90)>0?1.2:-1.2):0;
+  const one=(a,k)=>{g.save();g.translate(x+gl*(k===1?1:0),y);g.rotate(a);
+    g.globalAlpha=al*k*.22;g.fillStyle='#ff3a5a';axePath(g,f);g.fill();
+    g.globalAlpha=al*k*.9*flick;g.strokeStyle='#ff6a80';g.lineWidth=.9;axePath(g,f);g.stroke();
+    if(k===1){g.globalAlpha=al*flick;g.strokeStyle='#ffe0e6';g.lineWidth=.45;g.beginPath();g.moveTo(f*9,-43);g.quadraticCurveTo(f*17,-33,f*15,-21);g.stroke();
+      g.globalAlpha=al*.35*flick;g.strokeStyle='#ff9aa8';g.lineWidth=.35;for(let yy=-42;yy<-16;yy+=2.2){const s0=(yy+tAll*30)%3<1.4;if(!s0)continue;g.beginPath();g.moveTo(f*1.5,yy);g.lineTo(f*14.5,yy);g.stroke()}
+      g.globalAlpha=al*.6;g.fillStyle='#ffd0d8';g.beginPath();g.arc(0,-36,1.1,0,TAU);g.fill()}
+    g.restore()};
+  if(trail)for(let i=trail.length-1;i>=0;i--)one(trail[i],.35*(1-i/trail.length));one(ang,1)}
+function holoAxe(c,x,y){if(c.spec!=='exec'||c.state!=='ok'||c.ww>0||c.bs>0)return;const f=c.f||1,hx=x+f*6,hy=y-15+(c.moving?Math.abs(Math.sin(c.walk*TAU))*-1.2:Math.sin(c.t*2.2)*.6);
+  const rest=-f*.95;let a=rest,trail=null;
+  if(c.atk>0&&c.atkDur>0){const p=clamp(1-c.atk/c.atkDur,0,1),side=Math.cos(c.adir||0)>=0?1:-1,fwd=side*1.25,hv=c.heavy;
+    const up=hv===1?-side*1.9:hv===2?-side*1.6:-side*1.1,end=hv===2?side*2.4:fwd+side*.35,wind=hv===1?.42:.3,hit=hv===1?.62:.5;
+    const ease=t=>t*t*(3-2*t);
+    if(p<wind)a=rest+(up-rest)*ease(p/wind);else if(p<hit){const k=(p-wind)/(hit-wind);a=up+(end-up)*(k*k);trail=[1,2,3,4].map(i=>up+(end-up)*Math.max(0,k-i*.12)**2)}else if(p<hit+.22){const k=(p-hit)/.22;a=end+side*.08*Math.sin(k*Math.PI);trail=[1,2,3].map(i=>end-(end-up)*.12*i*(1-k))}else{const k=(p-hit-.22)/(1-hit-.22);a=end+(rest-end)*ease(k)}
+    return HOLO.push([hx,hy,a,side,1,trail])}
+  HOLO.push([hx,hy,a,f,.85,null])}
 function hblit(c,img,x,y,f,sx=1,sy=1,al=1,rot=0){if(c.spr.width<=S||c.spr.k===1){if(img===c.fin)c._fb=[x,y,f,sx,sy,al,rot,tAll];return blit(lg,img,x,y,f,sx,sy,al,rot)}c.snaps=c.snaps||[];const i=c.snapN++;let s=c.snaps[i];if(!s){s=mk(img.width,img.height);c.snaps[i]=s}const sg=s.getContext('2d');sg.clearRect(0,0,s.width,s.height);sg.drawImage(img,0,0);hiQ.push([s,x,y,f,sx,sy,al,rot]);hiQ.ys=c.y}
 /* ---- sprite sheets: drop PNG strips into sprites/<warden|lamp>/<anim>.png and they replace the drawn characters ---- */
 const SPR={warden:{},lamp:{}},SPR_ANIMS={warden:['idle','walk','attack1','attack2','attack3','spin','leap','cast','hurt','down'],lamp:['idle','walk','shoot','cast','twirl','hurt','down']};
@@ -1919,6 +1940,7 @@ function drawChar(c){c.snapN=0;if(c.state==='out')return;const sp=spriteFor(c);
     eg.strokeStyle=C.red;eg.lineWidth=2;eg.beginPath();eg.arc(rx,ry-26,6,-Math.PI/2,-Math.PI/2+TAU*clamp(c.down/20,0,1));eg.stroke();
     if(c.rev>0){eg.strokeStyle=C.heal;eg.beginPath();eg.ellipse(rx,ry,30,13,0,-Math.PI/2,-Math.PI/2+TAU*clamp(c.rev/revT(c),0,1));eg.stroke()}eg.lineWidth=1}
   if(c.skin>0&&c.state==='ok'){const hh=c.spr.height>S?22:18,rx=14,ry=hh+2,cx=Math.round(x),cy=Math.round(y-hh);for(let k=0;k<c.skin;k++){eg.globalAlpha=.35+.2*Math.sin(tAll*6+k);eg.strokeStyle=k?'#ffffff':C.cyan;eg.beginPath();eg.ellipse(cx,cy,rx+k*3,ry+k*3,0,0,TAU);eg.stroke()}eg.globalAlpha=.9;for(let i=0;i<6;i++){const an=i/6*TAU+tAll*1.5;R(eg,cx+Math.cos(an)*rx,cy+Math.sin(an)*ry,1,1,'#ffffff')}eg.globalAlpha=1}
+  if(c.cls==='warden')holoAxe(c,x,y);
   if(c.idx===ME&&c.state==='ok'){const col=CL[c.cls].color,yy=Math.round(y-(c.spr.height>S?64:c.cls==='warden'?48:42)+Math.sin(tAll*4));lg.fillStyle=col;lg.fillRect(Math.round(x)-1,yy,3,1);lg.fillRect(Math.round(x),yy+1,1,1);eg.fillStyle=col;eg.fillRect(Math.round(x)-1,yy,3,1)}}
 function x2(x,y,fn,k=2){x=Math.round(x);y=Math.round(y);for(const g of [lg,eg]){g.save();g.translate(x,y);g.scale(k,k);g.translate(-x,-y)}fn();lg.restore();eg.restore()}
 function crescent(g,cx,cy,r0,rr,a0,a1,col,al){const n=24;g.globalAlpha=al;g.fillStyle=col;g.beginPath();for(let i=0;i<=n;i++){const a=a0+(a1-a0)*i/n;g.lineTo(cx+Math.cos(a)*rr,cy+Math.sin(a)*rr*.62)}for(let i=n;i>=0;i--){const t=i/n,a=a0+(a1-a0)*t,ri=rr-(rr-r0)*Math.sin(Math.PI*t);g.lineTo(cx+Math.cos(a)*ri,cy+Math.sin(a)*ri*.62)}g.closePath();g.fill();g.globalAlpha=1}
@@ -2209,7 +2231,7 @@ function drawFly(fx,fy,lv=1){const x=Math.round(fx+ox),y=Math.round(fy+oy),evo=l
 const LSPR={};function lightSpr(col){let c=LSPR[col];if(c)return c;c=mk(64,64);const g=c.getContext('2d'),gr=g.createRadialGradient(32,32,0,32,32,32);gr.addColorStop(0,col.replace('A',1));gr.addColorStop(1,col.replace('A',0));g.fillStyle=gr;g.fillRect(0,0,64,64);LSPR[col]=c;return c}
 function render(){
   ox=Math.round(lw/2)-Math.round(cam.x)+Math.round(shk.x);oy=Math.round(lh/2)-Math.round(cam.y)+Math.round(shk.y);
-  eg.clearRect(0,0,lw,lh);hiQ=[];bg();world();
+  eg.clearRect(0,0,lw,lh);hiQ=[];HOLO.length=0;bg();world();
   const inGame=mode==='play'||mode==='pick'||mode==='end';
   if(inGame){const list=[];for(const p of PROPS)list.push({y:p.y,d:()=>drawProp(p)});for(const e of en)list.push({y:e.y,d:()=>drawEnemy(e)});for(const c of chars)list.push({y:c.y,d:()=>drawChar(c)});list.sort((a,b)=>a.y-b.y);for(const o of list)o.d();effects()}
   else for(const p of PROPS)drawProp(p);
@@ -2225,6 +2247,7 @@ function render(){
   ctx.globalAlpha=1;for(let i=0;i<2;i++){const a=-Math.PI/2+Math.sin(tAll*.3+i*2.1)*.55,bx=(i?.85:.15)*W*DPR,by=H*DPR*1.05,Ln=Math.max(W,H)*1.6*DPR;const g=ctx.createLinearGradient(bx,by,bx+Math.cos(a)*Ln,by+Math.sin(a)*Ln);g.addColorStop(0,'rgba(180,170,255,.09)');g.addColorStop(1,'rgba(180,170,255,0)');ctx.fillStyle=g;ctx.beginPath();ctx.moveTo(bx,by);ctx.lineTo(bx+Math.cos(a-.06)*Ln,by+Math.sin(a-.06)*Ln);ctx.lineTo(bx+Math.cos(a+.06)*Ln,by+Math.sin(a+.06)*Ln);ctx.fill()}
   ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1;
   if(hiQ.length){ctx.save();ctx.imageSmoothingEnabled=false;ctx.setTransform(sc,0,0,sc,DX,DY);for(const q of hiQ)blit(ctx,...q);for(const o of chars){if(o.hiHead||o.state==='out'||!o._fb||o._fb[7]!==tAll||!(o.y>hiQ.ys))continue;const art=chars.find(q=>q.hiHead);if(art&&Math.abs(o.x-art.x)<34&&Math.abs(o.y-art.y)<40)blit(ctx,o.fin,...o._fb.slice(0,7))}ctx.restore();hiQ=[]}
+  if(HOLO.length){ctx.save();ctx.setTransform(sc,0,0,sc,DX,DY);ctx.globalCompositeOperation='lighter';for(const h of HOLO)drawHoloAxe(ctx,...h);ctx.restore()}
   const me=meC(),lowHp=inGame&&me&&me.state==='ok'&&me.hp/me.max<.3;
   const vg=ctx.createRadialGradient(W*DPR/2,H*DPR/2,Math.min(W,H)*DPR*.35,W*DPR/2,H*DPR/2,Math.max(W,H)*DPR*.75);vg.addColorStop(0,'rgba(5,3,12,0)');vg.addColorStop(1,lowHp?'rgba(90,6,24,'+(.55+.15*Math.sin(tAll*6))+')':'rgba(5,3,12,.38)');ctx.fillStyle=vg;ctx.fillRect(0,0,W*DPR,H*DPR);
   if(inGame&&chars.length>1&&bond<.4){ctx.fillStyle='rgba(18,28,70,'+((.4-bond)*.9)+')';ctx.fillRect(0,0,W*DPR,H*DPR)}
