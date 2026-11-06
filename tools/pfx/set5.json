@@ -1,0 +1,11 @@
+{
+ "bsw":  {"id":"melee/sword-slash","anchor":"origin","step":1,"opts":{"palette":["#04141c","#0a2a3a","#10506a","#1a8aa8","#3fd2f0","#bff6ff","#ffffff"]}},
+ "bham": {"id":"melee/hammer-smash","anchor":"origin","step":1,"opts":{"palette":["#04141c","#0a2a3a","#10506a","#1a8aa8","#3fd2f0","#bff6ff","#ffffff"]}},
+ "esw":  {"id":"melee/spear-sweep","anchor":"origin","step":1,"opts":{"palette":["#14040a","#2a0814","#4a0c1e","#7a1426","#b0203a","#ff5a6a","#ffd0d8","#ffffff"]}},
+ "hth":  {"id":"melee/thrust","anchor":"origin","step":1,"opts":{"palette":"holy"}},
+ "hwh":  {"id":"melee/whip-crack","anchor":"origin","step":1,"opts":{"palette":"holy"}},
+ "hspin":{"id":"melee/spin-slash","anchor":"origin","step":1,"opts":{"palette":"holy"}},
+ "fclaw":{"id":"melee/claw-swipe","anchor":"origin","step":1,"opts":{"palette":"fire"}},
+ "fdag": {"id":"melee/dagger-flurry","anchor":"origin","step":1,"opts":{"palette":"fire"}},
+ "fup":  {"id":"melee/uppercut","anchor":"origin","step":1,"opts":{"palette":"fire"}}
+}

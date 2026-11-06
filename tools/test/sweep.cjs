@@ -1,6 +1,6 @@
 // Single-device sweep: menus, guide pages, intro, practice runs per spec, skills screen, loss and replay, leave. Prints errors and saves screenshots.
 // Usage: node tools/test/sweep.cjs <outDir> [port]
-const {chromium}=require('playwright');(async()=>{const O=process.argv[2]||'.',PORT=process.argv[3]||8767,U=`http://localhost:${PORT}/index.html?local`;
+const {chromium}=require('playwright');(async()=>{const O=process.argv[2]||require('path').join(__dirname,'out');require('fs').mkdirSync(O,{recursive:true});const PORT=process.argv[3]||8767,U=`http://localhost:${PORT}/index.html?local`;
 const b=await chromium.launch();const p=await b.newPage({viewport:{width:390,height:844},deviceScaleFactor:2,hasTouch:true,isMobile:true});const errs=[];p.on('pageerror',e=>errs.push(e.message));
 const miss=new Set();p.on('response',r=>{if(r.status()>=400&&!/googleapis|gstatic/.test(r.url()))miss.add(r.status()+' '+r.url().replace(/^https?:\/\/[^/]+/,''))});
 const clear=async(n=12)=>{for(let i=0;i<n;i++){const busy=await p.evaluate(()=>{let b=false;if(window.DLG&&DLG.blocking()){DLG.advance();b=true}if(__dd.LV){const x=document.querySelector('.pick:not(.chosen)');x&&x.click();b=true}return b});if(!busy)return;await p.waitForTimeout(400)}};const W=ms=>p.waitForTimeout(ms),log=(...a)=>console.log(...a),shot=n=>p.screenshot({path:`${O}/sw_${n}.png`});

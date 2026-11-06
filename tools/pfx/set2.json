@@ -1,0 +1,14 @@
+{
+ "lvlup":  {"id":"ui/level-up","anchor":"ground","step":1},
+ "count":  {"id":"ui/countdown","anchor":"center","step":1,"opts":{"from":3,"word":"BURN!","palette":["#2a0806","#5a1208","#9a2a0e","#d8501a","#ff8a2a","#ffc06a","#ffe8c0","#ffffff"],"go":["#2a0408","#5a0a14","#9a1424","#d8243a","#ff4a5a","#ff9aa6","#ffe0e6","#ffffff"]}},
+ "alert":  {"id":"ui/exclamation","anchor":"center","step":1},
+ "hlost":  {"id":"ui/heart-lost","anchor":"center","step":1},
+ "hpick":  {"id":"pickups/heart-pickup","anchor":"center","step":1},
+ "pstar":  {"id":"pickups/power-star","anchor":"center","step":1},
+ "beam":   {"id":"pickups/loot-beam","anchor":"ground","step":2},
+ "altar":  {"id":"ui/quest-complete","anchor":"center","step":1,"opts":{"text":"ALTAR LIT"}},
+ "dawn":   {"id":"ui/quest-complete","anchor":"center","step":1,"opts":{"text":"DAWN BREAKS"}},
+ "reunite":{"id":"ui/achievement","anchor":"center","step":1,"opts":{"title":"REUNITED","text":"EMPOWERED"}},
+ "memory": {"id":"ui/achievement","anchor":"center","step":1,"opts":{"title":"MEMORY","text":"HALF REKINDLE","ribbon":["#06141c","#0e3346","#1b6680","#3fa8c8","#9fe8ff"]}},
+ "confetti":{"id":"ui/confetti","anchor":"ground","step":2}
+}

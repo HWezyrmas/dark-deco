@@ -1,0 +1,22 @@
+{
+ "crit":   {"id":"impacts/crit-hit","anchor":"center","step":1},
+ "slam":   {"id":"impacts/ground-slam","anchor":"ground","step":2},
+ "land":   {"id":"impacts/heavy-landing","anchor":"ground","step":2},
+ "parry":  {"id":"impacts/parry","anchor":"center","step":1},
+ "smite":  {"id":"holy/smite","anchor":"ground","step":2},
+ "dome":   {"id":"scifi/force-field","anchor":"ground","step":2},
+ "ward":   {"id":"holy/divine-shield","anchor":"ground","step":2},
+ "sun":    {"id":"holy/sunburst","anchor":"center","step":2,"max":40},
+ "meteor": {"id":"fire/meteor","anchor":"ground","step":2},
+ "firering":{"id":"fire/fire-ring","anchor":"ground","step":2},
+ "revive": {"id":"holy/resurrection","anchor":"ground","step":2},
+ "healring":{"id":"holy/heal-aoe","anchor":"ground","step":2},
+ "levelup":{"id":"pickups/collect-burst","anchor":"center","step":1},
+ "darkexp":{"id":"shadow/dark-explosion","anchor":"ground","step":2},
+ "boom":   {"id":"explosions/small-explosion","anchor":"ground","step":2,"max":50},
+ "spin":   {"id":"melee/spin-slash","anchor":"ground","step":1},
+ "slash":  {"id":"melee/double-slash","anchor":"center","step":1,"opts":{"palette":["#04141c","#0a2a3a","#10506a","#1a8aa8","#3fd2f0","#bff6ff","#ffffff"]}},
+ "reap":   {"id":"melee/scythe-reap","anchor":"center","step":2,"opts":{"palette":["#14040a","#2a0814","#4a0c1e","#7a1426","#b0203a","#ff5a6a","#ffd0d8","#ffffff"]}},
+ "cleave": {"id":"melee/heavy-cleave","anchor":"ground","step":2,"skip":0.17,"opts":{"palette":["#1a0408","#3a0a12","#6e1020","#b0203a","#ff4a5a","#ff8a9a","#ffe0e6","#ffffff"]}},
+ "bolt":   {"id":"lightning/lightning-strike","anchor":"ground","step":2,"skip":0.1,"max":30}
+}

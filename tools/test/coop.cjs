@@ -1,6 +1,6 @@
 // Two-phone co-op test over the local link (?local uses a BroadcastChannel between two pages of the same browser).
 // Usage: node tools/test/coop.cjs <outDir> [port]
-const {chromium}=require('playwright');(async()=>{const O=process.argv[2]||'.',PORT=process.argv[3]||8767,U=`http://localhost:${PORT}/index.html?local`;
+const {chromium}=require('playwright');(async()=>{const O=process.argv[2]||require('path').join(__dirname,'out');require('fs').mkdirSync(O,{recursive:true});const PORT=process.argv[3]||8767,U=`http://localhost:${PORT}/index.html?local`;
 const b=await chromium.launch();const ctx=await b.newContext({viewport:{width:390,height:844},deviceScaleFactor:2,hasTouch:true,isMobile:true});
 const H=await ctx.newPage(),G=await ctx.newPage();const errs={H:[],G:[]};H.on('pageerror',e=>errs.H.push(e.message));G.on('pageerror',e=>errs.G.push(e.message));
 const miss=new Set();for(const p of [H,G])p.on('response',r=>{if(r.status()>=400)miss.add(r.status()+' '+r.url().replace(/^https?:\/\/[^/]+/,''))});

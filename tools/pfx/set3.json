@@ -1,0 +1,8 @@
+{
+ "bless":   {"id":"holy/blessing","anchor":"ground","step":1,"loop":1},
+ "halo":    {"id":"holy/halo","anchor":"center","step":1,"loop":1},
+ "feathers":{"id":"holy/feather-burst","anchor":"center","step":1},
+ "hpillar": {"id":"holy/holy-pillar","anchor":"ground","step":2},
+ "goldshot":{"id":"projectiles/plasma-shot","anchor":"head","step":1,"loop":1,"opts":{"palette":["#1a1004","#3a2608","#6a4a10","#a8761a","#e0a828","#ffd25a","#fff0b0","#ffffff"]}},
+ "laser":   {"id":"projectiles/laser-bolt","anchor":"head","step":1,"loop":1}
+}

@@ -1,0 +1,7 @@
+{
+ "reapO":  {"id":"melee/scythe-reap","anchor":"origin","step":1,"tmax":0.85,"opts":{"palette":["#14040a","#2a0814","#4a0c1e","#7a1426","#b0203a","#ff5a6a","#ffd0d8","#ffffff"]}},
+ "cleaveO":{"id":"melee/heavy-cleave","anchor":"origin","step":1,"tmax":0.95,"opts":{"palette":["#14040a","#2a0814","#4a0c1e","#7a1426","#b0203a","#ff5a6a","#ffd0d8","#ffffff"]}},
+ "gpound": {"id":"moves/ground-pound","anchor":"origin","step":2,"skip":0.5,"tmax":1.75},
+ "estomp": {"id":"moves/earth-stomp","anchor":"origin","step":2,"skip":0.3,"tmax":1.7,"opts":{"palette":["#14040a","#2a0814","#4a0c1e","#7a1426","#b0203a","#ff5a6a","#ffd0d8","#ffffff"]}},
+ "dstrike":{"id":"moves/dash-strike","anchor":"origin","step":1,"skip":0.15,"tmax":0.95}
+}
