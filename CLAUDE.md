@@ -17,7 +17,7 @@ Live: https://hwezyrmas.github.io/dark-deco/ (GitHub Pages, deployed by Actions 
 - `sprites/<cls>/<anim>/<dir>.png`: horizontal strips of square frames. Must be listed in `SPRHAVE` in game.js or they are not loaded.
 - `pfx/*.webp` + `pfx/manifest.json`: baked PixelFX sheets (MIT, see `pfx/LICENSE.txt`). The manifest is also inlined in game.js as `const PFXM=...`.
 - `tools/test/`: Playwright scripts (`coop.cjs`, `sweep.cjs`, `sim.cjs`). `tools/pfx/`: effect pipeline. `docs/ability-matrix.html`.
-- `v1/`, `v2/`, `arcade/`: older prototypes, leave alone.
+- `v1/`, `v2/`: older prototypes, leave alone. (Hala's Arcade was removed on 2026-11-08; restore it from commit a04d0b9 with `git checkout a04d0b9 -- arcade`.)
 
 ## Architecture
 - Host-authoritative over PeerJS. The host simulates; the guest renders snapshots and sends inputs.
