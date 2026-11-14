@@ -719,6 +719,30 @@ body.inlobby #tLogo,body.inlobby #tHeroes{opacity:0!important}
 #sLevel .offers.locked .pick:not(.chosen){opacity:.35}
 #sLevel .pick.landed .ic{animation:land .3s cubic-bezier(.2,1.8,.4,1)}
 @media (max-height:640px){#sLevel .pick{padding:7px 10px 8px 8px;grid-template-columns:48px 1fr}#sLevel .pick .ic{width:48px;height:48px}#sLevel .pick .ic img{width:42px;height:42px}#sLevel .pick .nm{font-size:15px}#sLevel .pick .d{font-size:11px}}
+
+/* gamified main menu */
+.rec,.coop,.modes{max-width:min(340px,calc(100vw - 84px))}
+.coop input{min-width:0;width:100%}
+.rec{display:flex;gap:6px;width:100%;justify-content:center}
+.rec span{flex:1 1 0;min-width:0;display:flex;align-items:center;justify-content:center;gap:6px;padding:5px 6px;border-radius:8px;background:linear-gradient(180deg,#1c1536,#0f0b1f);border:1px solid #5a4423;box-shadow:inset 0 1px 0 #ffffff14}
+.rec i{width:22px;height:22px;flex:none;background:var(--ic) center/contain no-repeat}
+.rec b{font:700 15px var(--ui);color:#ffd98a;letter-spacing:.04em}
+.rec em{display:flex;flex-direction:column;align-items:flex-start;font-style:normal;line-height:1.05;min-width:0}.rec small{font:600 7.5px var(--ui);letter-spacing:.14em;text-transform:uppercase;color:#a99cc8}
+.coop{width:100%;min-width:0;display:flex;flex-direction:column;gap:9px;padding:10px 10px 12px;border-radius:12px;background:radial-gradient(ellipse at 50% 0,#3b2462 0,#140f28 70%);border:1px solid #6b5228;box-shadow:inset 0 0 0 1px #00000066,0 0 18px #e0a83c22}
+.coopH{display:flex;align-items:center;justify-content:space-between;height:44px;margin-bottom:2px}
+.coopH img{height:52px;margin-top:-10px;filter:drop-shadow(0 2px 4px #0008)}
+.coopH b{display:block;font:800 17px var(--ui);letter-spacing:.32em;text-transform:uppercase;color:#ffd98a;text-shadow:0 0 10px #e0a83c88}
+.coopH small{font:600 9px var(--ui);letter-spacing:.2em;text-transform:uppercase;color:#bfb3dd}
+.modes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;width:100%}
+.mode{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 2px 7px;border-radius:10px;cursor:pointer;color:var(--moon);background:linear-gradient(180deg,#1d1638,#0d0a1c);border:1px solid #5a4423;box-shadow:inset 0 1px 0 #ffffff12,0 3px 0 #05030c;transition:transform .08s}
+.mode:active{transform:translateY(2px);box-shadow:inset 0 1px 0 #ffffff12,0 1px 0 #05030c}
+.mode i{width:40px;height:40px;background:var(--ic) center/contain no-repeat;filter:drop-shadow(0 0 6px #e0a83c44)}
+.mode b{font:700 9.5px var(--ui);letter-spacing:.08em;text-transform:uppercase;color:#ffe6b0}
+.mode small{font:500 8px var(--ui);letter-spacing:.02em;color:#a99cc8;white-space:nowrap;overflow:hidden;text-overflow:clip;max-width:100%}
+.mode::after{content:'';position:absolute;inset:0;border-radius:10px;background:linear-gradient(115deg,transparent 35%,#ffffff1c 50%,transparent 65%) -150% 0/250% 100% no-repeat;animation:modeShine 5s ease-in-out infinite;pointer-events:none}
+.mode:nth-child(2)::after{animation-delay:.25s}.mode:nth-child(3)::after{animation-delay:.5s}.mode:nth-child(4)::after{animation-delay:.75s}
+@keyframes modeShine{0%,70%{background-position:-150% 0}100%{background-position:150% 0}}
+.mode:focus-visible{outline:1px solid var(--gold);outline-offset:2px}
 </style>
 </head>
 <body>
@@ -775,16 +799,20 @@ body.inlobby #tLogo,body.inlobby #tHeroes{opacity:0!important}
     <h1>Dark Deco</h1>
     <div class="rule"></div>
     <p>Survive twelve minutes on the rooftops and bring down the Foreman. Attacks fire on their own; you move, dash and cast. Level up together and pick your upgrades.</p>
-    <div class="btns">
+    <div class="rec" id="menuRec" aria-label="Your record"><span><i style="--ic:url(ui/sym_skull.png)"></i><em><b id="recRuns">0</b><small>runs</small></em></span><span><i style="--ic:url(ui/sym_crown.png)"></i><em><b id="recDawns">0</b><small>dawns</small></em></span><span><i style="--ic:url(ui/sym_clock.png)"></i><em><b id="recBest">--:--</b><small>best</small></em></span></div>
+    <div class="coop">
+      <div class="coopH"><img src="title/por_warden.webp" alt=""><div><b>Co-op</b><small>2 players · 2 phones</small></div><img src="title/por_lamp.webp" alt=""></div>
       <button class="btn" id="bHost">Host a game</button>
       <div class="joinrow"><input id="code" maxlength="4" placeholder="CODE" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Room code"><button class="btn ghost" id="bJoin">Join</button></div>
-      <button class="btn ghost" id="bSolo">Practice with a bot</button>
-      <button class="btn ghost" id="bGuide">Meet the heroes</button>
-      <button class="btn ghost" id="bTrain" onclick="location.href='?dummy'">Training ground</button>
-      <button class="btn ghost" id="bIntro">Watch the intro</button>
+    </div>
+    <div class="modes">
+      <button class="mode" id="bSolo"><i style="--ic:url(ui/sym_swap.png)"></i><b>Solo</b><small>with a bot</small></button>
+      <button class="mode" id="bTrain" onclick="location.href='?dummy'"><i style="--ic:url(icons/reaper.png)"></i><b>Training</b><small>try abilities</small></button>
+      <button class="mode" id="bGuide"><i style="--ic:url(ui/sym_skills.png)"></i><b>Heroes</b><small>how to play</small></button>
+      <button class="mode" id="bIntro"><i style="--ic:url(icons/dawn.png)"></i><b>Intro</b><small>the story</small></button>
     </div>
     <div class="status" id="menuStatus"></div>
-    <p class="small">Turn sound on. Works over Wi-Fi or mobile data.</p>
+    <p class="small">Sound on · Wi-Fi or mobile data</p>
   </div>
 </div>
 
@@ -972,6 +1000,6 @@ body.inlobby #tLogo,body.inlobby #tHeroes{opacity:0!important}
 <script src="dlg.js?v=1793704285"></script>
 <script src="intro.js?v=1793704285"></script>
 <script src="title.js?v=1793704285"></script>
-<script src="game.js?v=1793735885"></script>
+<script src="game.js?v=1794637409"></script>
 </body>
 </html>
