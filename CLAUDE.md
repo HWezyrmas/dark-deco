@@ -64,4 +64,5 @@ Full documentation (gameplay, every system, ability catalog, pipelines, decision
 - **Godot port is the next phase** (decided 26 Nov 2026, cross-play required): see `docs/GODOT_PORT_PLAN.md`. The web game is now the reference build: bug fixes only. `node tools/data/export.cjs` re-exports the data tables to `data/*.json` for the port.
 - Grand Verdict frames 4-12 show him without armor (PixelLab glitch); swap in a regenerated strip when he sends it (17 frames, 128x128, impact on frame 12).
 - He is choosing new spec abilities from the "New Spec Abilities to Choose From" doc; build the picks with icon prompts.
+- **Story and dialogue are placeholders** (intro, prologue, lines, Foreman, portraits, story stills): a test only, to be fully reworked with Hamza. Don't treat them as canon or expand them.
 - Next phase: level design. Real two-phone testing over mobile data is still worth doing.

@@ -5,6 +5,7 @@
 **Decided (26 Nov 2026):**
 - Engine: Godot 4, 2D, keeping the current pixel art and effects. 3D characters are a later art swap, not part of the port.
 - Cross-play between Steam and phones: yes.
+- **Story and dialogue are placeholders.** The web game's intro, prologue, dialogue lines, the Foreman, the story stills and the portraits were a test and will be fully reworked. Port the dialogue *system* (box, portraits, host-driven pages, triggers) but not the *content* as canon; use the current lines only as stand-in test data. The real story is written with Hamza in phase 3.
 - Order: port, then build the level and story tools, then online play, then stabilise and launch. The web version at https://hwezyrmas.github.io/dark-deco/ stays live as the reference build (bug fixes only, no new features).
 
 Read with `docs/DOCUMENTATION.md`, which describes every system being ported.
@@ -68,7 +69,7 @@ Tasks:
 - All 50 abilities with levels 3 and 5; level-up cards (new, upgrade, passive, mod, team, duo), Muse gifts, Broker pacts.
 - All six enemy types with their telegraphs, the Gatekeepers and the Foreman.
 - Altars and twin altars, guarded chests, hearts, Bond and Rekindle, down/revive/out, the Divide and Not Without You, dawn victory.
-- Bot partner, effects (New and Classic), atmosphere (fog, storm, dawn light, bats), HUD, menus, lobby, record strip, Training ground, prologue and dialogue.
+- Bot partner, effects (New and Classic), atmosphere (fog, storm, dawn light, bats), HUD, menus, lobby, record strip, Training ground, and the dialogue system (current prologue lines as placeholder test data only).
 - Balance check: a headless simulation of bot runs matching the web `sim.cjs` results.
 
 Done when: a full 12-minute solo run with the bot plays start to dawn on phone and PC, and the balance numbers match the web game.
@@ -83,10 +84,12 @@ The web game has one map and a timeline hard-coded in `game.js`. Here it becomes
 - The data file holds the rules: duration, win condition (survive until dawn, beat a boss, escort, hold points), enemy pools and pacing over time, scheduled events (Muse, Broker, elites, Divides, boss), modifiers (darkness, rain, narrow roofs), and which story beats play where.
 - A level select and progression: finishing a level unlocks the next; endless mode stays as the current 12-minute run.
 
-**Story**
-- Dialogue files: lines with speaker, portrait (the existing `portraits/` set: warden, warden_grin, warden_hurt, warden_shout, lamp, lamp_happy, lamp_shout, lamp_surprised, lamp_worried, foreman, foreman_laugh), optional choices, and conditions (story flags, which spec, partner present).
+**Story (full rework, from scratch)**
+- Start with a story session with Hamza before building content: premise, world, who the two heroes are and why they are together, villains, chapter outline, tone, how Divide / Not Without You fit the story. Offer options, he decides. Nothing from the web game's story is fixed (heroes' names and the noir Art Deco setting included, unless he says so).
+- Then write the dialogue with him and plan the art it needs (portraits, story stills, new characters), with prompts.
+- Dialogue files: lines with speaker, portrait (the existing `portraits/` set is placeholder; new portraits come with the new story), optional choices, and conditions (story flags, which spec, partner present).
 - Triggers: run time, entering an area, an event (boss arrives, Divide starts, partner goes down, reunite), level start and end.
-- Story scenes between levels using the stills style of `story/s1-s5.jpg`.
+- Story scenes between levels (art style decided with the new story; `story/s1-s5.jpg` are placeholders).
 - Both players always see the same line at the same time (the host turns the pages, as now).
 - Save file: unlocked levels, story flags, record, settings.
 
@@ -183,6 +186,7 @@ Claude cannot do these. **Tell Hamza at the start of the session where one becom
 | Phase 1, lighting | Aseprite + Laigter installed (or approval to generate normal maps another way); a chosen Lospec palette (offer 3 options) |
 | Phase 1-2, art fixes | Regenerated PixelLab strips (give the exact PixelLab prompt, size and frame count); the armored Grand Verdict strip (17 frames, 128x128, impact on frame 12) |
 | Phase 2, new abilities | Icons and effects art: give an image prompt for every graphic each new ability needs (standing rule) |
+| Phase 3, story (before any content) | A story session: premise, characters, chapters, tone, decisions on everything placeholder |
 | Phase 3, levels | Tileset and prop art (Retro Diffusion or PixelLab prompts, with the palette); the reference board; story outline and dialogue decisions; portrait or story-still art for new characters |
 | Phase 4, online | Choice of relay service and any account or payment it needs; a second phone and his partner for real tests over mobile data |
 | Phase 5 | Playtesters (Google Play needs at least 12 for 14 days) |

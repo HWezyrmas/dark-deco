@@ -208,7 +208,7 @@ Plain HTML, CSS and JavaScript, no build step, no framework, no server. Canvas 2
 |---|---|
 | `index.html` | All CSS, every screen's markup (title, menu, lobby, HUD, level-up, end, guide), loads the scripts with a `?v=` cache-buster |
 | `game.js` | The whole game (about 2,600 long lines) in one IIFE `(()=>{'use strict'; ... })();` |
-| `dlg.js` | Dialogue box and host-driven dialogue sync |
+| `dlg.js` | Dialogue box and host-driven dialogue sync (the lines themselves are placeholder; the whole story will be reworked) |
 | `intro.js`, `title.js` | Story intro and animated title screen |
 | `icons.js` | Icon lookup for cards |
 | `sprites/` | Hero animation strips (`sprites/<warden|lamp>/<anim>/<direction>.png`) |
