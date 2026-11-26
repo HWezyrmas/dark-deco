@@ -2,6 +2,7 @@
 
 Two-player online co-op survivors-like for phones (Hamza plays it with his partner). Noir Art Deco rooftops, 12-minute runs.
 Live: https://hwezyrmas.github.io/dark-deco/ (GitHub Pages, deployed by Actions on every push to `main`).
+Full documentation (gameplay, every system, ability catalog, pipelines, decision log, backlog): `docs/DOCUMENTATION.md`. Read it before bigger changes.
 
 ## Working with Hamza
 - He tests on an iPhone, mostly away from a computer. Ship to the live site and tell him what to try; he can't run things locally.
@@ -16,7 +17,7 @@ Live: https://hwezyrmas.github.io/dark-deco/ (GitHub Pages, deployed by Actions 
 - `dlg.js` dialogue, `intro.js` intro, `title.js` title screen, `icons.js` icon lookup.
 - `sprites/<cls>/<anim>/<dir>.png`: horizontal strips of square frames. Must be listed in `SPRHAVE` in game.js or they are not loaded.
 - `pfx/*.webp` + `pfx/manifest.json`: baked PixelFX sheets (MIT, see `pfx/LICENSE.txt`). The manifest is also inlined in game.js as `const PFXM=...`.
-- `tools/test/`: Playwright scripts (`coop.cjs`, `sweep.cjs`, `sim.cjs`). `tools/pfx/`: effect pipeline. `docs/ability-matrix.html`.
+- `tools/test/`: Playwright scripts (`coop.cjs`, `sweep.cjs`, `sim.cjs`). `tools/pfx/`: effect pipeline. `docs/DOCUMENTATION.md`, `docs/ability-matrix.html`.
 - `v1/`, `v2/`: older prototypes, leave alone. (Hala's Arcade was removed on 2026-11-08; restore it from commit a04d0b9 with `git checkout a04d0b9 -- arcade`.)
 
 ## Architecture
@@ -38,6 +39,10 @@ Live: https://hwezyrmas.github.io/dark-deco/ (GitHub Pages, deployed by Actions 
   `python3 tools/pfx/render.py tools/pfx/setN.json <pixelfx dir>` and `python3 tools/pfx/process.py tools/pfx/setN.json <pixelfx dir>`,
   then paste `pfx/manifest.json` into `const PFXM=` in game.js. Sheets load lazily, one at a time.
 - Avoid side-view effects that paint the stock dummy body; prefer `--no-actor` renders.
+
+## Menu
+- Gamified main menu in `#sMenu` (index.html): record strip (`dd_rec`: runs, dawns, best; written in `showEnd`, shown by `recShow` on `go('menu')`), Co-op panel (Host, code + Join), mode tiles (Solo, Training, Heroes, Intro). Button ids are unchanged (`bHost`, `bJoin`, `code`, `bSolo`, `bTrain`, `bGuide`, `bIntro`).
+- The menu card covers the middle of the title screen, so tests tap `#title` near the top (`position:{x:190,y:140}`).
 
 ## Test pages
 - `?fxlab`: effects lab, Classic left vs New right, tap edges to skip.
