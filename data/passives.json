@@ -1,0 +1,34 @@
+{
+ "might": {
+  "name": "Might",
+  "desc": "+12% damage per level."
+ },
+ "haste": {
+  "name": "Haste",
+  "desc": "Abilities recharge 7% faster per level."
+ },
+ "reach": {
+  "name": "Reach",
+  "desc": "Abilities are 10% bigger per level."
+ },
+ "dur": {
+  "name": "Duration",
+  "desc": "Effects last 12% longer per level."
+ },
+ "volley": {
+  "name": "Volley",
+  "desc": "+1 projectile at levels 1, 3 and 5."
+ },
+ "lode": {
+  "name": "Lodestone",
+  "desc": "Pick up gems from 40% farther per level."
+ },
+ "armor": {
+  "name": "Armor",
+  "desc": "Take 6% less damage per level."
+ },
+ "regen": {
+  "name": "Regeneration",
+  "desc": "Heal 0.4 health per second per level."
+ }
+}

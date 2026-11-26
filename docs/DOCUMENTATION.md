@@ -322,6 +322,8 @@ Screenshots go to `tools/test/out/` (gitignored). Needs `npm i -g playwright` an
 
 ## 10. Open items and backlog
 
+- **Next phase: port to Godot 4** for levels, story and a Steam / App Store / Google Play launch with cross-play. Plan: `docs/GODOT_PORT_PLAN.md`. Data tables are exported to `data/*.json` by `tools/data/export.cjs`.
+
 - **Grand Verdict frames 4-12** show the Warden without armour (PixelLab glitch). Regenerate with "he keeps his full dark plate armor and pauldrons in every frame" and swap the strip (`sprites/warden/grand/east.png`).
 - **New spec abilities:** Hamza is choosing from the "New Spec Abilities to Choose From" doc (12 ideas per spec, plus replacing generic stat upgrades with spec-specific ones). Build the picks, with icon prompts.
 - **Executioner big axe sprites:** a full Executioner sprite set carrying one big greataxe (walk, idle, 3 attacks, cast, hurt, down) was requested from PixelLab; wire it to the Executioner only.

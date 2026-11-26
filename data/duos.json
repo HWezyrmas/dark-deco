@@ -1,0 +1,34 @@
+{
+ "ember": [
+  "whirl",
+  "flies"
+ ],
+ "rod": [
+  "slam",
+  "chain"
+ ],
+ "pax": [
+  "shield",
+  "prism"
+ ],
+ "sanct": [
+  "banner",
+  "garden"
+ ],
+ "phoenixrage": [
+  "bloodmoon",
+  "phoenix"
+ ],
+ "hellfire": [
+  "hellchain",
+  "firewall"
+ ],
+ "verdictlight": [
+  "guillotine",
+  "rose"
+ ],
+ "doomclock": [
+  "knell",
+  "clock"
+ ]
+}

@@ -1,0 +1,22 @@
+{
+ "hp": {
+  "name": "Iron Will",
+  "desc": "+20% max health, and heal 20 now."
+ },
+ "dmg": {
+  "name": "Sharpened",
+  "desc": "+15% damage on everything."
+ },
+ "spd": {
+  "name": "Quick Feet",
+  "desc": "+10% movement speed."
+ },
+ "cdr": {
+  "name": "Clockwork",
+  "desc": "Automatic attacks recharge 8% faster."
+ },
+ "mag": {
+  "name": "Lodestone",
+  "desc": "Pull in gems from 50% farther away."
+ }
+}

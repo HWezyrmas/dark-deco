@@ -1,0 +1,37 @@
+{
+ "run_seconds": 720,
+ "beat_seconds": 0.5,
+ "boss_time": 660,
+ "blood_boil_max": 50,
+ "grand_verdict_cast": 1.15,
+ "elite_times": [
+  240,
+  480
+ ],
+ "divide_times": [
+  290,
+  515
+ ],
+ "divide_seconds": 35,
+ "events": [
+  {
+   "t": 120,
+   "k": "muse"
+  },
+  {
+   "t": 330,
+   "k": "broker"
+  },
+  {
+   "t": 420,
+   "k": "muse"
+  },
+  {
+   "t": 570,
+   "k": "broker"
+  }
+ ],
+ "xp_formula": "need(level) = 9 + 7*level + floor(0.4*level^2)",
+ "enemy_hp_scale": "1 + T/240 + (T/560)^2",
+ "enemy_damage_scale": "1 + T/540"
+}

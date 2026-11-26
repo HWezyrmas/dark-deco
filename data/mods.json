@@ -1,0 +1,73 @@
+{
+ "verdictq": {
+  "cls": "warden",
+  "sp": "exec",
+  "name": "Swift Judgement",
+  "desc": "Verdict recharges 2 seconds faster."
+ },
+ "longstride": {
+  "cls": "warden",
+  "sp": "berserk",
+  "name": "Long Charge",
+  "desc": "Reckless Charge goes 40% farther and hits 30% harder."
+ },
+ "wildfire": {
+  "cls": "lamp",
+  "sp": "fire",
+  "name": "Wildfire",
+  "desc": "Flashfire's trail burns twice as long."
+ },
+ "hearth": {
+  "cls": "lamp",
+  "sp": "fire",
+  "name": "Hearth",
+  "desc": "Kindle also heals him for 25 and lasts 4 seconds longer."
+ },
+ "mirror": {
+  "cls": "warden",
+  "sp": "exec",
+  "name": "Mirror Dome",
+  "desc": "The Dome reflects bullets back as your own."
+ },
+ "longwatch": {
+  "cls": "warden",
+  "sp": "exec",
+  "name": "Long Watch",
+  "desc": "The Dome lasts 2 seconds longer."
+ },
+ "firebash": {
+  "cls": "warden",
+  "sp": "berserk",
+  "name": "Burning Leap",
+  "desc": "Heroic Leap lands in a ring of fire that keeps burning."
+ },
+ "quickbash": {
+  "cls": "warden",
+  "sp": "berserk",
+  "name": "Quick Leap",
+  "desc": "Heroic Leap recharges 1.5 seconds faster."
+ },
+ "dawn": {
+  "cls": "lamp",
+  "sp": "heal",
+  "name": "Second Dawn",
+  "desc": "The Solar Lance revives a fallen partner it touches."
+ },
+ "brightflare": {
+  "cls": "lamp",
+  "sp": "heal",
+  "name": "Bright Lance",
+  "desc": "The Solar Lance is 40% wider and its power-up lasts 8 seconds."
+ },
+ "twinstep": {
+  "cls": "lamp",
+  "sp": "heal",
+  "name": "Twin Step",
+  "desc": "Step's light heals twice as much and lasts longer."
+ },
+ "quickstep": {
+  "cls": "lamp",
+  "name": "Light Feet",
+  "desc": "Step recharges 1.5 seconds faster."
+ }
+}

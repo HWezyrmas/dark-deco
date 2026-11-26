@@ -1,0 +1,155 @@
+{
+ "rites": {
+  "cd": 4
+ },
+ "knell": {
+  "cd": 14
+ },
+ "firewall": {
+  "cd": 6
+ },
+ "pyre": {
+  "cd": 4
+ },
+ "reaper": {
+  "cd": 1.35
+ },
+ "cinder": {
+  "cd": 0.8
+ },
+ "hellchain": {
+  "cd": 7
+ },
+ "wyrm": {
+  "cd": 9
+ },
+ "obelisk": {
+  "cd": 8
+ },
+ "thunder": {
+  "cd": 5
+ },
+ "bloodmoon": {
+  "cd": 18
+ },
+ "legion": {
+  "cd": 10
+ },
+ "phoenix": {
+  "cd": 10
+ },
+ "heaven": {
+  "cd": 7
+ },
+ "cranes": {
+  "cd": 6
+ },
+ "starwell": {
+  "cd": 11
+ },
+ "clock": {
+  "cd": 12
+ },
+ "fireworks": {
+  "cd": 5
+ },
+ "guillotine": {
+  "cd": 7
+ },
+ "vortex": {
+  "cd": 8
+ },
+ "grip": {
+  "cd": 9
+ },
+ "carnage": {
+  "cd": 0
+ },
+ "constellation": {
+  "cd": 6
+ },
+ "aurora": {
+  "cd": 10
+ },
+ "rose": {
+  "cd": 9
+ },
+ "wisp": {
+  "cd": 4
+ },
+ "cleave": {
+  "cd": 0.85
+ },
+ "whirl": {
+  "cd": 1.5
+ },
+ "slam": {
+  "cd": 5
+ },
+ "shield": {
+  "cd": 4
+ },
+ "riposte": {
+  "cd": 8
+ },
+ "twirl": {
+  "cd": 0.62
+ },
+ "flies": {
+  "cd": 0
+ },
+ "moths": {
+  "cd": 2.5
+ },
+ "candle": {
+  "cd": 3
+ },
+ "chain": {
+  "cd": 3
+ },
+ "beam": {
+  "cd": 0
+ },
+ "prism": {
+  "cd": 0
+ },
+ "lighthouse": {
+  "cd": 0
+ },
+ "ravager": {
+  "cd": 0
+ },
+ "blood": {
+  "cd": 0
+ },
+ "charge": {
+  "cd": 6
+ },
+ "earth": {
+  "cd": 5
+ },
+ "hook": {
+  "cd": 4
+ },
+ "banner": {
+  "cd": 13
+ },
+ "shout": {
+  "cd": 8
+ },
+ "starfall": {
+  "cd": 3
+ },
+ "lanterns": {
+  "cd": 5
+ },
+ "garden": {
+  "cd": 0
+ },
+ "halo": {
+  "cd": 4
+ },
+ "kite": {
+  "cd": 0.65
+ }
+}

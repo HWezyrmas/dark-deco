@@ -1,0 +1,24 @@
+{
+ "warden": {
+  "name": "Warden",
+  "color": "#4ff0ff",
+  "spd": 68,
+  "hp": 140,
+  "s1": "Leap",
+  "s2": "Dome",
+  "cd1": 5,
+  "cd2": 12,
+  "start": "cleave"
+ },
+ "lamp": {
+  "name": "Lamplighter",
+  "color": "#ffc861",
+  "spd": 71,
+  "hp": 90,
+  "s1": "Step",
+  "s2": "Lance",
+  "cd1": 4,
+  "cd2": 11,
+  "start": "beam"
+ }
+}

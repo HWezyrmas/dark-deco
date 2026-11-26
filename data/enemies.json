@@ -1,0 +1,26 @@
+{
+ "names": [
+  "shadow",
+  "brute",
+  "gunman",
+  "bomber",
+  "elite",
+  "boss"
+ ],
+ "base_hp": [
+  34,
+  260,
+  40,
+  30,
+  1500,
+  4200
+ ],
+ "sprite_heights": [
+  21,
+  31,
+  27,
+  22,
+  40,
+  58
+ ]
+}

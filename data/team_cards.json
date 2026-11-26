@@ -1,0 +1,74 @@
+{
+ "litsteel": {
+  "name": "Lit Steel",
+  "req": {
+   "lamp": "heal"
+  },
+  "desc": "While the Lamplighter's light powers him up, the Warden's hits set enemies on fire."
+ },
+ "kindred": {
+  "name": "Kindred Flames",
+  "req": {
+   "lamp": "fire"
+  },
+  "desc": "Kindle lasts twice as long, and while he is Kindled he takes 20% less damage."
+ },
+ "witness": {
+  "name": "Witness",
+  "req": {
+   "warden": "exec"
+  },
+  "desc": "Every enemy he Executes heals the Lamplighter and fills her Spark."
+ },
+ "ward": {
+  "name": "Lantern Ward",
+  "req": {
+   "warden": "exec"
+  },
+  "desc": "Inside the Dome, all healing is doubled and the Dome lasts 1 second longer."
+ },
+ "bond": {
+  "name": "Bond of Light",
+  "desc": "Your Bond fills twice as fast, and close together you heal three times faster."
+ },
+ "ember": {
+  "name": "Ember Storm",
+  "duo": 1,
+  "desc": "Duo: while you stand close, her fireflies get pulled into his Whirlwind and everything it hits catches fire."
+ },
+ "rod": {
+  "name": "Lightning Rod",
+  "duo": 1,
+  "desc": "Duo: while you stand close, his Thunder Clap sends her lightning through the whole crowd."
+ },
+ "pax": {
+  "name": "Prismatic Axe",
+  "duo": 1,
+  "desc": "Duo: while you stand close, every Hurled Axe hit splits into rainbow bolts."
+ },
+ "sanct": {
+  "name": "Sanctuary",
+  "duo": 1,
+  "desc": "Duo: while you stand close, the War Banner heals you both and blooms with flowers."
+ },
+ "phoenixrage": {
+  "name": "Blood Phoenix",
+  "duo": 1,
+  "desc": "Duo: while you stand close and his Blood Moon is up, her Phoenix burns twice as hard and every hit heals him."
+ },
+ "hellfire": {
+  "name": "Hellfire",
+  "duo": 1,
+  "desc": "Duo: while you stand close, every Hellchains collision leaves a ring of fire behind."
+ },
+ "verdictlight": {
+  "name": "Verdict of Light",
+  "duo": 1,
+  "desc": "Duo: while you stand close, every Guillotine drop bursts with holy light that heals you both and hurts everything around it."
+ },
+ "doomclock": {
+  "name": "Doom Clock",
+  "duo": 1,
+  "desc": "Duo: while you stand close, Death Knell freezes time instead of stunning, and Executes 10% more."
+ }
+}
