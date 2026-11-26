@@ -133,6 +133,63 @@ Done when: you and your partner finish a run on two phones over mobile data, and
 
 ---
 
+## Setup (Hamza's MacBook Pro + cloud sessions)
+
+Hamza ports on his **MacBook Pro** with Claude Code, and also works from his iPhone through cloud sessions. Both must work.
+
+On the Mac (he runs these himself, once):
+```
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+brew install node gh git
+brew install --cask godot claude-code
+gh auth login
+gh repo create HWezyrmas/dark-deco-godot --public --clone
+cd dark-deco-godot
+git clone https://github.com/HWezyrmas/dark-deco.git ../dark-deco
+claude mcp add godot -e GODOT_PATH=/Applications/Godot.app/Contents/MacOS/Godot -- npx @coding-solo/godot-mcp
+```
+- The web game sits next to the new repo at `../dark-deco` (read its code, docs and assets from there).
+- `godot-mcp` (community, MIT) lets Claude launch the editor, run the game and read errors on the Mac. If it breaks, run Godot from the terminal instead.
+- Pin one Godot 4 version in the repo. If his installed Godot differs, tell him which version to install. Never upgrade mid-port.
+
+In the repo (first session builds these):
+- a session setup script that installs the pinned Godot headless + web export templates, so cloud sessions from his phone can import, test and export;
+- GUT for tests;
+- a GitHub Action that exports a web build to GitHub Pages on every push (his iPhone test link);
+- a `CLAUDE.md` for the new repo that copies the "Things Hamza must provide" and "Visual quality toolkit" sections below.
+
+---
+
+## Visual quality toolkit
+
+Priority order. Lighting first: it does the most for the noir mood.
+1. **Lighting:** Godot 2D lights (`PointLight2D`, `CanvasModulate`, `LightOccluder2D`) for a dark scene lit by lamps, neon and fire. Normal maps for sprites from **Laigter** (free) or **SpriteIlluminator** (paid), so lights shade them. Start this in phase 1 with the Berserker.
+2. **Pixel editing:** **Aseprite** (or free **Pixelorama**) to fix PixelLab glitches, recolour and export sheets.
+3. **One palette:** pick a noir Art Deco palette from **Lospec** and recolour every asset to it.
+4. **AI art:** PixelLab for characters (his uploads cap at 256x256); **Retro Diffusion** for tilesets, props and backgrounds; **Scenario** to train on approved art once there are 20 to 30 pieces; **Meshy / Tripo** for the later 3D phase (render to sprites). Everything player-facing goes in the Steam AI disclosure.
+5. **Levels:** Godot TileMapLayer + terrains; **LDtk** (free) if he prefers a visual level editor.
+6. **Effects:** shaders from **godotshaders.com** (rain, wet reflections, grain, grading, dissolve, outlines), WorldEnvironment glow for neon and fire, GPUParticles2D for ambience (keep PixelFX for big hits), **Phantom Camera** addon for follow, zoom and shake, **Pixel Composer** for custom pixel effects.
+7. **Direction:** a reference board (Art Deco skylines, noir film stills, Hyper Light Drifter, Katana Zero) turned into a style guide used in every art prompt.
+
+---
+
+## Things Hamza must provide (tell him when)
+
+Claude cannot do these. **Tell Hamza at the start of the session where one becomes needed, and say exactly what to do** (copyable commands or prompts in code blocks). Don't wait until work is blocked.
+
+| When | What he provides |
+|---|---|
+| Before session 1 | The Mac setup above; the empty repo; Godot installed |
+| Phase 1, lighting | Aseprite + Laigter installed (or approval to generate normal maps another way); a chosen Lospec palette (offer 3 options) |
+| Phase 1-2, art fixes | Regenerated PixelLab strips (give the exact PixelLab prompt, size and frame count); the armored Grand Verdict strip (17 frames, 128x128, impact on frame 12) |
+| Phase 2, new abilities | Icons and effects art: give an image prompt for every graphic each new ability needs (standing rule) |
+| Phase 3, levels | Tileset and prop art (Retro Diffusion or PixelLab prompts, with the palette); the reference board; story outline and dialogue decisions; portrait or story-still art for new characters |
+| Phase 4, online | Choice of relay service and any account or payment it needs; a second phone and his partner for real tests over mobile data |
+| Phase 5 | Playtesters (Google Play needs at least 12 for 14 days) |
+| Phase 6 | Steam ($100/game), Apple Developer ($99/yr), Google Play ($25) accounts; a Mac with Xcode signed into his Apple account for iOS builds; store page text, trailer choices, privacy policy decisions; music and sound sources; checked commercial licences for each AI tool |
+
+---
+
 ## How to work on this with Claude Code
 
 - Keep one phase per milestone and one task per session. Start each session with: "Read docs/GODOT_PORT_PLAN.md and docs/DOCUMENTATION.md, then continue with the next unchecked task in phase N."
