@@ -59,7 +59,7 @@ h2{margin:0 0 16px;font-size:12px;letter-spacing:4px;color:#9fc27a;font-weight:n
 <div id="intro"><div class="card panel">
 <h1>DARK DECO</h1><h2>Base defense demo</h2>
 <p>The city has gone quiet and green. Your <b>generator</b> is the last light on this roof. Keep it running through the night.</p>
-<p><b>By day</b> pick a building at the bottom, then tap the ground to place it. Red markers show where tonight's horde comes from.</p>
+<p><b>By day</b> pick a building at the bottom, tap a spot inside the <b>gold square</b> to preview it, and tap again to build. Red markers at the edge show where tonight's horde comes from.</p><p>Rubble walls and wrecks block the way. Everything flat on the ground is just ground.</p>
 <p><b>At night</b> drag anywhere to move. The Warden swings on his own. Tap <b>Leap</b> to slam into a crowd.</p>
 <p><b>Arc Pylons</b> zap the dead. <b>Lamps</b> slow them and make them take more damage. <b>Spikes</b> wear down with use.</p>
 <p>Survive three nights. If the generator falls, you lose part of the base and try the night again.</p>
@@ -112,8 +112,8 @@ function overgrow(c,amt){const w=c.width,h=c.height;pixels(c,(a,i)=>{const l=.3*
 // zombie rot tint: grey-green flesh, keep glowing eyes
 function rot(c){return pixels(c,(a,i)=>{const r=a[i],gg=a[i+1],b=a[i+2],l=.3*r+.59*gg+.11*b;if(l>170&&r>200&&gg>120)return;a[i]=clamp(l*.62+r*.18,0,255);a[i+1]=clamp(l*.86+gg*.12+8,0,255);a[i+2]=clamp(l*.5+b*.15,0,255)})}
 
-const PROPH={a_pylon:34,a_lamp:38,a_spikes:12,a_bench:28,a_tent:32,a_stock:28,a_rubble:24,a_sign:22,a_tree:34,a_car:26,a_junk:30,a_scrap:9,hut:48,crates:22,pylon_p:32,pylon_c:32,chimney:40,gargoyle:30,planter:28,spire:46,tower:58,vent:22,sign:34,antenna:34};
-const PS={};
+const PROPH={a_pylon:34,a_lamp:38,a_spikes:12,a_bench:28,a_tent:32,a_stock:28,a_rubble:24,a_sign:22,a_tree:34,a_car:26,a_junk:30,a_scrap:9,hut:50,crates:19,pylon_p:32,pylon_c:32,chimney:40,gargoyle:30,planter:28,spire:46,tower:58,vent:22,sign:34,antenna:34};
+const PS={};const PROPW={a_pylon:18,a_lamp:16,a_spikes:17,a_bench:32,a_tent:34,a_stock:32,a_rubble:50,a_sign:52,a_tree:46,a_car:54,a_junk:40,a_scrap:10};
 const ZDEF={
   walker:{img:'gunman',h:28,nh:30,hp:34,spd:13,dmg:7,bd:8,r:5,rate:1,drop:[2,0],name:'Walker'},
   runner:{img:'shadow',h:22,nh:28,hp:20,spd:30,dmg:5,bd:5,r:4,rate:.7,drop:[1,0],name:'Runner'},
@@ -124,8 +124,9 @@ const ZDEF={
 const ZS={};
 const HS=.5,HER={};
 function prep(){
-  for(const n in PROPH){const im=IM['p_'+n];if(!im)continue;const h=PROPH[n],w=Math.round(im.width*h/im.height);let c=down(im,Math.round(w*RS),Math.round(h*RS));
+  for(const n in PROPH){const im=IM['p_'+n];if(!im)continue;let h=PROPH[n],w=Math.round(im.width*h/im.height);if(PROPW[n]){w=PROPW[n];h=Math.round(im.height*w/im.width)}let c=down(im,Math.round(w*RS),Math.round(h*RS));
     const ruin=!n.startsWith('a_')&&!['hut','crates','pylon_p','pylon_c'].includes(n);if(ruin)overgrow(c,1.4);else if(n==='crates'||n==='hut')overgrow(c,.5);PS[n]={c,w,h,wh:white(c),k:c.width/w}}
+  for(const i of KIT){const im=IM['kit'+i];if(!im)continue;const sc=Math.min(20/im.width,18/im.height),w=Math.round(im.width*sc),h=Math.round(im.height*sc),c=down(im,Math.round(w*RS),Math.round(h*RS));PS['k'+i]={c,w,h,wh:white(c),k:c.width/w}}
   for(const k in ZDEF){const D=ZDEF[k],ni=IM['nz_'+k];if(ni){const h=D.nh||D.h,w=Math.round(ni.width*h/ni.height),c=down(ni,Math.round(w*RS),Math.round(h*RS));ZS[k]={c,wh:white(c),w,h,one:1,k:c.width/w};continue}const im=IM['z_'+D.img];if(!im)continue;const fw=im.width/8,sc=D.h/im.height,w=Math.round(fw*sc),h=D.h,c=mk(Math.round(w*RS)*8,Math.round(h*RS)),x=c.getContext('2d');
     for(let f=0;f<8;f++)x.drawImage(down(cropC(im,f*fw,0,fw,im.height),Math.round(w*RS),Math.round(h*RS)),f*Math.round(w*RS),0);rot(c);ZS[k]={c,wh:white(c),w,h,k:Math.round(w*RS)/w}}
   for(const k in IM){if(/^(walk|rot|attack)/.test(k)){const im=IM[k],fs=k.startsWith('rot')?64:84,n=Math.round(im.width/fs),P=Math.round(fs*HS*RS),c=mk(P*n,P),x=c.getContext('2d');
@@ -142,51 +143,58 @@ let sndT={};const lim=(k,dt)=>{const n=performance.now();if(sndT[k]&&n-sndT[k]<d
 const grid=new Array(N).fill(null);const id=(x,y)=>y*GW+x,inb=(x,y)=>x>=0&&y>=0&&x<GW&&y<GH;
 const SOLID={ruin:1,wall:1,pylon:1,lamp:1,core:1};
 const GATES=[{n:'north',tiles:[[15,0],[16,0],[17,0],[18,0]],dx:0,dy:1},{n:'east',tiles:[[GW-1,18],[GW-1,19],[GW-1,20],[GW-1,21]],dx:-1,dy:0},{n:'south',tiles:[[15,GH-1],[16,GH-1],[17,GH-1],[18,GH-1]],dx:0,dy:-1},{n:'west',tiles:[[0,18],[0,19],[0,20],[0,21]],dx:1,dy:0}];
+const PLOT={x0:11,y0:14,x1:22,y1:26},inPlot=(x,y)=>x>=PLOT.x0&&x<=PLOT.x1&&y>=PLOT.y0&&y<=PLOT.y1;let pv=null;
 const isGate=(x,y)=>GATES.some(G=>G.tiles.some(t=>t[0]===x&&t[1]===y));
 const BDEF={
   wall:{name:'Barricade',cost:[10,0],hp:140,img:'crates'},
   spike:{name:'Spikes',cost:[12,0],uses:36},
   pylon:{name:'Arc Pylon',cost:[22,12],hp:90,img:'a_pylon',old:'pylon_p',range:84,rate:.65,dmg:9},
   lamp:{name:'Lamp',cost:[10,8],hp:70,img:'a_lamp',old:'pylon_c',rad:74}};
-let builds=[],props=[];let core;const WIDE={a_car:1,a_rubble:1,a_sign:1,a_junk:1,a_tent:1,a_bench:1,tower:1,sign:1,antenna:1};const PN=n=>PS[n]?n:n==='a_pylon'?'pylon_p':n==='a_lamp'?'pylon_c':n;
+let builds=[],props=[];let core;const WIDE={a_car:3,a_rubble:3,a_sign:3,a_junk:2,a_tent:2,a_bench:2,a_stock:2,a_tree:3,tower:2,sign:2,antenna:2};const PN=n=>PS[n]?n:n==='a_pylon'?'pylon_p':n==='a_lamp'?'pylon_c':n;
 function placeB(k,x,y,free){const D=BDEF[k],b={k,tx:x,ty:y,x:x*TS+8,y:y*TS+8,hp:D.hp||1,max:D.hp||1,cd:rnd(),uses:D.uses||0,flash:0,born:T};grid[id(x,y)]=b;builds.push(b);return b}
 function buildMap(){
   // edge rubble ring with gaps at the four gates
   for(let x=0;x<GW;x++)for(let y=0;y<GH;y++){if((x===0||y===0||x===GW-1||y===GH-1)&&!isGate(x,y))grid[id(x,y)]={k:'ruin',tx:x,ty:y}}
   // the generator shack: 2x2 in the middle
   core={k:'core',tx:16,ty:19,x:17*TS,y:21*TS-2,hp:600,max:600,flash:0};for(let x=16;x<18;x++)for(let y=19;y<21;y++)grid[id(x,y)]=core;
-  // overgrown ruins scattered across the roof (blocking, shape the paths)
-  const R=['a_car','a_junk','a_tree','a_rubble','a_sign','a_junk','a_tree','a_rubble','a_car','a_sign','a_rubble','a_junk','a_tree','a_rubble'];
-  const spots=[[5,6],[27,6],[6,31],[28,32],[10,13],[23,12],[9,26],[24,27],[4,19],[29,15],[13,35],[21,4],[3,11],[30,25]];
-  spots.forEach(([x,y],i)=>{const n=R[i%R.length];const p={k:'ruin',tx:x,ty:y,img:n};grid[id(x,y)]=p;props.push(p);if(WIDE[n]){if(inb(x+1,y)&&!grid[id(x+1,y)])grid[id(x+1,y)]={k:'ruin',tx:x+1,ty:y}}});
-  // corner and edge props on the rubble ring
-  const edge=[[2,1,'a_tree'],[GW-3,1,'a_junk'],[1,GH-2,'a_junk'],[GW-2,GH-2,'a_tree'],[8,0,'a_rubble'],[25,0,'a_sign'],[0,9,'a_rubble'],[GW-1,30,'a_rubble'],[10,GH-1,'a_car'],[24,GH-1,'a_rubble'],[0,30,'a_tree'],[GW-1,9,'a_junk']];
-  edge.forEach(([x,y,n])=>{props.push({k:'ruin',tx:x,ty:y,img:n,edge:1})});
+  // ruins: rubble walls that funnel the dead from the gates toward the base, plus a few big landmarks. Everything standing up blocks.
+  const wall=(x,y)=>{if(!inb(x,y)||grid[id(x,y)]||inPlot(x,y))return;const p={k:'ruin',tx:x,ty:y,img:'k'+KIT[(rnd()*KIT.length)|0]};grid[id(x,y)]=p;props.push(p)};
+  const line=(x0,y0,x1,y1)=>{const n=Math.max(Math.abs(x1-x0),Math.abs(y1-y0));for(let i=0;i<=n;i++)wall(Math.round(x0+(x1-x0)*i/n),Math.round(y0+(y1-y0)*i/n))};
+  line(4,6,11,6);line(22,6,29,6);line(4,33,11,33);line(22,33,29,33);
+  line(7,9,7,14);line(26,9,26,14);line(7,25,7,30);line(26,25,26,30);
+  line(11,9,13,11);line(22,9,20,11);line(11,30,13,28);line(22,30,20,28);
+  const land=(x,y,n)=>{const p={k:'ruin',tx:x,ty:y,img:n};grid[id(x,y)]=p;props.push(p);for(let i=1;i<(WIDE[n]||1);i++)if(inb(x+i,y)&&!grid[id(x+i,y)])grid[id(x+i,y)]={k:'ruin',tx:x+i,ty:y}};
+  land(2,3,'a_car');land(27,3,'a_junk');land(2,36,'a_junk');land(27,36,'a_car');land(2,12,'a_tree');land(28,27,'a_tree');land(28,11,'a_sign');land(2,27,'a_rubble');
   // a starter barricade line near the core so the first look is a base, not an empty roof
   [[15,17],[18,17],[15,22],[18,22]].forEach(([x,y])=>placeB('wall',x,y));
   placeB('lamp',14,20);placeB('pylon',19,19);
   // base dressing: the survivors' camp around the generator (blocking, not attackable)
-  [[12,19,'a_bench'],[21,21,'a_tent'],[13,22,'a_stock']].forEach(([x,y,n])=>{const p={k:'ruin',tx:x,ty:y,img:n,camp:1};grid[id(x,y)]=p;props.push(p);if(WIDE[n]&&!grid[id(x+1,y)])grid[id(x+1,y)]={k:'ruin',tx:x+1,ty:y}});
+  [[11,18,'a_bench'],[21,21,'a_tent'],[12,23,'a_stock']].forEach(([x,y,n])=>{const p={k:'ruin',tx:x,ty:y,img:n,camp:1};grid[id(x,y)]=p;props.push(p);for(let i=1;i<(WIDE[n]||1);i++)if(!grid[id(x+i,y)])grid[id(x+i,y)]={k:'ruin',tx:x+i,ty:y}});
 }
 
 /* ground: worn deco rooftop swallowed by moss */
 let GROUND;
 function bakeGround(){const GR=Math.min(2,RS);GROUND=mk(WW*GR,WH*GR);const x=GROUND.getContext('2d');x.scale(GR,GR);x.imageSmoothingQuality='high';const gr=IM.ground,r=IM.p_roof;
-  if(gr){const T2=128;for(let yy=0;yy<WH;yy+=T2)for(let xx=0;xx<WW;xx+=T2)x.drawImage(gr,xx,yy,T2,T2);x.globalCompositeOperation='multiply';x.fillStyle='#a9b8a2';x.fillRect(0,0,WW,WH);x.globalCompositeOperation='source-over'}else if(r){for(let yy=0;yy<WH;yy+=r.height)for(let xx=0;xx<WW;xx+=r.width)x.drawImage(r,xx,yy)}else{x.fillStyle='#2a2a33';x.fillRect(0,0,WW,WH)}
+  if(gr){const T2=128;for(let yy=0;yy<WH;yy+=T2)for(let xx=0;xx<WW;xx+=T2)x.drawImage(gr,xx,yy,T2,T2);x.globalCompositeOperation='multiply';x.fillStyle='#7f8f7a';x.fillRect(0,0,WW,WH);x.globalCompositeOperation='source-over'}else if(r){for(let yy=0;yy<WH;yy+=r.height)for(let xx=0;xx<WW;xx+=r.width)x.drawImage(r,xx,yy)}else{x.fillStyle='#2a2a33';x.fillRect(0,0,WW,WH)}
   if(!gr){x.globalCompositeOperation='multiply';x.fillStyle='#5f6f5a';x.fillRect(0,0,WW,WH);x.globalCompositeOperation='source-over'}
-  const decal=(k,cx,cy,sz,al)=>{const im=IM[k];if(!im)return;const s=sz/Math.max(im.width,im.height);x.globalAlpha=al||1;x.drawImage(im,(cx-im.width*s/2)|0,(cy-im.height*s/2)|0,Math.round(im.width*s),Math.round(im.height*s));x.globalAlpha=1};
-  for(let i=0;i<30;i++)decal('dd'+DEC_D[(rnd()*DEC_D.length)|0],rnd()*WW,rnd()*WH,18+rnd()*16,.6);
-  for(let i=0;i<45;i++)decal('dg'+DEC_G[(rnd()*DEC_G.length)|0],rnd()*WW,rnd()*WH,10+rnd()*10,.7);
+  const decal=(k,cx,cy,sz,al,any)=>{const im=IM[k];if(!im)return;if(!any&&inPlot((cx/TS)|0,(cy/TS)|0))return;const s=sz/Math.max(im.width,im.height);x.globalAlpha=al||1;x.drawImage(im,(cx-im.width*s/2)|0,(cy-im.height*s/2)|0,Math.round(im.width*s),Math.round(im.height*s));x.globalAlpha=1};
+  for(let i=0;i<30;i++)decal('dd'+DEC_D[(rnd()*DEC_D.length)|0],rnd()*WW,rnd()*WH,18+rnd()*16,.4);
+  for(let i=0;i<45;i++)decal('dg'+DEC_G[(rnd()*DEC_G.length)|0],rnd()*WW,rnd()*WH,10+rnd()*10,.5);
   const blob=(cx,cy,R,cols,den)=>{for(let k=0;k<R*R*den;k++){const a=rnd()*6.283,d=R*Math.sqrt(rnd());x.fillStyle=cols[rnd()*cols.length|0];x.fillRect((cx+Math.cos(a)*d)|0,(cy+Math.sin(a)*d*.8)|0,1+(rnd()*2|0),1)}};
   const MOSS=['#23401f','#2c4f24','#365e2a','#1c3319','#41702f'];
-  for(let i=0;i<(gr?30:70);i++)blob(rnd()*WW,rnd()*WH,8+rnd()*26,MOSS,.45);
+  for(let i=0;i<(gr?30:70);i++){const bx=rnd()*WW,by=rnd()*WH;if(!inPlot((bx/TS)|0,(by/TS)|0))blob(bx,by,8+rnd()*26,MOSS,.45)}
   for(let i=0;i<60;i++){let px=rnd()*WW,py=rnd()*WH;x.fillStyle='#0f1410';for(let s=0;s<20+rnd()*40;s++){x.fillRect(px|0,py|0,1,1);px+=rnd()*2-.6;py+=rnd()*2-1}}  // cracks
   for(let i=0;i<(gr?0:14);i++){const cx=rnd()*WW,cy=rnd()*WH,R=6+rnd()*14;x.fillStyle='#0d1a1e';x.beginPath();x.ellipse(cx,cy,R,R*.5,0,0,7);x.fill();x.fillStyle='#29424a';x.fillRect((cx-R*.4)|0,(cy-1)|0,(R*.5)|0,1)} // puddles
-  for(let i=0;i<900;i++){const px=rnd()*WW|0,py=rnd()*WH|0,h=1+(rnd()*3|0);x.fillStyle=rnd()<.5?'#4f8a38':'#3b6b2c';x.fillRect(px,py-h,1,h);if(rnd()<.4)x.fillRect(px+1,py-h+1,1,h-1)} // grass
+  for(let i=0;i<900;i++){const px=rnd()*WW|0,py=rnd()*WH|0,h=1+(rnd()*3|0);if(inPlot((px/TS)|0,(py/TS)|0))continue;x.fillStyle=rnd()<.5?'#4f8a38':'#3b6b2c';x.fillRect(px,py-h,1,h);if(rnd()<.4)x.fillRect(px+1,py-h+1,1,h-1)} // grass
   for(let i=0;i<70;i++){x.fillStyle=['#d9d27a','#c98ab5','#e8e3d0'][i%3];x.fillRect(rnd()*WW|0,rnd()*WH|0,1,1)} // tiny flowers
+  {const X0=PLOT.x0*TS,Y0=PLOT.y0*TS,X1=(PLOT.x1+1)*TS,Y1=(PLOT.y1+1)*TS;
+   for(let ty=PLOT.y0;ty<=PLOT.y1;ty++)for(let tx=PLOT.x0;tx<=PLOT.x1;tx++){const v=(rnd()*14)|0;x.fillStyle=`rgb(${92+v},${86+v},${74+v})`;x.fillRect(tx*TS,ty*TS,TS,TS);x.fillStyle='rgba(255,240,210,.07)';x.fillRect(tx*TS,ty*TS,TS,1);x.fillStyle='rgba(0,0,0,.35)';x.fillRect(tx*TS,ty*TS+TS-1,TS,1);x.fillRect(tx*TS+TS-1,ty*TS,1,TS);if(rnd()<.25){x.fillStyle='rgba(30,25,20,.35)';x.fillRect(tx*TS+3+rnd()*8,ty*TS+3+rnd()*8,4,1)}}
+   for(let i=0;i<40;i++){const ex=rnd()<.5,px=ex?(rnd()<.5?X0:X1)+(rnd()*10-5):X0+rnd()*(X1-X0),py=ex?Y0+rnd()*(Y1-Y0):(rnd()<.5?Y0:Y1)+(rnd()*10-5);x.fillStyle=rnd()<.5?'#3e6b2e':'#2c5124';x.fillRect(px|0,py|0,1+(rnd()*3|0),1)}
+   x.strokeStyle='#1a140a';x.lineWidth=4;x.strokeRect(X0-1,Y0-1,X1-X0+2,Y1-Y0+2);x.strokeStyle='#c9a24a';x.lineWidth=2;x.strokeRect(X0-1,Y0-1,X1-X0+2,Y1-Y0+2);x.strokeStyle='rgba(255,230,160,.5)';x.lineWidth=.6;x.strokeRect(X0-3,Y0-3,X1-X0+6,Y1-Y0+6);
+   for(const [cx,cy] of [[X0,Y0],[X1,Y0],[X0,Y1],[X1,Y1]]){x.fillStyle='#c9a24a';x.beginPath();x.moveTo(cx,cy-5);x.lineTo(cx+5,cy);x.lineTo(cx,cy+5);x.lineTo(cx-5,cy);x.fill();x.fillStyle='#1a140a';x.fillRect(cx-1,cy-1,2,2)}}
   // rubble ring
   for(let tx=0;tx<GW;tx++)for(let ty=0;ty<GH;ty++){const c=grid[id(tx,ty)];if(!c||c.k!=='ruin'||c.img)continue;const X=tx*TS,Y=ty*TS;
-    if(IM.kit0){decal('kit'+KIT[(rnd()*KIT.length)|0],X+8+rnd()*4-2,Y+7+rnd()*4-2,17+rnd()*7);continue}
+    if(IM.kit0){decal('kit'+KIT[(rnd()*KIT.length)|0],X+8+rnd()*4-2,Y+7+rnd()*4-2,19+rnd()*6,1,1);continue}
     for(let k=0;k<7;k++){const w=3+rnd()*7,h=2+rnd()*5;x.fillStyle=['#2b2a2e','#3a383d','#232226','#46434a'][k%4];x.fillRect(X+rnd()*(TS-w)|0,Y+rnd()*(TS-h)|0,w|0,h|0)}
     blob(X+8,Y+8,9,['#2c4f24','#41702f','#5b8f3c','#24451f'],.8)}
   // vines crawling in from the walls
@@ -327,12 +335,13 @@ let tipT=0;function tip(s){$('tip').textContent=s;$('tip').style.opacity=1;tipT=
 const TOOLS=[{k:'wall',img:'../../props/crates.png'},{k:'spike',img:'../../art/base/08-spikes-new.png'},{k:'pylon',img:'../../art/base/10-pylon-idle.png'},{k:'lamp',img:'../../art/base/12-floodlight.png'},{k:'repair'},{k:'remove'}];
 function makeBar(){const bar=$('bar');bar.innerHTML='';for(const t of TOOLS){const b=document.createElement('button');b.className='bt';b.dataset.k=t.k;const D=BDEF[t.k];
   b.innerHTML=(t.img?'<img src="'+t.img+'">':'<span class="ico">'+(t.k==='spike'?'&#9650;&#9650;':t.k==='repair'?'&#9874;':'&#10005;')+'</span>')+'<b>'+(D?D.name:t.k==='repair'?'Repair':'Remove')+'</b>'+(D?'<em>'+D.cost[0]+(D.cost[1]?' + <u>'+D.cost[1]+'</u>':'')+'</em>':'<em>&nbsp;</em>');
-  b.onclick=e=>{e.stopPropagation();tool=tool===t.k?null:t.k;syncUI();if(tool)tip(tool==='repair'?'Tap a damaged building':tool==='remove'?'Tap a building to take it down':'Tap the ground to place');snd(660,.04,'triangle',.02)};bar.appendChild(b)}}
+  b.onclick=e=>{e.stopPropagation();pv=null;tool=tool===t.k?null:t.k;syncUI();if(tool)tip(tool==='repair'?'Tap a damaged building':tool==='remove'?'Tap a building to take it down':'Tap a spot in the gold square, then tap again');snd(660,.04,'triangle',.02)};bar.appendChild(b)}}
 const canPay=c=>scrap>=c[0]&&parts>=c[1];
 function tapWorld(wx,wy){if(!tool)return;const tx=(wx/TS)|0,ty=(wy/TS)|0;if(!inb(tx,ty))return;const b=grid[id(tx,ty)];
   if(tool==='repair'){const t=b===core?core:b;if(!t||t.k==='ruin'||t.k==='spike'){return tip('Nothing to repair there')}if(t.hp>=t.max)return tip('Already in good shape');const miss=t.max-t.hp,c=Math.ceil(miss/(t===core?10:15));if(scrap<1)return tip('No scrap');const pay=Math.min(c,scrap);scrap-=pay;t.hp=Math.min(t.max,t.hp+pay*(t===core?10:15));t.flash=.15;snd(700,.08,'triangle',.03);snd(900,.08,'triangle',.03);texts.push({x:t.x,y:t.y-20,s:'-'+pay,c:'#e6c48a',t:0});flowDirty=true;return syncUI()}
   if(tool==='remove'){if(!b||b.k==='ruin'||b===core)return tip('Can\'t remove that');const D=BDEF[b.k],k=phase==='day'?1:.5;scrap+=Math.floor(D.cost[0]*k);parts+=Math.floor(D.cost[1]*k);killB(b,true);flowDirty=true;snd(300,.1,'triangle',.03,150);return syncUI()}
-  const D=BDEF[tool];if(b)return tip('That spot is taken');if(isGate(tx,ty)||tx===0||ty===0||tx===GW-1||ty===GH-1)return tip('Too close to the edge');
+  const D=BDEF[tool];if(!inPlot(tx,ty)){pv=null;return tip('Build inside the gold square')}if(b){pv=null;return tip('That spot is taken')}
+  if(!pv||pv.tx!==tx||pv.ty!==ty||pv.k!==tool){pv={tx,ty,k:tool,t:T};snd(520,.04,'triangle',.02);return tip(canPay(D.cost)?'Tap again to build':'Not enough '+(scrap<D.cost[0]?'scrap':'parts'))}pv=null;
   if(zs.some(z=>((z.x/TS)|0)===tx&&((z.y/TS)|0)===ty))return tip('The dead are standing there');
   if(!canPay(D.cost))return tip('Not enough '+(scrap<D.cost[0]?'scrap':'parts'));
   scrap-=D.cost[0];parts-=D.cost[1];const nb=placeB(tool,tx,ty);if(IM.fx_bdust)pushFx('bdust',nb.x,nb.y+7,.2,rnd()<.5,.9);else pushFx('land',nb.x,nb.y+6,.25,false,.8);snd(240,.06,'square',.03,180);noise(.1,.05,900);
@@ -372,7 +381,7 @@ function drawZ(z){const S=ZS[z.k];if(!S)return;const D=ZDEF[z.k],f=S.one?0:Math.
   g.fillStyle='rgba(0,0,0,.35)';g.beginPath();g.ellipse(x,y+1,z.r+2,2.5,0,0,7);g.fill();
   g.save();g.translate(x+(z.lunge?(z.fl?-2:2):0),y);if(z.fl)g.scale(-1,1);if(S.one){const ph=z.walk*.55,bob=Math.abs(Math.sin(ph));g.rotate(Math.sin(ph)*.07+(z.lunge?.12:0));g.translate(0,-bob*1.5);g.scale(1+bob*.03,pop*(1-bob*.04))}else g.scale(1,pop);g.drawImage(S.c,f*S.w*S.k,0,S.w*S.k,S.h*S.k,-S.w/2,-S.h+2,S.w,S.h);if(z.flash>0){g.globalAlpha=z.flash/.12;g.drawImage(S.wh,f*S.w*S.k,0,S.w*S.k,S.h*S.k,-S.w/2,-S.h+2,S.w,S.h)}g.restore();
   if(z.hp<z.max&&z.k!=='walker'&&z.k!=='runner'&&z.k!=='boss'){const w=14;g.fillStyle='#000';g.fillRect(x-w/2-1,y-S.h-1,w+2,3);g.fillStyle='#9ed34a';g.fillRect(x-w/2,y-S.h,Math.max(0,w*z.hp/z.max)|0,1)}}
-function drawProp(n,x,y,flash,shadow){n=PN(n);const S=PS[n];if(!S)return;if(shadow){g.fillStyle='rgba(0,0,0,.45)';g.beginPath();g.ellipse(x+ox,y+oy-1,Math.min(S.w*.48,shadow*8),3.2,0,0,7);g.fill()}const X=x+ox-S.w/2,Y=y+oy-S.h;g.drawImage(S.c,X,Y,S.w,S.h);if(flash>0){g.globalAlpha=Math.min(1,flash/.12);g.drawImage(S.wh,X,Y,S.w,S.h);g.globalAlpha=1}}
+function drawProp(n,x,y,flash,shadow){n=PN(n);const S=PS[n];if(!S)return;if(shadow){g.fillStyle='rgba(0,0,0,.45)';g.beginPath();g.ellipse(x+ox,y+oy-1,Math.min(S.w*.5,shadow*8+1),3.2,0,0,7);g.fill()}const X=x+ox-S.w/2,Y=y+oy-S.h;g.drawImage(S.c,X,Y,S.w,S.h);if(flash>0){g.globalAlpha=Math.min(1,flash/.12);g.drawImage(S.wh,X,Y,S.w,S.h);g.globalAlpha=1}}
 function bar(x,y,v,w){g.fillStyle='#000';g.fillRect(Math.round(x+ox-w/2-1),Math.round(y+oy),w+2,3);g.fillStyle=v>.5?'#e7c56a':v>.25?'#e08a3a':'#d94a3a';g.fillRect(Math.round(x+ox-w/2),Math.round(y+oy+1),Math.max(0,Math.round(w*v)),1)}
 function drawSpike(b){const P=PS.a_spikes;if(P){const wear=b.uses/BDEF.spike.uses,X=Math.round(b.x+ox-P.w/2),Y=Math.round(b.y+oy-P.h/2+1);g.globalAlpha=.55+.45*wear;g.drawImage(P.c,X,Y,P.w,P.h);if(b.flash>0){g.globalAlpha=.8;g.drawImage(P.wh,X,Y,P.w,P.h)}g.globalAlpha=1;return}const X=Math.round(b.tx*TS+ox),Y=Math.round(b.ty*TS+oy),wear=b.uses/BDEF.spike.uses;g.fillStyle='#1a1a1a';g.fillRect(X+1,Y+3,14,11);
   for(let i=0;i<3;i++)for(let j=0;j<3;j++){if(wear<.4&&(i+j)%2)continue;const sx=X+3+i*4,sy=Y+5+j*3;g.fillStyle=b.flash>0?'#fff':'#8a8f96';g.fillRect(sx,sy,1,2);g.fillStyle='#cfd5da';g.fillRect(sx,sy-1,1,1);g.fillStyle='#5a3a2a';g.fillRect(sx+1,sy+1,1,1)}}
@@ -389,16 +398,18 @@ function render(){
   const sh=shake>0?shake*5:0;ox=Math.round(lw/2-cx+(rnd()-.5)*sh);oy=Math.round(lh/2-cy+(rnd()-.5)*sh);
   g.fillStyle='#070a07';g.fillRect(0,0,lw,lh);g.drawImage(GROUND,ox,oy,WW,WH);
   // build grid hint
-  if(tool&&tool!=='repair'&&tool!=='remove'){for(let x=1;x<GW-1;x++)for(let y=1;y<GH-1;y++){const b=grid[id(x,y)];if(b&&SOLID[b.k]){g.fillStyle='rgba(220,60,40,.22)';g.fillRect(x*TS+ox+1,y*TS+oy+1,TS-2,TS-2)}else if(!b){g.strokeStyle='rgba(231,197,106,.16)';g.lineWidth=.5;g.strokeRect(x*TS+ox+.5,y*TS+oy+.5,TS-1,TS-1)}}}
+  if(tool&&tool!=='repair'&&tool!=='remove'){const pa=.35+.15*Math.sin(T*5);for(let x=PLOT.x0;x<=PLOT.x1;x++)for(let y=PLOT.y0;y<=PLOT.y1;y++){if(grid[id(x,y)])continue;g.strokeStyle='rgba(255,226,140,'+pa+')';g.lineWidth=.7;g.strokeRect(x*TS+ox+1.5,y*TS+oy+1.5,TS-3,TS-3)}}
   // gates tonight
   for(const gi of activeGates){const G=GATES[gi];const p=.5+.5*Math.sin(T*4);for(const t of G.tiles){g.fillStyle='rgba(200,40,30,'+(.18+.18*p)+')';g.fillRect(t[0]*TS+ox,t[1]*TS+oy,TS,TS)}
     const m=G.tiles[1],ax=m[0]*TS+8+(G.dx?0:8)+ox,ay=m[1]*TS+8+oy;g.fillStyle='#ff5a40';for(let i=0;i<3;i++){const o=((T*20+i*7)%21);const px=ax+G.dx*o,py=ay+G.dy*o;g.fillRect(Math.round(px)-1,Math.round(py)-1,3,3)}}
   for(const b of builds)if(b.k==='spike')drawSpike(b);
+  if(pv&&tool===pv.k){const ok=!grid[id(pv.tx,pv.ty)]&&canPay(BDEF[pv.k].cost);g.fillStyle=ok?'rgba(120,230,120,.35)':'rgba(230,80,60,.4)';g.fillRect(pv.tx*TS+ox,pv.ty*TS+oy,TS,TS);g.strokeStyle=ok?'#9dff9d':'#ff7a6a';g.lineWidth=1;g.strokeRect(pv.tx*TS+ox+.5,pv.ty*TS+oy+.5,TS-1,TS-1)}
   // drops
   for(const d of drops){const X=Math.round(d.x+ox),Y=Math.round(d.y+oy+Math.sin(T*5+d.x)*1);if(d.k==='scrap'&&PS.a_scrap){const P=PS.a_scrap;g.drawImage(P.c,X-P.w/2,Y-P.h+2,P.w,P.h)}else if(d.k==='scrap'){g.fillStyle='#000';g.fillRect(X-2,Y-2,5,4);g.fillStyle='#c9a56a';g.fillRect(X-1,Y-1,3,2);g.fillStyle='#fff1c8';g.fillRect(X,Y-1,1,1)}else{g.fillStyle='#000';g.fillRect(X-2,Y-2,5,5);g.fillStyle='#7fd6c8';g.fillRect(X-1,Y-1,3,3);g.fillStyle='#e8fffb';g.fillRect(X,Y-1,1,1)}}
   // y-sorted world
   const L=[];for(const p of props)L.push([p.ty*TS+14,0,p]);for(const b of builds)if(b.k!=='spike')L.push([b.y+6,1,b]);L.push([core.y,2,core]);for(const z of zs)L.push([z.y,3,z]);L.push([hero.y,4,hero]);L.sort((a,b)=>a[0]-b[0]);
-  for(const [,t,o] of L){if(t===0)drawProp(o.img,o.tx*TS+8+(WIDE[o.img]&&!o.edge?8:0),o.ty*TS+14,0,o.edge?0:(WIDE[o.img]?2:1));else if(t===1){drawProp(BDEF[o.k].img,o.x,o.y+6,o.flash,1);if(o.hp<o.max)bar(o.x,o.y-(PS[PN(BDEF[o.k].img)]||{h:20}).h+4,o.hp/o.max,12)}else if(t===2){drawProp('hut',core.x,core.y,core.flash,2)}else if(t===3)drawZ(o);else drawHero()}
+  const ghost=pv&&tool===pv.k&&pv.k!=='spike'?pv:null;if(ghost)L.push([ghost.ty*TS+14,5,ghost]);L.sort((a,b)=>a[0]-b[0]);
+  for(const [,t,o] of L){if(t===5){g.globalAlpha=.6;drawProp(BDEF[o.k].img,o.tx*TS+8,o.ty*TS+14);g.globalAlpha=1;continue}if(t===0){const n=WIDE[o.img]||1;drawProp(o.img,o.tx*TS+n*TS/2,o.ty*TS+15,0,n)}else if(t===1){drawProp(BDEF[o.k].img,o.x,o.y+6,o.flash,1);if(o.hp<o.max)bar(o.x,o.y-(PS[PN(BDEF[o.k].img)]||{h:20}).h+4,o.hp/o.max,12)}else if(t===2){drawProp('hut',core.x,core.y,core.flash,2)}else if(t===3)drawZ(o);else drawHero()}
   // particles
   for(const p of parts_){g.fillStyle=p.c;g.fillRect(Math.round(p.x+ox),Math.round(p.y+oy),1,1)}
   // darkness with light holes
@@ -427,7 +438,7 @@ function render(){
 /* ---------- loop ---------- */
 let last=performance.now();
 function step(dt){T+=dt;shake=Math.max(0,shake-dt*1.6);
-  darkK+=((phase==='night'?.78:.3)-darkK)*Math.min(1,dt*1.2);
+  darkK+=((phase==='night'?.74:.12)-darkK)*Math.min(1,dt*1.2);
   if(phase==='night'){nt+=dt;while(sched.length&&sched[0].t<=nt){const s=sched.shift();spawnZ(s.k,s.gate)}if(!sched.length&&!zs.length&&nt>3)endNight(true)}
   updHero(dt);updZ(dt);updB(dt);
   for(let i=pend.length-1;i>=0;i--){pend[i].t-=dt;if(pend[i].t<=0){const f=pend[i].f;pend.splice(i,1);f()}}
