@@ -464,7 +464,7 @@ function onData(m){lastRecv=performance.now();
   }}
 
 /* ================= screens ================= */
-function go(m){mode=m;if(m==='menu')recShow();{const it=m==='menu'||m==='lobby';titleAudio(it&&(document.body.classList.contains('titled')||!!window.__ddTitleSeen));const was=document.body.classList.contains('intitle');document.body.classList.toggle('intitle',it);document.body.classList.toggle('inlobby',m==='lobby');if(it&&!was&&window.__ddTitleSeen&&window.__ddTitleReady)window.__ddTitleReady();if(!it)window.__ddTitleSeen=1}if(m!=='play'&&m!=='pick')$('sSkills').hidden=true;$('sMenu').hidden=m!=='menu';$('sLobby').hidden=m!=='lobby';$('sLevel').hidden=m!=='pick';$('sEnd').hidden=m!=='end';$('hud').hidden=!(m==='play'||m==='pick');document.body.classList.toggle('playing',m==='play');if(m!=='play')$('combo').classList.remove('on');if(m==='menu'||m==='lobby')$('boss').hidden=true}
+function go(m){if(m==='menu'&&RL&&!RL.res)rlEnd(null);mode=m;if(m==='menu')recShow();{const it=m==='menu'||m==='lobby';titleAudio(it&&(document.body.classList.contains('titled')||!!window.__ddTitleSeen));const was=document.body.classList.contains('intitle');document.body.classList.toggle('intitle',it);document.body.classList.toggle('inlobby',m==='lobby');if(it&&!was&&window.__ddTitleSeen&&window.__ddTitleReady)window.__ddTitleReady();if(!it)window.__ddTitleSeen=1}if(m!=='play'&&m!=='pick')$('sSkills').hidden=true;$('sMenu').hidden=m!=='menu';$('sLobby').hidden=m!=='lobby';$('sLevel').hidden=m!=='pick';$('sEnd').hidden=m!=='end';$('hud').hidden=!(m==='play'||m==='pick');document.body.classList.toggle('playing',m==='play');if(m!=='play')$('combo').classList.remove('on');if(m==='menu'||m==='lobby')$('boss').hidden=true}
 function menuStatus(t,c){const s=$('menuStatus');s.textContent=t||'';s.className='status'+(c?' '+c:'')}
 function lobStatus(t,c){const s=$('lobStatus');s.textContent=t;s.className='status'+(c?' '+c:'')}
 function showCode(){menuStatus('');enterLobby();$('roomCode').textContent=roomCode;lobStatus('Waiting for your partner to join');updLobby()}
@@ -601,11 +601,11 @@ function storyStep(dt){const S=STORY;if(!S.on)return;packT=bruteT=altT=chestT=de
 function storyEnd(){STORY.on=false;objSet('');T=0;BT=0;packT=1.5;bruteT=60;debT=45;altT=35;chestT=75;evDone=[];dangerDone=[];eliteDone=[];emit('msg','Hold the roof until dawn');emit('sfx','warn')}
 function drawWP(){if(!WP)return;const x=Math.round(WP[0]+ox),y=Math.round(WP[1]+oy),pu=.6+.4*Math.sin(tAll*5);eg.globalAlpha=.25*pu;eg.fillStyle='#ffd27a';eg.fillRect(x-5,y-80,10,80);eg.globalAlpha=1;strokeE(eg,x,y,22,10,'#ffd27a',2,.8*pu);strokeE(lg,x,y,14,6,'#fff1c4',1,.9);
   R(lg,x-1,y-26,3,26,'#3a2a18');R(lg,x-3,y-34,7,8,'#2a1a10');fillE(eg,x,y-30,5,5,'#ffd27a',.5+.3*pu)}
-function startHost(){if(NEWFX)pfxLoad();irisT=tAll+.15;ME=0;resetWorld();const other=myCls==='warden'?'lamp':'warden';
+function startHost(){if(NEWFX)pfxLoad();irisT=tAll+.15;ME=0;resetWorld();setTimeout(()=>rlStart(false),0);const other=myCls==='warden'?'lamp':'warden';
   chars=[mkChar(0,myCls,220,240)];if(solo&&!alone)chars.push(mkChar(1,other,196,248));if(solo&&alone)PROLOGUE=false;else if(mateJoined&&mateCls)chars.push(mkChar(1,mateCls,196,248));
   for(let i=0;i<6;i++)en.push(newE(0,140+rnd()*160,80+rnd()*110,i*.05));
   cam.x=chars[0].x;cam.y=chars[0].y;if(PROLOGUE)storyStart();else STORY={on:false};go('play');setHud();wake();arriveFx();if(!solo&&chars.length>1)send({t:'start',h:myCls,g:mateCls,sp:SPEC})}
-function startGuest(m){if(NEWFX)pfxLoad();irisT=tAll+.15;ME=1;resetWorld();myCls=m.g;mateCls=m.h;if(m.sp)SPEC=Object.assign({},m.sp);chars=[mkChar(0,m.h,220,240),mkChar(1,m.g,196,248)];cam.x=chars[1].x;cam.y=chars[1].y;go('play');setHud();wake();arriveFx()}
+function startGuest(m){if(NEWFX)pfxLoad();irisT=tAll+.15;ME=1;resetWorld();setTimeout(()=>rlStart(true),0);myCls=m.g;mateCls=m.h;if(m.sp)SPEC=Object.assign({},m.sp);chars=[mkChar(0,m.h,220,240),mkChar(1,m.g,196,248)];cam.x=chars[1].x;cam.y=chars[1].y;go('play');setHud();wake();arriveFx()}
 function openSkills(){const c=meC();if(!c)return;const I=window.DD_ICONS||{};
   $('skW').innerHTML=c.weapons.map(w=>{const d=WDEF[w.id];const ev=w.lv>=5;return`<div class="ski" style="--wc:${ev?C.gold:WCOL[w.id]}"><img src="${I[w.id]||''}" alt=""><div class="t"><b>${ev?'★ '+d.evo:d.name}</b><span>Level ${w.lv}${ev?' · evolved':''}. ${ev?d.evoD:d.desc}${!ev&&w.lv>=3?' '+d.up3:''}${!ev?' Evolves at level 5 with '+PAS[d.need].name+'.':''}</span></div></div>`}).join('')+Object.entries(c.pv||{}).map(([p,l])=>`<div class="ski" style="--wc:${PCOL[p]}"><img src="${I['p_'+p]||''}" alt=""><div class="t"><b>${PAS[p].name} · ${l}</b><span>${PAS[p].desc}</span></div></div>`).join('');
   const rows=[...c.mods].map(k=>`<div class="ski" style="--wc:${C.cyan}"><img src="${I[k]||''}" alt=""><div class="t"><b>${MODS[k].name}</b><span>${MODS[k].desc}</span></div></div>`);
@@ -654,7 +654,7 @@ function nearestEnemy(p,range,skip){let b=null,bd=range;for(const e of en){if(!a
 function countNear(c,r){let n=0;for(const e of en)if(alive(e)&&len(e.x-c.x,(e.y-c.y)*1.4)<r)n++;return n}
 function inDome(x,y){if(!dome)return false;const dx=(x-dome.x)/40,dy=(y-dome.y)/18;return dx*dx+dy*dy<1}
 const HEAL_R=115;
-let ECHOH=false;function healP(c,amt,show=true){if(c.state!=='ok')return;if(DIVON&&!ECHOH&&HEALER&&c!==HEALER)return;if(HEALER&&HEALER.spec==='fire')amt*=.75;if(HEALER&&c!==HEALER&&len(c.x-HEALER.x,(c.y-HEALER.y)*1.4)>HEAL_R)amt*=.25;if(teamMods.has('ward')&&inDome(c.x,c.y))amt*=2;const before=c.hp;c.hp=Math.min(c.max,c.hp+amt);const got=c.hp-before;if(show&&got>=1)emit('num',c.x,c.y-42,'+'+Math.round(got),C.heal,.9)}
+let ECHOH=false;function healP(c,amt,show=true){if(c.state!=='ok')return;if(DIVON&&!ECHOH&&HEALER&&c!==HEALER)return;if(HEALER&&HEALER.spec==='fire')amt*=.75;if(HEALER&&c!==HEALER&&len(c.x-HEALER.x,(c.y-HEALER.y)*1.4)>HEAL_R)amt*=.25;if(teamMods.has('ward')&&inDome(c.x,c.y))amt*=2;const before=c.hp;c.hp=Math.min(c.max,c.hp+amt);const got=c.hp-before;c.hR=(c.hR||0)+got;if(show&&got>=1)emit('num',c.x,c.y-42,'+'+Math.round(got),C.heal,.9)}
 
 /* ================= host: damage ================= */
 const QUIETW=new Set(['wyrm','bloodmoon','phoenix','starwell','vortex','aurora','carnage','ravager','halo','starfall','earth','lanterns','kite','garden','banner','shout','flies','candle','lighthouse']);
@@ -663,13 +663,13 @@ function hitE(e,base,src,o={}){if(!alive(e))return false;if(o.w&&QUIETW.has(o.w)
   if(o.exec)e.exK=1;if(o.exec&&teamMods.has('witness')){const L=chars.find(q=>q.cls==='lamp'&&q.state==='ok');if(L){healP(L,2,false);addSpark(L,2)}}
   const crit=o.crit??(rnd()<.15);if(src)e.ls=src;if(!o.det&&src){if(src.cls==='lamp'){if(!(e.detT>T))e.mark=4}else if(src.cls==='warden'&&e.mark>0&&!((src.detCd||0)>T)){src.detCd=T+.5;e.mark=0;e.detT=T+1.5;later.push({t:0,f:()=>detonate(e,src)})}}if(src&&src.kd>0)base*=1.3;e.lw=o.w||null;let a=Math.round(base*(src?src.st.dmg:1)*(src&&src.shoutT>0?1.2:1)*(src&&src.pow>0?1.5:1)*(src&&chars.length>1?1+.25*bond:1)*(src?(chars.length<2&&src.cls==='lamp'?(src.spec==='fire'?1.5:1.1):src.spec==='fire'?.62:ROLE_DMG[src.cls]||1):1)*(.85+rnd()*.3));if(crit)a*=2;
   if(window.__DLOG&&src)__DLOG[(src.cls==='lamp'?'L:':'W:')+(o.w||'other')]=(__DLOG[(src.cls==='lamp'?'L:':'W:')+(o.w||'other')]||0)+a;
-  e.hp-=a;e.hit=.1;e.sq=.4;if(o.frz)e.frz=Math.max(e.frz||0,o.frz);const kr=e.kind>=4?0:e.kind===1?.35:1;e.kx+=(o.kx||0)*kr;e.ky+=(o.ky||0)*kr;if(o.up&&e.kind!==1&&e.kind<4)e.vz=Math.max(e.vz,o.up);if(o.stun)e.stun=Math.max(e.stun||0,o.stun);
+  e.hp-=a;if(src)src.dD=(src.dD||0)+a;e.hit=.1;e.sq=.4;if(o.frz)e.frz=Math.max(e.frz||0,o.frz);const kr=e.kind>=4?0:e.kind===1?.35:1;e.kx+=(o.kx||0)*kr;e.ky+=(o.ky||0)*kr;if(o.up&&e.kind!==1&&e.kind<4)e.vz=Math.max(e.vz,o.up);if(o.stun)e.stun=Math.max(e.stun||0,o.stun);
   if(src&&src.cls==='warden'&&((src.pow>0&&teamMods.has('litsteel'))||src.lit>0))e.burn=Math.max(e.burn||0,2);
   const dir=o.dir??Math.atan2(e.y-(src?src.y:e.y),e.x-(src?src.x:e.x));const big=e.kind===1?14:e.kind===4?26:e.kind===5?40:0;
   if(o.quiet){e.acc=(e.acc||0)+a;e.accW=o.w;e.accY=big;if(rnd()<.3)emit('puff',e.x,e.y-8-e.z,2,o.col||'#ffffff',50,.2,true,0,1)}else emit('hit',e.x,e.y-8-e.z-big,o.exec?a+' EXECUTE':crit?a+'!':String(a),o.exec?'#ff3a5c':crit?'#ffd84a':(o.w?WCOL[o.w]:(src&&src.pow>0?'#ffe7a8':'#ffffff')),o.exec?1.7:crit?1.6:(o.w&&src&&src.cls==='lamp'?1.15:1),dir,o.col||'#ffffff',crit?1:0);
   if(e.hp<=0)killE(e,dir);return true}
 const BB_MAX=50;
-function killE(e,dir){e.dead=true;kills++;{const k=e.ls;if(k&&k.spec==='exec'&&k.state==='ok'){const was=k.bb|0;k.bb=Math.min(BB_MAX,was+(e.exK?2:1)+(e.kind===1||e.kind>=4?3:0));k.bbT=T;if(was<BB_MAX&&k.bb>=BB_MAX)emit('msgP',k.idx,'Blood Boil maxed: Grand Verdict at full power','His Blood Boil is maxed')}}
+function killE(e,dir){if(e===boss)rlEv('bosskill');e.dead=true;kills++;{const k=e.ls;if(k&&k.spec==='exec'&&k.state==='ok'){const was=k.bb|0;k.bb=Math.min(BB_MAX,was+(e.exK?2:1)+(e.kind===1||e.kind>=4?3:0));k.bbT=T;if(was<BB_MAX&&k.bb>=BB_MAX)emit('msgP',k.idx,'Blood Boil maxed: Grand Verdict at full power','His Blood Boil is maxed')}}
   if(e.burn>0&&chars.some(q=>q.spec==='fire'))for(const c of chars)if(c.state==='ok'&&len(c.x-e.x,c.y-e.y)<85)healP(c,c.cls==='warden'?2:1.4,false);if(e.ls&&e.ls.moonT>0)healP(e.ls,1.2,false);if(e.ls&&e.ls.carnP&&e.ls.weapons&&e.ls.weapons.some(w=>w.id==='carnage'))carnage(e.ls,e);if(e.ls&&e.ls.weapons&&e.ls.weapons.some(w=>w.id==='blood'))e.ls.bloodK=(e.ls.bloodK||0)+1;if(e.kind===4)gems.push({x:e.x,y:e.y,v:0,chest:1,vx:0,vy:0,hold:.6});const big=e.kind===1||e.kind>=4;emit('kill',e.x,e.y-6-e.z,big?1:0,dir,(e.lw&&WCOL[e.lw])||null,e.kind,e.f);emit('ink',e.x,e.y,big?1:0);
   const v=[1,6,2,2,30,0][e.kind];for(let i=0;i<(e.kind===4?6:1);i++)if(v)gems.push({x:e.x+(i?(rnd()-.5)*20:0),y:e.y+(i?(rnd()-.5)*10:0),v:e.kind===4?5:v,vx:0,vy:0,hold:.3,life:16});
   {const hn=gems.filter(g=>g.heart).length,nh=e.kind>=4?2:(rnd()<(e.kind===1?.12:.009)&&hn<3?1:0);for(let i=0;i<nh;i++)gems.push({x:e.x+(rnd()-.5)*24,y:e.y+(rnd()-.5)*14,v:0,heart:1,vx:0,vy:0,hold:.4,life:25})}
@@ -1109,18 +1109,18 @@ function updProj2(p,dt){
 function hurtP(c,dmg,sx,sy,heavy){if(STORY.on)dmg*=.5;if(DIVON)dmg*=.65;if(c.cls==='lamp'&&echoes.some(E=>E.o===c.idx))dmg*=.65;if(chars.length<2)dmg*=c.cls==='lamp'?(c.spec==='fire'?.25:.3):.55;if(c.spec==='exec'&&false)0;else if(c.spec==='exec'&&!c.moving)dmg*=.75;if(c.kd>0&&teamMods.has('kindred'))dmg*=.8;if(c.state==='ok'&&c.ward>0){parry(c,sx,sy);return}if(c.state!=='ok'||c.dash>0||c.strideT>0||c.inv>0||c.fall||c.leapT>0||c.bs>0||(c.cast&&c.cast.grand))return;addRage(c,8);if(inDome(c.x,c.y))dmg*=.7;dmg*=(1+T/540)*(1-Math.min(.5,c.st.arm||0));
   if(c.skin>0){const rp=c.weapons.find(w=>w.id==='riposte');c.skin--;c.inv=.45;emit('skinbreak',c.idx);if(rp){const L=lvm(rp),R=40*L.a*(c.st.area||1);emit('slash',c.x,c.y-12,0,R,1,TAU,'#ffffff');
     for(const e of en){if(!alive(e))continue;const ex=e.x-c.x,ey=e.y-c.y,ed=len(ex,ey*1.4)||1;if(ed<R)hitE(e,30*L.d,c,{w:'riposte',kx:ex/ed*220,ky:ey/ed*150,col:WCOL.riposte,stun:rp.lv>=5?.8:0,dir:Math.atan2(ey,ex)})}if(rp.lv>=5)healP(c,8)}return}
-  c.hp-=dmg;c.inv=.45;const dx=c.x-sx,dy=c.y-sy,d=len(dx,dy)||1;emit('ouch',c.idx,Math.round(dmg),-dx/d,-dy/d,heavy?1:0);
+  c.hp-=dmg;c.dT=(c.dT||0)+dmg;c.inv=.45;const dx=c.x-sx,dy=c.y-sy,d=len(dx,dy)||1;emit('ouch',c.idx,Math.round(dmg),-dx/d,-dy/d,heavy?1:0);
 
   if(c.hp<=0&&notWithoutYou(c))return;
-  if(c.hp<=0){storySay(c.cls==='warden'?'downW':'downL',1);emit('pfx','hlost',r1(c.x),r1(c.y-46),.55);c.hp=0;c.state='down';c.down=20;c.rev=0;c.downs=(c.downs||0)+1;c.cast=null;emit('sfx','down');emit('msgP',c.idx,'You are down','Partner down! Stand beside them')}}
+  if(c.hp<=0){storySay(c.cls==='warden'?'downW':'downL',1);emit('pfx','hlost',r1(c.x),r1(c.y-46),.55);c.hp=0;c.state='down';c.down=20;c.rev=0;c.downs=(c.downs||0)+1;c.cast=null;rlEv('down',c.cls);emit('sfx','down');emit('msgP',c.idx,'You are down','Partner down! Stand beside them')}}
 // every time you go down, getting back up takes longer and leaves you weaker
 function revT(c){return Math.min(9,2.5+1.5*Math.max(0,(c.downs||1)-1))}
-function revive(c,by){emit('pfx','revive',r1(c.x),r1(c.y),.5);c.state='ok';c.hp=Math.round(c.max*Math.max(.25,.55-.06*(c.downs||1)));c.inv=1.5;c.rev=0;c.down=0;c.out=0;emit('sfx','revive');emit('star',c.x,c.y-14,C.heal);emit('heal',c.idx);emit('msgP',c.idx,'Back on your feet','Revived!')}
+function revive(c,by){if(c.state==='down')c.revd=(c.revd||0)+1;emit('pfx','revive',r1(c.x),r1(c.y),.5);c.state='ok';c.hp=Math.round(c.max*Math.max(.25,.55-.06*(c.downs||1)));c.inv=1.5;c.rev=0;c.down=0;c.out=0;emit('sfx','revive');emit('star',c.x,c.y-14,C.heal);emit('heal',c.idx);emit('msgP',c.idx,'Back on your feet','Revived!')}
 function updPlayers(dt){
   for(const c of chars){c.inv-=dt;c.banT=(c.banT||0)-dt;c.shoutT=(c.shoutT||0)-dt;if(c.state==='ok'&&c.st.reg>0)c.hp=Math.min(c.max,c.hp+c.st.reg*dt);
     if(c.state==='down'){c.down-=dt;if(DIVON)c.down=Math.max(c.down,8);const o=chars.find(q=>q!==c&&q.state==='ok');
       if(o&&len(o.x-c.x,(o.y-c.y)*1.4)<30){c.rev+=dt*(inDome(c.x,c.y)?2:1);if(c.rev>=revT(c))revive(c,o)}else c.rev=Math.max(0,c.rev-dt*.5);
-      if(c.state==='down'&&c.down<=0){c.state='out';c.out=20;emit('msgP',c.idx,'Out for 20 seconds','Partner out for 20 seconds')}}
+      if(c.state==='down'&&c.down<=0){c.state='out';c.out=20;c.outs=(c.outs||0)+1;rlEv('out',c.cls);emit('msgP',c.idx,'Out for 20 seconds','Partner out for 20 seconds')}}
     else if(c.state==='out'){c.out-=dt;if(c.out<=0){const o=chars.find(q=>q!==c&&q.state==='ok');if(o){c.x=o.x+12;c.y=o.y;c.tx=c.x;c.ty=c.y;c.tp=(c.tp||0)+1}revive(c,o)}}}
   // tether
   if(chars.length>1){const [a,b]=chars;const close=a.state==='ok'&&b.state==='ok'&&len(a.x-b.x,(a.y-b.y)*1.4)<75,bm=teamMods.has('bond')?2:1;
@@ -1136,14 +1136,14 @@ function divStep(dt){if(STORY.on||chars.length<2||endState)return;
     for(const [c,x,y] of [[W,200,240],[L,640,240]]){if(!c)continue;if(c.state!=='ok'){c.state='ok';c.hp=Math.max(c.hp,c.max*.35);c.out=0;c.down=0}c.leap=null;c.dash=0;c.x=x;c.y=y;c.tp=(c.tp||0)+1;
       for(const e of en){if(!alive(e))continue;const dx=e.x-x,dy=e.y-y,d=len(dx,dy)||1;if(d<55){e.x=x+dx/d*60;e.y=y+dy/d*60;if(!walkable(e.x,e.y)){e.x=x+60;e.y=y}}}
       emit('imp','holy',r1(x),r1(y),90,.5);emit('wave',x,y,.5,70,c.cls==='lamp'?C.gold:C.cyan,4,0)}
-    for(const c of chars)c.memC=1;
+    for(const c of chars)c.memC=1;rlEv('divide',DIV.i+1);
     emit('div',1,DIV.i+1);emit('big',.3,1.04,.04,8);packT=.4}
   if(DIV.ph===1){const left=Math.max(0,Math.ceil(DIV.end-T));if(left!==DIV.l){DIV.l=left;emit('obj','Survive apart · '+left+'s')}
-    if(T>=DIV.end){DIV.ph=2;DIV.rt=T;emit('div',0,0);emit('obj','Find each other');emit('story','divEnd',1)}}
-  else if(DIV.ph===2){const [a,b]=chars;if(a.state==='ok'&&b.state==='ok'&&len(a.x-b.x,(a.y-b.y)*1.4)<60){reunite(a,b);DIV=null;emit('obj','')}else if(T-DIV.rt>30){DIV=null;emit('obj','')}if(!DIV)for(const c of chars)c.memC=0}}
+    if(T>=DIV.end){DIV.ph=2;DIV.rt=T;rlEv('divend',chars.map(c=>c.state).join('/'));emit('div',0,0);emit('obj','Find each other');emit('story','divEnd',1)}}
+  else if(DIV.ph===2){const [a,b]=chars;if(a.state==='ok'&&b.state==='ok'&&len(a.x-b.x,(a.y-b.y)*1.4)<60){reunite(a,b);rlEv('reunite');DIV=null;emit('obj','')}else if(T-DIV.rt>30){rlEv('noreunite');DIV=null;emit('obj','')}if(!DIV)for(const c of chars)c.memC=0}}
 function reunite(a,b){apart=false;bond=1;rekindle(a,b);emit('pfx','reunite',r1((a.x+b.x)/2),r1((a.y+b.y)/2-58),.55);for(const c of [a,b])emit('pfx','pstar',r1(c.x),r1(c.y-20),.5);for(const c of chars){c.pow=Math.max(c.pow,8);healP(c,c.max*.35)}emit('big',.45,1.06,.06,10);emit('msg','Reunited! Empowered for 8s');emit('story','reunite',1)}
 // Not Without You: during a Divide each hero carries one Memory. If the partner would fall while apart, the Memory spends itself: they hold on at 30% health, can't be hurt for 2 seconds, and a burst of light throws the shadows off them
-function notWithoutYou(c){if(!DIV||DIV.ph<1)return false;const p=partnerOf(c);if(!p||!(p.memC>0)||p.state!=='ok')return false;p.memC=0;
+function notWithoutYou(c){if(!DIV||DIV.ph<1)return false;const p=partnerOf(c);if(!p||!(p.memC>0)||p.state!=='ok')return false;p.memC=0;rlEv('nwy',c.cls);
   c.hp=Math.round(c.max*.3);c.inv=2;c.nwyEnd=T+2.2;const x=c.x,y=c.y;
   for(const e of en){if(!alive(e))continue;const dx=e.x-x,dy=e.y-y,d=len(dx,dy*1.4)||1;if(d<80)hitE(e,25*(1+level/20),p,{w:'memory',kx:dx/d*260,ky:dy/d*180,up:50,stun:.8,col:'#ffe2a0',crit:false,dir:Math.atan2(dy,dx)})}
   for(const b of eb)if(len(b.x-x,b.y-y)<90)b.life=0;
@@ -1277,7 +1277,7 @@ function hostStep(dt){
   for(let i=0;i<ELITE_T.length;i++)if(T>=ELITE_T[i]&&!eliteDone[i]){eliteDone[i]=1;const n=i+1;for(let k=0;k<n;k++)spawnAt(4,chars[k%chars.length]);for(const c of chars)if(c.state==='ok')emit('pfx','alert',r1(c.x),r1(c.y-56),.7);storySay(i?'gate2':'gate1',1);emit('msg',n>1?'Two Gatekeepers rise':'A Gatekeeper rises');emit('sfx','warn')}
   // dawn: the sun comes up at 12:00 and burns the Foreman away, so holding the roof that long is a win
   if(T>=RUN&&!endState&&!STORY.on&&!DAWNT){emit('msg','Dawn breaks');emit('big',.8,1.06,.1,8);emit('sfx','win');if(boss&&alive(boss)){emit('imp','holy',r1(boss.x),r1(boss.y),140,.8);boss.dead=true}for(const c of chars)if(c.state==='ok'){emit('pfx','confetti',r1(c.x),r1(c.y+10),.8);emit('pfx','dawn',r1(c.x),r1(c.y-60),.6)}if(!DAWNT)DAWNT=later.push({t:NEWFX?2.4:0,f:()=>endRun(true,true)})}
-  if(T>=BOSS_T&&!bossSpawned){bossSpawned=true;for(const c of chars)if(c.state==='ok'){emit('pfx','alert',r1(c.x),r1(c.y-56),.8);emit('pfx','eclipse',r1(c.x),r1(c.y-96),.5)}boss=spawnAt(5,chars[0]);emit('msg','THE FOREMAN');emit('sfx','warn');emit('big',.3,1.06,0,10);storySay('boss',0)}}
+  if(T>=BOSS_T&&!bossSpawned){bossSpawned=true;for(const c of chars)if(c.state==='ok'){emit('pfx','alert',r1(c.x),r1(c.y-56),.8);emit('pfx','eclipse',r1(c.x),r1(c.y-96),.5)}boss=spawnAt(5,chars[0]);rlEv('boss');emit('msg','THE FOREMAN');emit('sfx','warn');emit('big',.3,1.06,0,10);storySay('boss',0)}}
   updEnemies(dt);updHaz(dt);updProj(dt);
   if(dome){dome.t+=dt;if(dome.sanct>0)dome.sanct-=dt;if(dome.t>=dome.life){emit('puff',dome.x,dome.y-14,24,C.cyan,70,.5,true,0,1);dome=null}}
   // gems
@@ -1292,7 +1292,7 @@ function endRun(win,dawn){if(TUT){TUT=null;tutShow()}if(endState)return;endState
 // run record shown on the main menu: runs played, dawns reached, longest survival
 function recGet(){try{return JSON.parse(localStorage.getItem('dd_rec')||'null')||{runs:0,dawns:0,best:0}}catch(_){return{runs:0,dawns:0,best:0}}}
 function recShow(){const r=recGet(),e=$('recRuns');if(!e)return;e.textContent=r.runs;$('recDawns').textContent=r.dawns;$('recBest').textContent=r.best?Math.floor(r.best/60)+':'+String(r.best%60).padStart(2,'0'):'--:--'}
-function showEnd(){const s=endState;if(!s._rec&&!/[?&](dummy|fxlab)/.test(location.search)){s._rec=1;const r=recGet();r.runs++;if(s.dawn)r.dawns++;r.best=Math.max(r.best||0,Math.min(RUN,s.T|0));try{localStorage.setItem('dd_rec',JSON.stringify(r))}catch(_){}}go('end');$('sEnd').style.backgroundImage=`linear-gradient(180deg,rgba(9,7,20,.2),rgba(9,7,20,.55) 45%,rgba(9,7,20,.92)),url(story/${s.win?'s4':'s5'}.jpg)`;if(window.DLG)setTimeout(()=>DLG.play(SCRIPT[s.win?'win':'lose'](),{bark:true}),600);$('endEye').textContent=s.win?(s.dawn?'You held the roof until sunrise':'The Foreman falls before dawn'):'The fog wins tonight';$('endTitle').textContent=s.win?(s.dawn?'Dawn breaks':'Rooftops cleared'):'Lost to the fog';$('endBan').className=s.win?'win':'';
+function showEnd(){const s=endState;rlEnd(s);if(!s._rec&&!/[?&](dummy|fxlab)/.test(location.search)){s._rec=1;const r=recGet();r.runs++;if(s.dawn)r.dawns++;r.best=Math.max(r.best||0,Math.min(RUN,s.T|0));try{localStorage.setItem('dd_rec',JSON.stringify(r))}catch(_){}}go('end');$('sEnd').style.backgroundImage=`linear-gradient(180deg,rgba(9,7,20,.2),rgba(9,7,20,.55) 45%,rgba(9,7,20,.92)),url(story/${s.win?'s4':'s5'}.jpg)`;if(window.DLG)setTimeout(()=>DLG.play(SCRIPT[s.win?'win':'lose'](),{bark:true}),600);$('endEye').textContent=s.win?(s.dawn?'You held the roof until sunrise':'The Foreman falls before dawn'):'The fog wins tonight';$('endTitle').textContent=s.win?(s.dawn?'Dawn breaks':'Rooftops cleared'):'Lost to the fog';$('endBan').className=s.win?'win':'';
   const tt=s.T;$('endStats').innerHTML=`<span>Time</span><b>${String(Math.floor(tt/60)).padStart(2,'0')}:${String(tt%60).padStart(2,'0')}</b><span>Level</span><b>${s.level}</b><span>Shadows cleared</span><b>${s.kills}</b>`;
   $('bAgain').hidden=!isHost;$('endNote').textContent=isHost?'':'Waiting for the host to start another run.';if(s.win)SFX.win()}
 
@@ -1326,7 +1326,7 @@ function cardInfo(c,o){const [kind,k]=o.id.split(':');
   return{id:o.id,t:'pair',tag:PAIRS[k].duo?'Duo ability · both of you':'Pair · both of you',name:PAIRS[k].name,desc:PAIRS[k].desc}}
 function applyPassive(c,k){const lv=(c.pv[k]||0)+1;c.pv[k]=lv;const s=c.st;
   if(k==='might')s.dmg+=.12;else if(k==='haste')s.cdr=Math.min(.5,s.cdr+.07);else if(k==='reach')s.area=(s.area||1)+.1;else if(k==='dur')s.dur=(s.dur||1)+.12;else if(k==='volley')s.proj=Math.floor((lv+1)/2);else if(k==='lode')s.mag+=.4;else if(k==='armor')s.arm=(s.arm||0)+.06;else if(k==='regen')s.reg=(s.reg||0)+.4}
-function applyCard(c,id){const [kind,k]=id.split(':');
+function applyCard(c,id){rlEv('pick',c.cls,id);const [kind,k]=id.split(':');
   if(kind==='w'){const w=c.weapons.find(x=>x.id===k);if(w)w.lv=Math.min(5,w.lv+1);else if(c.weapons.length<6)c.weapons.push({id:k,lv:1,cd:.5})}
   else if(kind==='v')applyPassive(c,k);
   else if(kind==='m')c.mods.add(k);
@@ -2567,9 +2567,15 @@ window.__dd={FXF,iceConfig,get bond(){return bond},get shk(){return shk},get DIV
   function mkDummy(x,y){const e=newE(0,x,y,0);e.dummy=1;e.hp=e.max=HPV[S.hp];e.spawn=.25;e.hx=x;e.hy=y;return e}
   function placeDummies(){en=en.filter(e=>!e.dummy);for(const [x,y] of spots(S.n))en.push(mkDummy(x,y))}
   function arm(){const c=me();if(!c)return;c.weapons=[...S.on].filter(id=>WDEF[id]).map(id=>({id,lv:S.lv,cd:.4}));c.hp=c.max;c.rage=0;c.cd1=c.cd2=0}
+  // Stress test (roadmap Phase 1): every ability of the spec evolved, a dense mixed crowd and the boss, so readability can be judged on a phone
+  function setStress(on){S.stress=on;if(on){if(!S.prev)S.prev={on:[...S.on],lv:S.lv,n:S.n};S.on=new Set(Object.keys(WDEF).filter(id=>WDEF[id].cls===S.cls&&WDEF[id].spec===S.spec));S.lv=5;S.nocd=true;S.open=false;en=en.filter(e=>!e.dummy);arm()}
+    else{if(S.prev){S.on=new Set(S.prev.on);S.lv=S.prev.lv;S.n=S.prev.n}S.prev=null;for(const e of en)e.dead=true;en=[];boss=null;arm();placeDummies()}}
+  function stressTick(c){const live=en.filter(e=>!e.dead&&!e.dummy);const want=70;
+    if(!live.some(e=>e.kind===5)){const a=rnd()*TAU,b=newE(5,c.x+Math.cos(a)*150,c.y+Math.sin(a)*100,0);en.push(b);boss=b}
+    for(let i=live.length;i<want;i++){const k=rnd(),kind=k<.55?0:k<.7?2:k<.82?3:k<.94?1:4,a=rnd()*TAU,r=110+rnd()*70;let x=c.x+Math.cos(a)*r,y=c.y+Math.sin(a)*r*.75;if(typeof walkable==='function'&&!walkable(x,y)){x=c.x+Math.cos(a)*60;y=c.y+Math.sin(a)*45}en.push(newE(kind,x,y,i*.02))}}
   function begin(){myCls=S.cls;SPEC[S.cls]=S.spec;solo=true;alone=true;isHost=true;PROLOGUE=false;
     {const it=document.getElementById('intro');if(it){it.classList.remove('on','playing');it.style.display='none'}document.body.classList.remove('inintro');document.body.classList.add('titled','tground')}
-    startHost();started=true;T=30;bossSpawned=true;const c=me();c.x=222;c.y=258;home=[262,248];placeDummies();arm();ui()}
+    startHost();started=true;T=30;bossSpawned=true;const c=me();c.x=222;c.y=258;home=[262,248];if(S.stress)setStress(true);else placeDummies();arm();ui()}
   // panel
   const P=document.createElement('div');P.id='tg';document.body.appendChild(P);
   const st=document.createElement('style');st.textContent=`
@@ -2595,6 +2601,7 @@ body.tground #obj,body.tground #dlg,body.tground #xpbar,body.tground #timer{disp
     r=row('Level');for(let l=1;l<=5;l++)r.appendChild(bt(l===5?'5 · evolved':l===3?'3 · +effect':String(l),S.lv===l,()=>{S.lv=l;arm()},'sm'));
     r=row('Dummies');for(const n of [1,3,6,10])r.appendChild(bt(String(n),S.n===n,()=>{S.n=n;placeDummies()},'sm'));
     r=row('Dummy HP');for(const k of ['weak','normal','tough','endless'])r.appendChild(bt(k[0].toUpperCase()+k.slice(1),S.hp===k,()=>{S.hp=k;placeDummies()},'sm'));
+    r=row('Stress test');r.appendChild(bt(S.stress?'Stop stress test':'Max effects: crowd + boss',S.stress,()=>{setStress(!S.stress)},'sm'));
     r=row();r.appendChild(bt('Skills without cooldown',S.nocd,()=>{S.nocd=!S.nocd},'sm'));r.appendChild(bt('Full Rage',S.rage,()=>{S.rage=!S.rage},'sm'));if(S.spec==='exec')r.appendChild(bt('Max Blood Boil',S.bbmax,()=>{S.bbmax=!S.bbmax},'sm'));r.appendChild(bt('Dummies hit back',S.hitback,()=>{S.hitback=!S.hitback},'sm'));r=row();r.appendChild(bt('Only this ability',false,()=>{const a=[...S.on].filter(id=>!BASIC[S.spec].includes(id));S.on=new Set(a.length?[a[a.length-1]]:BASIC[S.spec]);arm()},'sm'));r.appendChild(bt('Clear all',false,()=>{S.on=new Set();arm()},'sm'));
     const n=document.createElement('div');n.className='note';n.textContent='Tap abilities to turn them on or off; skill buttons work as usual. Crowd abilities (Whirlwind, Battle Shout, War Banner, Death Knell) need you standing among 6 to 10 dummies. Bloodthirst, Carnage and Last Rites feed on kills and low dummies, so pair them with a damage ability. Iron Skin needs Dummies hit back.';bd.appendChild(n)}
   // drive the run: no spawns, no level-ups, no clock, the hero never dies
@@ -2603,9 +2610,42 @@ body.tground #obj,body.tground #dlg,body.tground #xpbar,body.tground #timer{disp
     if(mode!=='play'){if(LV){LV=null;go('play')}return}
     const c=me();if(!c)return;if(c.state!=='ok'){c.state='ok';c.down=0}c.hp=c.max;xp=0;bossSpawned=true;if(T>600)T=40;packT=bruteT=altT=chestT=debT=1e9;LV=null;
     if(S.rage&&c.cls==='warden')c.rage=110;if(S.bbmax&&c.spec==='exec'&&!c.cast){c.bb=BB_MAX;c.bbT=T}if(S.hitback&&tAll>=(tgHit||0)){const e=en.find(q=>q.dummy&&alive(q)&&len(q.x-c.x,q.y-c.y)<70);if(e){tgHit=tAll+1.3;hurtP(c,6,e.x,e.y,false);c.hp=c.max}}if(S.nocd){c.cd1=Math.min(c.cd1||0,.3);c.cd2=Math.min(c.cd2||0,.3);c.cd3=Math.min(c.cd3||0,.3)}
+    if(S.stress){stressTick(c);gems.length=0;return}
     for(const e of en)if(!e.dummy)e.dead=true;
     for(const e of en)if(e.dummy&&S.hp==='endless'&&e.hp<e.max*.5)e.hp=e.max;
-    const live=en.filter(e=>e.dummy&&!e.dead).length;if(live<S.n){if(!deadT)deadT=tAll+1.1;else if(tAll>=deadT){deadT=0;const have=en.filter(e=>e.dummy&&!e.dead);en=en.filter(e=>!e.dummy||!e.dead);for(const [x,y] of spots(S.n))if(!have.some(e=>Math.abs(e.hx-x)<2&&Math.abs(e.hy-y)<2))en.push(mkDummy(x,y))}}
+    const live=en.filter(e=>e.dummy&&!e.dead).length;if(live<S.n&&!S.stress){if(!deadT)deadT=tAll+1.1;else if(tAll>=deadT){deadT=0;const have=en.filter(e=>e.dummy&&!e.dead);en=en.filter(e=>!e.dummy||!e.dead);for(const [x,y] of spots(S.n))if(!have.some(e=>Math.abs(e.hx-x)<2&&Math.abs(e.hy-y)<2))en.push(mkDummy(x,y))}}
     gems.length=0},100);
 })();
+
+/* ================= run log (roadmap Phase 1: playtest evidence) =================
+   Every real run is recorded on the phone in localStorage dd_log (last 40). The host has the full picture
+   (damage, downs, revives, Divides, picks); a guest records the outline only. "Copy run log" on the menu and
+   end screen puts a readable summary plus the raw JSON on the clipboard for Claude. */
+var RL=null,RL_KEY='dd_log',RL_TEST=/[?&](dummy|fxlab)/.test(location.search);
+function rlLoad(){try{return JSON.parse(localStorage.getItem(RL_KEY)||'[]')}catch(_){return[]}}
+function rlSave(L){try{localStorage.setItem(RL_KEY,JSON.stringify(L.slice(-40)))}catch(_){}rlLabel()}
+function rlStart(guest){if(RL_TEST)return;const L=rlLoad(),last=L[L.length-1];if(last&&last.endAt&&Date.now()-last.endAt<10*60e3&&!last.again){last.again=1;rlSave(L)}
+  RL={v:1,at:Date.now(),mode:guest?'online-guest':solo?(alone?'alone':'bot'):'online-host',me:myCls,heroes:chars.map(c=>c.cls+':'+(SPEC[c.cls]||'')),ev:[]}}
+function rlEv(k,...a){if(!RL||RL.res||RL.ev.length>500)return;RL.ev.push([T|0,k,...a])}
+function rlEnd(s){if(!RL||RL.res)return;RL.res=s?(s.win?(s.dawn?'dawn':'boss down'):'lost'):'quit';RL.T=T|0;RL.level=level;RL.kills=kills;RL.endAt=Date.now();
+  RL.h=chars.map(c=>({cls:c.cls,spec:SPEC[c.cls]||'',dmg:Math.round(c.dD||0),taken:Math.round(c.dT||0),healed:Math.round(c.hR||0),downs:c.downs||0,revived:c.revd||0,outs:c.outs||0,w:(c.weapons||[]).map(w=>w.id+':'+w.lv)}));
+  const L=rlLoad();L.push(RL);rlSave(L);RL=null}
+const rlT=t=>String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0');
+function rlName(id){const [k,v]=String(id).split(':');const n=(WDEF[v]&&WDEF[v].name)||(PAS[v]&&PAS[v].name)||(MODS[v]&&MODS[v].name)||(PAIRS[v]&&PAIRS[v].name)||(typeof DUOS!=='undefined'&&DUOS[v]&&DUOS[v].name)||v;return k+':'+n}
+function rlText(){const L=rlLoad();if(!L.length)return 'Dark Deco run log: no runs yet.';const H={warden:'W',lamp:'L'};
+  const out=['Dark Deco run log ('+L.length+' runs, copied '+new Date().toLocaleString()+')',''];
+  L.forEach((r,i)=>{const d=new Date(r.at),ev=r.ev||[],cnt=k=>ev.filter(e=>e[1]===k).length,bt=ev.find(e=>e[1]==='boss'),bk=ev.find(e=>e[1]==='bosskill');
+    out.push('#'+(i+1)+' '+d.toLocaleDateString()+' '+d.toTimeString().slice(0,5)+' | '+r.mode+' | '+(r.heroes||[]).map(h=>{const [c,sp]=h.split(':');return(c==='warden'?'Warden':'Lamplighter')+'/'+(SPECN[sp]||sp)}).join(' + ')+(r.me?' | me: '+r.me:''));
+    out.push('   result '+String(r.res||'?').toUpperCase()+' at '+rlT(r.T||0)+' | level '+(r.level||0)+' | kills '+(r.kills||0)+' | played again: '+(r.again?'yes':'no'));
+    if(r.mode!=='online-guest'){out.push('   divides '+cnt('divide')+', reunited '+cnt('reunite')+', not reunited '+cnt('noreunite')+' | Not Without You saves '+cnt('nwy')+(bt?' | boss at '+rlT(bt[0])+(bk?', down at '+rlT(bk[0])+' ('+(bk[0]-bt[0])+'s)':', not killed'):''));
+      for(const h of r.h||[])out.push('   '+H[h.cls]+' dmg '+h.dmg+' | taken '+h.taken+' | healed '+h.healed+' | downs '+h.downs+' | revived '+h.revived+' | outs '+h.outs+' | build '+h.w.join(' '));
+      const P=ev.filter(e=>e[1]==='pick');if(P.length)out.push('   picks: '+P.map(e=>rlT(e[0])+' '+(H[e[2]]||e[2])+' '+rlName(e[3])).join(', '))}
+    out.push('')});
+  out.push('RAW '+JSON.stringify(L));return out.join('\n')}
+function rlCopy(btn){const t=rlText(),done=ok=>{if(!btn)return;const o=btn.dataset.l||btn.textContent;btn.dataset.l=o;btn.textContent=ok?'Copied':'Copy failed';setTimeout(()=>{btn.textContent=o},1600)};
+  const fb=()=>{try{const a=document.createElement('textarea');a.value=t;a.setAttribute('readonly','');a.style.cssText='position:fixed;left:-9999px;top:0';document.body.appendChild(a);a.select();a.setSelectionRange(0,t.length);const ok=document.execCommand('copy');a.remove();done(ok)}catch(_){done(false)}};
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(()=>done(true),fb);else fb()}
+function rlLabel(){const b=$('bLog');if(b){const n=rlLoad().length;b.textContent='Copy test log'+(n?' ('+n+')':'');b.dataset.l=b.textContent}}
+{const b=$('bLog');if(b)b.addEventListener('click',()=>rlCopy(b));const e=$('bEndLog');if(e)e.addEventListener('click',()=>rlCopy(e));rlLabel()}
+window.__rl={text:rlText,load:rlLoad};
 })();

@@ -2,6 +2,7 @@
 
 Two-player online co-op survivors-like for phones (Hamza plays it with his partner). Noir Art Deco rooftops, 12-minute runs.
 Live: https://hwezyrmas.github.io/dark-deco/ (GitHub Pages, deployed by Actions on every push to `main`).
+**Order of work: `docs/ROADMAP.md`** (zombie pivot, Phase 1 playtests on the web build before the Godot port). Read it first.
 Full documentation (gameplay, every system, ability catalog, pipelines, decision log, backlog): `docs/DOCUMENTATION.md`. Read it before bigger changes.
 
 ## Working with Hamza
@@ -18,6 +19,7 @@ Full documentation (gameplay, every system, ability catalog, pipelines, decision
 - `sprites/<cls>/<anim>/<dir>.png`: horizontal strips of square frames. Must be listed in `SPRHAVE` in game.js or they are not loaded.
 - `pfx/*.webp` + `pfx/manifest.json`: baked PixelFX sheets (MIT, see `pfx/LICENSE.txt`). The manifest is also inlined in game.js as `const PFXM=...`.
 - `tools/test/`: Playwright scripts (`coop.cjs`, `sweep.cjs`, `sim.cjs`). `tools/pfx/`: effect pipeline. `docs/DOCUMENTATION.md`, `docs/ability-matrix.html`.
+- `proto/base/`: base-defense prototype (zombie pivot). `docs/playtest/`: playtest script and findings template. `docs/reviews/`: external product review.
 - `v1/`, `v2/`: older prototypes, leave alone. (Hala's Arcade was removed on 2026-11-08; restore it from commit a04d0b9 with `git checkout a04d0b9 -- arcade`.)
 
 ## Architecture
@@ -47,6 +49,8 @@ Full documentation (gameplay, every system, ability catalog, pipelines, decision
 ## Test pages
 - `?fxlab`: effects lab, Classic left vs New right, tap edges to skip.
 - `?dummy`: Training ground (also the menu button): pick hero/spec/abilities/level, scarecrow dummies, cooldown/rage toggles.
+- `?dummy` **Stress test** toggle: every spec ability evolved, ~70 mixed enemies + the boss (roadmap Phase 1 readability check).
+- Run log (`RL` block near the end of game.js): localStorage `dd_log`, last 40 runs; hooks `rlStart/rlEv/rlEnd`. Menu "Copy test log" and end-screen "Copy run log" copy a readable summary + RAW JSON. `window.__rl.text()` in scripts.
 - `window.__dd` exposes internals (chars, en, T setter, FXF, ...) for scripts.
 
 ## Testing and shipping
@@ -61,8 +65,9 @@ Full documentation (gameplay, every system, ability catalog, pipelines, decision
 
 ## Open items
 - **Godot port:** the plan's "Things Hamza must provide" table lists what he has to supply (art, accounts, installs). Tell him ahead of time, with copyable steps, whenever a task will need one.
-- **Godot port is the next phase** (decided 26 Nov 2026, cross-play required): see `docs/GODOT_PORT_PLAN.md`. The web game is now the reference build: bug fixes only. `node tools/data/export.cjs` re-exports the data tables to `data/*.json` for the port.
+- **Godot port** (decided 26 Nov 2026, cross-play required): see `docs/GODOT_PORT_PLAN.md`. It starts after roadmap Phases 1-2. Until then the web build takes bug fixes plus Phase 1-2 work (run log, stress scene, readability); no new content. `node tools/data/export.cjs` re-exports the data tables to `data/*.json` for the port.
 - Grand Verdict frames 4-12 show him without armor (PixelLab glitch); swap in a regenerated strip when he sends it (17 frames, 128x128, impact on frame 12).
-- He is choosing new spec abilities from the "New Spec Abilities to Choose From" doc; build the picks with icon prompts.
+- On hold (roadmap: no new abilities until playtests): his picks from the "New Spec Abilities to Choose From" doc; build them later with icon prompts.
 - **Story and dialogue are placeholders** (intro, prologue, lines, Foreman, portraits, story stills): a test only, to be fully reworked with Hamza. Don't treat them as canon or expand them.
+- **Zombie pivot** (27 Nov 2026): Raid mode (the current run) + Base mode (prototype in `proto/base/index.html`, standalone, uses repo assets via `../../`). See `docs/ROADMAP.md`.
 - Next phase: level design. Real two-phone testing over mobile data is still worth doing.

@@ -8,6 +8,8 @@
 - **Story and dialogue are placeholders.** The web game's intro, prologue, dialogue lines, the Foreman, the story stills and the portraits were a test and will be fully reworked. Port the dialogue *system* (box, portraits, host-driven pages, triggers) but not the *content* as canon; use the current lines only as stand-in test data. The real story is written with Hamza in phase 3.
 - Order: port, then build the level and story tools, then online play, then stabilise and launch. The web version at https://hwezyrmas.github.io/dark-deco/ stays live as the reference build (bug fixes only, no new features).
 
+**Update 27 Nov 2026:** `docs/ROADMAP.md` now sets the order: playtest and readability work on the web build first (roadmap Phases 1-2), then this port. The zombie pivot (Raid + Base modes) reshapes phase 3 onwards here: levels become raid locations and the base mode is added.
+
 Read with `docs/DOCUMENTATION.md`, which describes every system being ported.
 
 ---

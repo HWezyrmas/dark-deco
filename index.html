@@ -733,6 +733,7 @@ body.inlobby #tLogo,body.inlobby #tHeroes{opacity:0!important}
 .coopH img{height:52px;margin-top:-10px;filter:drop-shadow(0 2px 4px #0008)}
 .coopH b{display:block;font:800 17px var(--ui);letter-spacing:.32em;text-transform:uppercase;color:#ffd98a;text-shadow:0 0 10px #e0a83c88}
 .coopH small{font:600 9px var(--ui);letter-spacing:.2em;text-transform:uppercase;color:#bfb3dd}
+.ptest{display:flex;gap:8px;justify-content:center;align-items:center;margin-top:9px;font-size:11px;letter-spacing:.5px}.ptest a{color:#e9c46a;text-decoration:underline;text-underline-offset:3px}.ptest button,.logb{font:inherit;font-size:11px;color:#cfc6e6;background:transparent;border:1px solid #ffffff33;border-radius:4px;padding:5px 8px}.logb{display:block;margin:10px auto 0}
 .modes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;width:100%}
 .mode{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 2px 7px;border-radius:10px;cursor:pointer;color:var(--moon);background:linear-gradient(180deg,#1d1638,#0d0a1c);border:1px solid #5a4423;box-shadow:inset 0 1px 0 #ffffff12,0 3px 0 #05030c;transition:transform .08s}
 .mode:active{transform:translateY(2px);box-shadow:inset 0 1px 0 #ffffff12,0 1px 0 #05030c}
@@ -811,6 +812,7 @@ body.inlobby #tLogo,body.inlobby #tHeroes{opacity:0!important}
       <button class="mode" id="bGuide"><i style="--ic:url(ui/sym_skills.png)"></i><b>Heroes</b><small>how to play</small></button>
       <button class="mode" id="bIntro"><i style="--ic:url(icons/dawn.png)"></i><b>Intro</b><small>the story</small></button>
     </div>
+    <div class="ptest"><a href="proto/base/">Base defense prototype</a><button id="bLog" type="button">Copy test log</button></div>
     <div class="status" id="menuStatus"></div>
     <p class="small">Sound on · Wi-Fi or mobile data</p>
   </div>
@@ -992,6 +994,7 @@ body.inlobby #tLogo,body.inlobby #tHeroes{opacity:0!important}
     <div class="stats" id="endStats"></div>
     <p class="small" id="endNote"></p>
     <div class="btns"><button class="btn" id="bAgain">Again</button><button class="btn ghost" id="bEndLeave">Leave</button></div>
+    <button class="logb" id="bEndLog" type="button">Copy run log</button>
   </div>
 </div>
 
@@ -1000,6 +1003,6 @@ body.inlobby #tLogo,body.inlobby #tHeroes{opacity:0!important}
 <script src="dlg.js?v=1793704285"></script>
 <script src="intro.js?v=1793704285"></script>
 <script src="title.js?v=1793704285"></script>
-<script src="game.js?v=1794637409"></script>
+<script src="game.js?v=1795766621"></script>
 </body>
 </html>
