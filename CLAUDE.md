@@ -44,7 +44,7 @@ Full documentation (gameplay, every system, ability catalog, pipelines, decision
 - `pfxPush(k,x,y,scale,flip,startTime,alpha,rot)` one-shots; `pfxLoop(...)` loops; `swing(k,x,y,sc,angle,delay)` starts a melee effect so its contact frame (`hit` in the manifest) lands `delay` seconds later.
 - New sheets: clone https://github.com/patch-gg/pixelfx, `npm install`, add entries to a `tools/pfx/set*.json`, then
   `python3 tools/pfx/render.py tools/pfx/setN.json <pixelfx dir>` and `python3 tools/pfx/process.py tools/pfx/setN.json <pixelfx dir>`,
-  then paste `pfx/manifest.json` into `const PFXM=` in game.js. Sheets load lazily, one at a time.
+  then paste `pfx/manifest.json` into `const PFXM=` in game.js. Sheets load only when first used (never all up front: all 93 decode to ~400MB and iPhones killed the page around 5 min, 28 Nov); `PFXMB`=140 MB budget, least recently used sheets are dropped (`PFXU`). Check decoded size before adding big sheets.
 - Avoid side-view effects that paint the stock dummy body; prefer `--no-actor` renders.
 
 ## Menu
