@@ -32,6 +32,8 @@ Full documentation (gameplay, every system, ability catalog, pipelines, decision
 - Combat: one action per hero per beat (`BEAT=.5`), 3-step basic attack cycles (`cmbNext`). Specs: Warden = Berserker / Executioner, Lamplighter = Healer / Firebrand.
 - Abilities = weapons in `WDEF` (cls, spec, name, desc, up3, evo); per-ability logic in the `AB` table; levels 1-5 (3 = extra effect, 5 = evolved).
 - The Divide (T=290 and 515): bridges burn for 35s, heroes split. "Not Without You": each hero holds one Memory per Divide that auto-saves the partner from going down.
+- Pace (27 Nov 2026): `EPACK` (pack size x.55), `ETOUGH` (normal enemy HP x1.6), `EPACE` (walk speed x.85) next to `EK`; XP per kill doubled to keep levelling pace. Ability effects are faded by `FXQ` (.62) and capped in `pfxPush`; `FXKEEP` lists effects that stay full strength (basic swings, warnings, revives, the `zburst` death burst).
+- Environment art from the zombie pivot set: `x_tree`/`x_junk`/`x_rubble` props (sized by width in `PW`), flat overgrowth marks baked onto roofs (`overgrowRoof`, images from `art/base/`), scrap sprite for XP pickups (`SCRAP`).
 - Executioner: Blood Boil stacks from kills (cap 50, decays after 6s); Grand Verdict spends them (up to 2.5x damage). Grand Verdict uses `sprites/warden/grand/east.png`.
 
 ## Effects (PixelFX)
