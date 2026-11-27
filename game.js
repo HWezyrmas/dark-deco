@@ -936,7 +936,7 @@ function aimTrack(c,dt){const dx=c.x-(c._ax??c.x),dy=c.y-(c._ay??c.y);c._ax=c.x;
 function inAim(e){if(!AIMC)return true;const dx=e.x-AIMC.x,dy=(e.y-AIMC.y)*1.25,d=len(dx,dy);if(d<26)return true;return (dx*AIMC.amx+dy*AIMC.amy)/d>=AIM_COS}
 function densest(c,R,r){let b=null,bn=0;const pool=en.filter(e=>alive(e)&&inAim(e)&&len(e.x-c.x,e.y-c.y)<R);const step=Math.max(1,Math.floor(pool.length/40));for(let i=0;i<pool.length;i+=step){const e=pool[i];let n=0;for(const o of pool)if(len(o.x-e.x,(o.y-e.y)*1.4)<r)n++;if(n>bn){bn=n;b=e}}return b}
 function vtxPos(v,t){const a=v.a0+.75*t,d=60*t;return[v.x+Math.cos(a)*d,v.y+Math.sin(a)*d*.7]}
-function carnage(c,e){const P=c.carnP;if(!P||(c.carnB??0)<1)return;if(rnd()>(P.evo?.6:.22+.04*P.lv))return;c.carnB-=1;const n=P.m3?16:8,a0=rnd()*TAU,x=e.x,y=e.y,L=46*P.a;emit('carn',r1(x),r1(y-4),n,P.evo?1:0,r2(a0));
+function carnage(c,e){const P=c.carnP;if(!P||(c.carnB??0)<1)return;if(rnd()>(P.evo?.75:.36+.06*P.lv))return;c.carnB-=1;const n=P.m3?16:8,a0=rnd()*TAU,x=e.x,y=e.y,L=46*P.a;emit('carn',r1(x),r1(y-4),n,P.evo?1:0,r2(a0));
   later.push({t:.08,f:()=>{for(let i=0;i<n;i++){const a=a0+i*TAU/n,dx=Math.cos(a),dy=Math.sin(a)*.7;for(const o of en){if(!alive(o))continue;if(distSeg(o.x,o.y,x,y,x+dx*L,y+dy*L)<5+rad(o)*.4){hitE(o,11*P.d,c,{w:'carnage',col:WCOL.carnage,kx:dx*120,ky:dy*120});if(!P.evo)break}}}}})}
 function legPos(x0,y0,a,n,g,s,back){const ca=Math.cos(a),sa=Math.sin(a),off=(g-(n-1)/2)*16,run=back&&s>1.05?150-(s-1.05)*150:Math.min(1,s/1)*150;return[x0+ca*run-sa*off,y0+sa*run*.7+ca*off*.7]}
 function phxPos(c,t,S){const a=t*2.2;return[c.x+Math.sin(a)*S,c.y-14+Math.sin(a*2)*S*.32]}
@@ -965,7 +965,7 @@ const AB={
     tg.forEach((e,i)=>later.push({t:.12+i*.13,f:()=>{const x=pts[i*2],y=pts[i*2+1];for(const o of en){if(!alive(o))continue;if(len(o.x-x,(o.y-y)*1.4)<14+rad(o)*.5)hitE(o,26*P.d,c,{w:'thunder',col:WCOL.thunder,stun:.3})}
       if(P.evo){let k=0;for(const o of en){if(k>=2)break;if(!alive(o))continue;const d=len(o.x-x,o.y-y);if(d>14&&d<60){k++;hitE(o,12*P.d,c,{w:'thunder',col:WCOL.thunder,quiet:1});emit('bolt',[x,y-6,o.x,o.y-6],1)}}}emit('sfx','crit');emit('shake',0,1,2,c.idx)}}))},
   bloodmoon(c,w,dt,rate){const P=AP(c,w);if(c.moonT>0){c.moonT-=dt;c.moonTick=(c.moonTick||0)-dt;if(c.moonTick<=0){c.moonTick=.5;for(const e of en){if(alive(e)&&len(e.x-c.x,e.y-c.y)<170){hitE(e,6*P.d,c,{w:'bloodmoon',col:WCOL.bloodmoon,crit:false});if(P.evo)e.slowT=.7}}}return}
-    w.cd-=dt*rate;if(w.cd>0||countNear(c,110)<6)return;w.cd=18*P.c;fired(c,w);c.moonT=(P.m3?7:5)*P.du;emit('moon',r1(c.moonT),P.evo?1:0,c.idx);emit('sfx','boom')},
+    w.cd-=dt*rate;if(w.cd>0||countNear(c,110)<4)return;w.cd=14*P.c;fired(c,w);c.moonT=(P.m3?7:5)*P.du;emit('moon',r1(c.moonT),P.evo?1:0,c.idx);emit('sfx','boom')},
   legion(c,w,dt,rate){const P=AP(c,w);w.cd-=dt*rate;if(w.cd>0)return;const t=nearestEnemy(c,150);if(!t)return;w.cd=10*P.c;fired(c,w);const a=Math.atan2(t.y-c.y,t.x-c.x),n=P.m3?5:3,x0=c.x-Math.cos(a)*14,y0=c.y-Math.sin(a)*10,back=P.evo?1:0;
     emit('leg',r1(x0),r1(y0),r2(a),n,back,c.idx);emit('sfx','charge');const hitS=new Set();
     for(let s=.05;s<(back?2.1:1.1);s+=.06)later.push({t:s,f:()=>{if(back&&Math.abs(s-1.05)<.04)hitS.clear();for(let g=0;g<n;g++){const [gx,gy]=legPos(x0,y0,a,n,g,s,back);for(const e of en){if(!alive(e)||hitS.has(e.id*10+g))continue;if(len(e.x-gx,(e.y-gy)*1.4)<13+rad(e)*.5){hitS.add(e.id*10+g);hitE(e,20*P.d,c,{w:'legion',col:WCOL.legion,kx:Math.cos(a)*(s<1.05?180:-180),ky:Math.sin(a)*(s<1.05?120:-120)})}}}}})},
@@ -1051,7 +1051,7 @@ const AB={
   ravager(c,w,dt,rate){const P=AP(c,w),n=Math.min(5,(P.m3?2:1)+(P.evo?1:0)+P.n),R=34*P.a,sp=P.evo?4.4:3.2;c.ravA=(c.ravA||0)+dt*sp*Math.min(1.6,rate);c.ravPos=[];c.ravLv=w.lv;
     for(let i=0;i<n;i++){const a=c.ravA+i*TAU/n,x=c.x+Math.cos(a)*R,y=c.y-8+Math.sin(a)*R*.55;c.ravPos.push([x,y,a]);
       for(const e of en){if(!alive(e)||(e.ravT||0)>tAll)continue;if(len(e.x-x,(e.y-8-e.z-y)*1.3)<(P.evo?14:11)+rad(e)*.4){e.ravT=tAll+.3;const dx=e.x-c.x,dy=e.y-c.y,d=len(dx,dy)||1;hitE(e,(P.evo?17:14)*P.d,c,{w:'ravager',col:WCOL.ravager,kx:dx/d*110,ky:dy/d*80,dir:a+Math.PI/2,frz:.03,crit:rnd()<.08})}}}},
-  blood(c,w){const nd=w.lv>=5?8:w.lv>=3?10:12;w.frac=clamp((c.bloodK||0)/nd,0,1);if((c.bloodK||0)<nd)return;const t=nearestEnemy(c,170);if(!t)return;c.bloodK=0;const P=AP(c,w),k=1;
+  blood(c,w){const nd=w.lv>=5?4:w.lv>=3?5:7;w.frac=clamp((c.bloodK||0)/nd,0,1);if((c.bloodK||0)<nd)return;const t=nearestEnemy(c,170);if(!t)return;c.bloodK=0;const P=AP(c,w),k=1;
     emit('pfx','lsteal',r1(c.x),r1(c.y),.42,t.x<c.x);for(let i=0;i<k;i++){const a=Math.atan2(t.y-c.y,t.x-c.x)+(i-(k-1)/2)*.6;proj.push({k:'baxe',x:c.x,y:c.y-14,vx:Math.cos(a)*200,vy:Math.sin(a)*150,tgt:i?null:t,bounce:2+(P.m3?1:0)+(P.evo?1:0)+P.n,hit:new Set(),dmg:20*P.d,heal:P.evo?6:P.m3?4:3,evo:P.evo,src:c,life:3})}
     emit('sfx','swoosh',1);emit('num',c.x,c.y-48,'BLOODTHIRST','#ff5a6a',1);fired(c,w)},
   charge(c,w,dt,rate){const P=AP(c,w);w.cd-=dt*rate;if(w.cd>0)return;const t=strongest(c,140*P.a);if(!t)return;w.cd=6*P.c;fired(c,w);
@@ -1069,7 +1069,7 @@ const AB={
     emit('sfx','swoosh',1)},
   banner(c,w,dt,rate){const P=AP(c,w);w.cd-=dt*rate;if(w.cd>0||countNear(c,90)<3)return;w.cd=13*P.c;fired(c,w);const life=(6+(P.m3?1.5:0))*P.du;
     proj.push({k:'banner',x:c.x+c.f*10,y:c.y+2,life,max:life,r:48*P.a*(P.m3?1.2:1),tick:0,dmg:9*P.d,slow:P.m3,evo:P.evo,src:c,lv:w.lv,a:1});emit('sfx','boom');emit('wave',c.x,c.y,.4,60*P.a,C.gold,3,0)},
-  shout(c,w,dt,rate){const P=AP(c,w);w.cd-=dt*rate;if(w.cd>0||countNear(c,60)<4)return;w.cd=8*P.c;fired(c,w);const R=75*P.a;
+  shout(c,w,dt,rate){const P=AP(c,w);w.cd-=dt*rate;if(w.cd>0||countNear(c,60)<3)return;w.cd=8*P.c;fired(c,w);const R=75*P.a;
     emit('shout',c.idx,Math.round(R));for(const e of en){if(!alive(e))continue;const dx=e.x-c.x,dy=e.y-c.y,d=len(dx,dy*1.4)||1;if(d<R){hitE(e,12*P.d,c,{w:'shout',col:WCOL.shout,kx:dx/d*320,ky:dy/d*220,dir:Math.atan2(dy,dx)});e.fear=Math.max(e.fear||0,(P.m3?1.6:1.1)*P.du)}}
     if(P.m3)for(const q of chars)if(q.state==='ok'&&len(q.x-c.x,q.y-c.y)<130)q.shoutT=4*P.du;
     if(P.evo){addRage(c,30);for(const q of chars)healP(q,q.max*.05)}},
@@ -2656,14 +2656,16 @@ body.tground #obj,body.tground #dlg,body.tground #xpbar,body.tground #timer{disp
    (damage, downs, revives, Divides, picks); a guest records the outline only. "Copy run log" on the menu and
    end screen puts a readable summary plus the raw JSON on the clipboard for Claude. */
 var RL=null,RL_KEY='dd_log',RL_TEST=/[?&](dummy|fxlab)/.test(location.search);
-function rlLoad(){try{return JSON.parse(localStorage.getItem(RL_KEY)||'[]')}catch(_){return[]}}
+function rlLoad(){let L=[];try{L=JSON.parse(localStorage.getItem(RL_KEY)||'[]')}catch(_){}try{const lv=JSON.parse(localStorage.getItem('dd_log_live')||'null');if(lv&&(!RL||RL.at!==lv.at)&&!L.some(r=>r.at===lv.at))L.push(Object.assign(lv,{res:'unfinished (app closed)'}));else if(lv&&RL&&RL.at===lv.at)L.push(lv)}catch(_){}return L}
 function rlSave(L){try{localStorage.setItem(RL_KEY,JSON.stringify(L.slice(-40)))}catch(_){}rlLabel()}
-function rlStart(guest){if(RL_TEST)return;const L=rlLoad(),last=L[L.length-1];if(last&&last.endAt&&Date.now()-last.endAt<10*60e3&&!last.again){last.again=1;rlSave(L)}
+function rlStart(guest){if(RL_TEST)return;try{const lv=JSON.parse(localStorage.getItem('dd_log_live')||'null');if(lv){const S=JSON.parse(localStorage.getItem(RL_KEY)||'[]');if(!S.some(r=>r.at===lv.at))S.push(Object.assign(lv,{res:'unfinished (app closed)'}));localStorage.setItem(RL_KEY,JSON.stringify(S.slice(-40)));localStorage.removeItem('dd_log_live')}}catch(_){}const L=rlLoad(),last=L[L.length-1];if(last&&last.endAt&&Date.now()-last.endAt<10*60e3&&!last.again){last.again=1;rlSave(L)}
   RL={v:1,at:Date.now(),mode:guest?'online-guest':solo?(alone?'alone':'bot'):'online-host',me:myCls,heroes:chars.map(c=>c.cls+':'+(SPEC[c.cls]||'')),ev:[]}}
 function rlEv(k,...a){if(!RL||RL.res||RL.ev.length>500)return;RL.ev.push([T|0,k,...a])}
+function rlSnap(){if(!RL||RL.res)return;try{const o=Object.assign({},RL,{res:'in progress',T:T|0,level,kills,h:chars.map(c=>({cls:c.cls,spec:SPEC[c.cls]||'',dmg:Math.round(c.dD||0),taken:Math.round(c.dT||0),healed:Math.round(c.hR||0),downs:c.downs||0,revived:c.revd||0,outs:c.outs||0,w:(c.weapons||[]).map(w=>w.id+':'+w.lv)}))});localStorage.setItem('dd_log_live',JSON.stringify(o))}catch(_){}}
+setInterval(rlSnap,10000);addEventListener('pagehide',rlSnap);document.addEventListener('visibilitychange',()=>{if(document.hidden)rlSnap()});
 function rlEnd(s){if(!RL||RL.res)return;RL.res=s?(s.win?(s.dawn?'dawn':'boss down'):'lost'):'quit';RL.T=T|0;RL.level=level;RL.kills=kills;RL.endAt=Date.now();
   RL.h=chars.map(c=>({cls:c.cls,spec:SPEC[c.cls]||'',dmg:Math.round(c.dD||0),taken:Math.round(c.dT||0),healed:Math.round(c.hR||0),downs:c.downs||0,revived:c.revd||0,outs:c.outs||0,w:(c.weapons||[]).map(w=>w.id+':'+w.lv)}));
-  const L=rlLoad();L.push(RL);rlSave(L);RL=null}
+  let L=[];try{L=JSON.parse(localStorage.getItem(RL_KEY)||'[]')}catch(_){}try{const lv=JSON.parse(localStorage.getItem('dd_log_live')||'null');if(lv&&lv.at!==RL.at&&!L.some(r=>r.at===lv.at))L.push(Object.assign(lv,{res:'unfinished (app closed)'}));localStorage.removeItem('dd_log_live')}catch(_){}L.push(RL);rlSave(L);RL=null}
 const rlT=t=>String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0');
 function rlName(id){const [k,v]=String(id).split(':');const n=(WDEF[v]&&WDEF[v].name)||(PAS[v]&&PAS[v].name)||(MODS[v]&&MODS[v].name)||(PAIRS[v]&&PAIRS[v].name)||(typeof DUOS!=='undefined'&&DUOS[v]&&DUOS[v].name)||v;return k+':'+n}
 function rlText(){const L=rlLoad();if(!L.length)return 'Dark Deco run log: no runs yet.';const H={warden:'W',lamp:'L'};

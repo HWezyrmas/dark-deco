@@ -53,7 +53,7 @@ Full documentation (gameplay, every system, ability catalog, pipelines, decision
 - `?fxlab`: effects lab, Classic left vs New right, tap edges to skip.
 - `?dummy`: Training ground (also the menu button): pick hero/spec/abilities/level, scarecrow dummies, cooldown/rage toggles.
 - `?dummy` **Stress test** toggle: every spec ability evolved, ~70 mixed enemies + the boss (roadmap Phase 1 readability check).
-- Run log (`RL` block near the end of game.js): localStorage `dd_log`, last 40 runs; hooks `rlStart/rlEv/rlEnd`. Menu "Copy test log" and end-screen "Copy run log" copy a readable summary + RAW JSON. `window.__rl.text()` in scripts.
+- Run log (`RL` block near the end of game.js): localStorage `dd_log`, last 40 runs; the run in progress is snapshotted to `dd_log_live` every 10s and on app hide, and shows up as "unfinished (app closed)"; hooks `rlStart/rlEv/rlEnd`. Menu "Copy test log" and end-screen "Copy run log" copy a readable summary + RAW JSON. `window.__rl.text()` in scripts.
 - `window.__dd` exposes internals (chars, en, T setter, FXF, ...) for scripts.
 
 ## Testing and shipping
