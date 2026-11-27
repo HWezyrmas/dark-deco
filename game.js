@@ -1834,7 +1834,7 @@ function blob2(x,yb,sc,sq,P,rows,hit){const n=rows.length,hh=sc*(1-sq*.3);if(!hi
 function blob(x,yb,sc,sq,body,rows){for(const [rw,dy] of rows){const ww=Math.round(rw*sc*(1+sq*.4)),hh=sc*(1-sq*.3);lg.fillStyle=body;lg.fillRect(x-(ww>>1),yb+Math.round(dy*hh),ww,Math.max(1,Math.ceil(hh)))}}
 const ROWS={shadow:[[4,-11],[8,-10],[10,-9],[10,-8],[10,-7],[10,-6],[10,-5],[8,-4],[10,-3],[10,-2]],gun:[[3,-17],[5,-16],[5,-15],[4,-14],[6,-13],[6,-12],[6,-11],[6,-10],[6,-9],[6,-8],[6,-7],[7,-6],[7,-5],[8,-4],[8,-3],[8,-2]],bomb:[[4,-11],[8,-10],[10,-9],[12,-8],[12,-7],[12,-6],[12,-5],[12,-4],[10,-3],[8,-2]]};
 // painted enemies (sheet F). Pre-scaled once per kind; shadow imps get a hue-shifted copy per stage colour
-const ENAMES=['shadow','brute','gunman','bomber','elite','boss'],EH=[21,31,27,22,40,58],ESPR=[];
+const ENAMES=['shadow','brute','gunman','bomber','elite','boss'],ESZ=1.25,EH=[21,31,27,22,40,58].map(h=>Math.round(h*ESZ))/* ESZ: enemy size (28 Nov, x1.25) */,ESPR=[];
 function tintCv(src,col,keepHue){const w=src.width,h=src.height,c=mk(w,h),g=c.getContext('2d');g.drawImage(src,0,0);g.globalCompositeOperation='source-in';g.fillStyle=col;g.fillRect(0,0,w,h);return c}
 function hueCv(src,deg){const w=src.width,h=src.height,c=mk(w,h),g=c.getContext('2d');g.drawImage(src,0,0);const d=g.getImageData(0,0,w,h),a=d.data;
   for(let i=0;i<a.length;i+=4){if(!a[i+3])continue;const r=a[i]/255,gg=a[i+1]/255,b=a[i+2]/255,mx=Math.max(r,gg,b),mn=Math.min(r,gg,b),dl=mx-mn;if(dl<.08)continue;let hh=mx===r?((gg-b)/dl)%6:mx===gg?(b-r)/dl+2:(r-gg)/dl+4;hh*=60;if(hh<0)hh+=360;
@@ -1911,7 +1911,7 @@ function drawEnemy(e){if(e.dummy){drawDummy(e);return}const x=rq(e.x+ox)+(e.hit>
     lg.fillRect(ex,yb-8*sc,ew,eh);lg.fillRect(ex+3*sc,yb-8*sc,ew,eh);eg.fillRect(ex,yb-8*sc,ew,eh);eg.fillRect(ex+3*sc,yb-8*sc,ew,eh);if(kind===5){lg.fillRect(ex+1.5*sc,yb-10*sc,ew,eh);eg.fillRect(ex+1.5*sc,yb-10*sc,ew,eh)}}
   if(e.mark>0){const S2=ESPR[kind],hh=S2?S2.h:16,my=Math.round(yb-hh-6+Math.sin(tAll*6+e.id)*1),pu=.7+.3*Math.sin(tAll*10);eg.globalAlpha=pu;const mc=chars.some(q=>q.spec==='fire')?'#ff8a2a':'#ffe08a';eg.strokeStyle=mc;eg.lineWidth=2;eg.beginPath();eg.moveTo(x,my-5);eg.lineTo(x+4,my);eg.lineTo(x,my+5);eg.lineTo(x-4,my);eg.closePath();eg.stroke();lg.globalAlpha=1;lg.fillStyle='#ffffff';lg.fillRect(x,my,1,1);eg.globalAlpha=1;eg.lineWidth=1}
   if(e.burn&&!(pfxBN++<16&&pfxLoop('burnS',x,yb+1,.26*Math.min(sc,1.8),0,.8,e.id*.13))){eg.fillStyle='#ff7a3a';eg.fillRect(x-1,yb-14*Math.min(sc,1.5),2,2)}
-  if(kind===1||kind===4){const bw=kind===4?36:24,p=Math.max(0,e.hp/e.max),top=yb-(kind===4?38:34);lg.fillStyle='#0a0812';lg.fillRect(x-bw/2-1,top,bw+2,3);lg.fillStyle=C.red;lg.fillRect(x-bw/2,top+1,Math.round(bw*p),1);eg.fillStyle=C.red;eg.fillRect(x-bw/2,top+1,Math.round(bw*p),1)}
+  if(kind===1||kind===4){const bw=kind===4?36:24,p=Math.max(0,e.hp/e.max),top=yb-(EH[kind]+(kind===4?-2:3));lg.fillStyle='#0a0812';lg.fillRect(x-bw/2-1,top,bw+2,3);lg.fillStyle=C.red;lg.fillRect(x-bw/2,top+1,Math.round(bw*p),1);eg.fillStyle=C.red;eg.fillRect(x-bw/2,top+1,Math.round(bw*p),1)}
   if(kind===2&&e.st===1){const lock=e.stt<=.25;eg.globalAlpha=lock?.95:.45;eg.strokeStyle=C.red;if(!lock)eg.setLineDash([4,4]);eg.beginPath();eg.moveTo(x,yb-9);eg.lineTo(x+e.ax*240,yb-9+e.ay*190);eg.stroke();eg.setLineDash([]);eg.globalAlpha=1}}
 let hiQ=[];
 function queueHead(c,x,y,F,sx,sy,al,rot){if(!c.hc)c.hc=mk(S*2,S*2);const h=c.hc.getContext('2d');h.clearRect(0,0,S*2,S*2);
