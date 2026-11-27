@@ -744,6 +744,63 @@ body.inlobby #tLogo,body.inlobby #tHeroes{opacity:0!important}
 .mode:nth-child(2)::after{animation-delay:.25s}.mode:nth-child(3)::after{animation-delay:.5s}.mode:nth-child(4)::after{animation-delay:.75s}
 @keyframes modeShine{0%,70%{background-position:-150% 0}100%{background-position:150% 0}}
 .mode:focus-visible{outline:1px solid var(--gold);outline-offset:2px}
+
+/* ===== level-up cards v2 (27 Nov 2026): framed tall cards after Hamza's reference, level pips, path step, select then confirm ===== */
+#offers.v2{display:flex;flex-direction:row;gap:8px;align-items:stretch;justify-content:center;width:100%;max-width:470px;margin:10px auto 0;padding:0 6px}
+#offers.v2 .pick{all:unset;box-sizing:border-box;--rc:#8a7cff;flex:1 1 0;min-width:0;max-width:150px;display:flex;flex-direction:column;align-items:center;gap:7px;padding:14px 8px 11px;background:linear-gradient(180deg,#1d1734,#0f0b1d 70%);border:1.5px solid color-mix(in srgb,var(--rc) 80%,#000);border-radius:5px;position:relative;cursor:pointer;opacity:0;transform:translateY(14px);transition:transform .2s,opacity .2s,border-color .15s,box-shadow .15s;text-align:center;color:#e8e2f6;font-family:var(--ui);-webkit-tap-highlight-color:transparent}
+#offers.v2 .pick::before{content:'';position:absolute;inset:4px;border:1px solid color-mix(in srgb,var(--rc) 30%,transparent);border-radius:3px;pointer-events:none}
+#offers.v2 .pick.show{opacity:1;transform:none}
+#offers.v2 .pick .ic{all:unset;width:56px;height:56px;border-radius:50%;background:#0b0818;box-shadow:0 0 0 2px var(--rc),0 0 0 5px #120e22,0 0 0 6px color-mix(in srgb,var(--rc) 45%,transparent);display:grid;place-items:center;overflow:hidden;flex:none}
+#offers.v2 .pick .ic img{width:48px;height:48px;border-radius:50%;image-rendering:auto}
+#offers.v2 .pick .rar{all:unset;font:600 8.5px var(--ui);letter-spacing:.14em;text-transform:uppercase;color:var(--rc)}
+#offers.v2 .pick .nm{all:unset;display:block;box-sizing:border-box;width:calc(100% + 16px);margin:0 -8px;padding:6px 6px;background:color-mix(in srgb,var(--rc) 24%,#0b0818);border-top:1px solid var(--rc);border-bottom:1px solid var(--rc);font:400 14px/1.15 var(--display,Georgia),serif;color:#fff6e2;text-wrap:balance}
+#offers.v2 .pick .d{all:unset;display:block;font-size:11px;line-height:1.4;color:#d6cfea;flex:1;text-wrap:pretty}
+#offers.v2 .pick .d .pl{display:block;margin-top:6px;font-size:10px;color:var(--rc)}
+#offers.v2 .pick .d .cost{color:#ff9aaa;font-weight:600}
+#offers.v2 .pick .pp{display:flex;gap:5px;justify-content:center;margin-top:2px}
+#offers.v2 .pick .pp i{width:7px;height:7px;transform:rotate(45deg);background:#241d38;border:1px solid color-mix(in srgb,var(--rc) 55%,#000)}
+#offers.v2 .pick .pp i.on{background:var(--rc);border-color:var(--rc)}
+#offers.v2 .pick .pp i.nw{background:#fff;border-color:#fff;box-shadow:0 0 6px var(--rc);animation:pipnw .6s ease-in-out infinite alternate}
+@keyframes pipnw{to{opacity:.35}}
+#offers.v2 .pick .pth{font:600 8.5px var(--ui);letter-spacing:.1em;text-transform:uppercase;color:var(--rc);opacity:.85}
+#offers.v2 .pick.sel{border-color:#ffd27a;transform:translateY(-7px);box-shadow:0 0 0 1px #ffd27a,0 0 22px rgba(255,210,122,.4)}
+#offers.v2 .pick.sel::before{border-color:rgba(255,210,122,.5)}
+#offers.v2.locked .pick:not(.chosen){opacity:.28}
+#offers.v2 .pick.chosen{border-color:#ffd27a;opacity:1}
+#offers.v2 .pick:hover{filter:none}
+.lvok{display:block;margin:16px auto 0;min-width:170px;max-width:86vw;padding:11px 26px;border-radius:24px;border:1.5px solid #ffd27a;background:#1b1530;color:#ffe9b0;font:600 12px var(--ui);letter-spacing:.16em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lvok[hidden]{display:none}
+/* skills screen by path */
+.skp{border:1px solid color-mix(in srgb,var(--pc) 45%,transparent);border-radius:6px;padding:8px 8px 4px;margin:0 0 10px;background:color-mix(in srgb,var(--pc) 6%,transparent)}
+.skh{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 6px}
+.skh b{font:600 11px var(--ui);letter-spacing:.14em;text-transform:uppercase;color:var(--pc)}
+.skh span{font-size:10px;color:#b8b0d4}
+.skh i{flex:1 1 100%;height:4px;background:#241d38;border-radius:2px;overflow:hidden}.skh i u{display:block;height:100%;background:var(--pc)}
+.ski.lock{opacity:.45}.ski .nx{display:block;margin-top:3px;font-size:11px;color:#ffe9b0}.ski .nx b{color:#ffd27a}
+.pp2{display:inline-flex;gap:3px;margin-left:6px;vertical-align:middle}.pp2 i{width:6px;height:6px;transform:rotate(45deg);background:#241d38;border:1px solid color-mix(in srgb,var(--pc) 55%,#000)}.pp2 i.on{background:var(--pc);border-color:var(--pc)}
+.sknext{font-size:11px;color:#cfc6e4;margin:2px 0 6px}.sknext b{color:var(--pc)}
+.skrest{--pc:#8a84a8}.skr{font-size:11px;color:#cfc6e4;margin:0 0 5px}.skr b{color:var(--pc);margin-right:4px}
+#sGuide .need{display:none!important}
+
+/* ===== HUD meters and chips v2 (27 Nov 2026): segmented resource meters with state colours, framed ability chips ===== */
+#rowRage .hp.rage{width:128px;height:12px;background:#120e20!important;border:1px solid #4a3a5e;transform:skewX(-20deg);margin-left:6px;box-shadow:none}
+#rowRage .hp.rage>i{left:2px;right:2px;top:2px;bottom:2px}
+#rowRage .hp.rage b{border:0!important;border-image:none!important;height:100%;background:linear-gradient(90deg,#a3203f,#ff4a6e)!important;-webkit-mask:repeating-linear-gradient(90deg,#000 0 9px,transparent 9px 11px);mask:repeating-linear-gradient(90deg,#000 0 9px,transparent 9px 11px);box-shadow:none!important;filter:none!important;animation:none!important}
+#rowRage.spark .hp.rage b{background:linear-gradient(90deg,#b8862a,#ffe39a)!important}
+#rowRage.full .hp.rage{border-color:#4fd6ff;box-shadow:0 0 8px rgba(79,214,255,.45)}
+#rowRage.full .hp.rage b{background:linear-gradient(90deg,#3fb6ff,#c8f2ff)!important}
+#rowRage.enr .hp.rage{border-color:#d04aff;box-shadow:0 0 8px rgba(208,74,255,.45)}
+#rowRage.enr .hp.rage b{background:linear-gradient(90deg,#b03aff,#ffb0ff)!important}
+#rowRage .rgn{font:600 8px var(--ui)!important;letter-spacing:.16em}
+.bbn{display:flex;align-items:center;gap:6px;font:600 8px/1 var(--ui);letter-spacing:.14em;color:#ff7a8a;text-shadow:none;opacity:1;margin:4px 0 0 2px}
+.bbn i{font-size:8px;opacity:.85}
+.bbn::after{content:'';width:84px;height:6px;transform:skewX(-20deg);background:linear-gradient(90deg,#ff4a5a calc(var(--k,0)*100%),#2a1a26 0);-webkit-mask:repeating-linear-gradient(90deg,#000 0 6px,transparent 6px 8px);mask:repeating-linear-gradient(90deg,#000 0 6px,transparent 6px 8px)}
+.bbn.max{color:#fff}.bbn.max::after{background:#ffd27a}
+#kit .kw{background:#120e20!important;border:1px solid color-mix(in srgb,var(--wc) 60%,#000);border-radius:4px;padding:3px 3px 7px}
+#kit .kw .pp{gap:2px;margin-top:1px}#kit .kw .pp i{width:4px;height:4px;transform:rotate(45deg);background:#2a2545;border:0;box-shadow:none}#kit .kw .pp i.on{background:var(--wc)}
+#kit .kw .cdb{left:3px;right:3px;bottom:2px;height:2px}
+#kit .kw.cool img{filter:grayscale(.75) brightness(.55)}
+#kit .kw.evo{border-color:var(--gold)}
 </style>
 </head>
 <body>
@@ -856,6 +913,7 @@ body.inlobby #tLogo,body.inlobby #tHeroes{opacity:0!important}
     <div class="lvban" id="lvlBan">Level Up</div>
     <div class="lvsub" id="lvlSub">Choose a new skill</div>
     <div class="offers" id="offers"></div>
+    <button class="lvok" id="lvOk" hidden>Confirm</button>
     <div id="mateChoice"></div>
     <div class="lvfoot"><button class="hb" id="skillsBtn2">Learned skills</button></div>
   </div>
@@ -1003,6 +1061,6 @@ body.inlobby #tLogo,body.inlobby #tHeroes{opacity:0!important}
 <script src="dlg.js?v=1793704285"></script>
 <script src="intro.js?v=1793704285"></script>
 <script src="title.js?v=1793704285"></script>
-<script src="game.js?v=1795784675"></script>
+<script src="game.js?v=1795785511"></script>
 </body>
 </html>

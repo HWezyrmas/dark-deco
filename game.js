@@ -240,8 +240,8 @@ const CL={
 const WCOL={rites:'#ff3a5a',knell:'#e8d8a8',firewall:'#ff6a1a',pyre:'#ffb23a',reaper:'#ff5a6a',cinder:'#ff8a2a',hellchain:'#ff7a1a',wyrm:'#3fffe0',obelisk:'#f2cf7a',thunder:'#d8b0ff',bloodmoon:'#ff2a4a',legion:'#9fb8ff',phoenix:'#ffa03a',heaven:'#fff3b0',cranes:'#ffc0dc',starwell:'#9a7aff',clock:'#8fe6ff',fireworks:'#ff6fd8',guillotine:'#b8a8ff',vortex:'#5fffd0',grip:'#7dffb0',carnage:'#ff3a7a',constellation:'#ffd6f0',aurora:'#6fffb0',rose:'#ff8fd0',wisp:'#ffb05a',ravager:'#8ff3ff',blood:'#ff5a6a',charge:'#b88cff',earth:'#ff7a3a',hook:'#d6e2ff',banner:'#ffd27a',shout:'#ff9a7a',starfall:'#fff3a0',lanterns:'#ff9fb8',garden:'#9dffb0',halo:'#ffe7a0',kite:'#ffd08a',cleave:'#bff9ff',whirl:'#7fd7ff',slam:'#ffe14a',shield:'#ff9a3c',riposte:'#e0e8ff',twirl:'#ffc861',flies:'#d8ff6a',moths:'#d8a8ff',candle:'#4fe8d0',chain:'#7ab8ff',beam:'#fff0a8',prism:'#c9a0ff',lighthouse:'#ffe08a',lance:'#fff0a8'};
 function wCount(id,lv){if(lv<1)return 0;if(id==='prism')return lv>=5?4:lv>=3?2:1;if(id==='twirl')return lv>=5?7:2+lv;if(id==='moths')return lv>=5?6:3+Math.floor((lv-1)/2);if(id==='candle')return lv>=5?3:lv>=3?2:1;if(id==='chain')return lv>=5?9:3+lv;if(id==='flies')return lv>=5?6:2+(lv>=2)+(lv>=4);if(id==='shield')return lv>=5?5:3+Math.floor((lv-1)/3);if(id==='prism')return lv>=5?4:1+Math.floor((lv-1)/2);if(id==='lighthouse')return lv>=5?2:1;return 0}
 const UNIT={prism:'split bolts',lighthouse:'beams',twirl:'sparks',moths:'moths',candle:'candles',chain:'jumps',flies:'fireflies',shield:'bounces'};
-function upText(id,lv){if(lv===3&&WDEF[id]&&WDEF[id].up3)return WDEF[id].up3+' Plus +25% damage.';const n0=wCount(id,lv-1),n1=wCount(id,lv),p=[];if(UNIT[id]&&n1>n0)p.push(n0+' → '+n1+' '+UNIT[id]);p.push('+25% damage');if(['cleave','whirl','slam','twirl','flies','candle'].includes(id))p.push('bigger');p.push('faster');return p.join(' · ')}
-function lvm(w){return{d:1+.25*(w.lv-1)+(w.lv>=5?.25:0),c:1-.07*(w.lv-1),a:(1+.08*(w.lv-1))*(w.ar||1)}}
+function upText(id,lv){if(lv===3&&WDEF[id]&&WDEF[id].up3)return WDEF[id].up3+' Plus +30% damage.';const n0=wCount(id,lv-1),n1=wCount(id,lv),p=[];if(UNIT[id]&&n1>n0)p.push(n0+' → '+n1+' '+UNIT[id]);p.push('+30% damage');if(['cleave','whirl','slam','twirl','flies','candle'].includes(id))p.push('bigger');p.push('faster');return p.join(' · ')}
+function lvm(w){return{d:1+.3*(w.lv-1)+(w.lv>=5?.4:0),c:1-.07*(w.lv-1),a:(1+.08*(w.lv-1))*(w.ar||1)}}
 function cd1Max(c){if(c.spec==='exec')return 6.5-(c.mods.has('verdictq')?2:0);return CL[c.cls].cd1-(c.mods.has('quickbash')||c.mods.has('quickstep')?1.5:0)}
 function cd2Max(c){return c.spec==='berserk'?6:c.spec==='exec'?12:c.spec==='fire'?12:CL[c.cls].cd2}
 function skillN(c){return c.spec==='exec'?['Verdict','Dome']:c.spec==='berserk'?['Leap','Charge']:c.spec==='fire'?['Flashfire','Kindle']:[CL[c.cls].s1,CL[c.cls].s2]}
@@ -608,7 +608,15 @@ function startHost(){if(NEWFX)pfxLoad();irisT=tAll+.15;ME=0;resetWorld();setTime
   cam.x=chars[0].x;cam.y=chars[0].y;if(PROLOGUE)storyStart();else STORY={on:false};go('play');setHud();wake();arriveFx();if(!solo&&chars.length>1)send({t:'start',h:myCls,g:mateCls,sp:SPEC})}
 function startGuest(m){if(NEWFX)pfxLoad();irisT=tAll+.15;ME=1;resetWorld();setTimeout(()=>rlStart(true),0);myCls=m.g;mateCls=m.h;if(m.sp)SPEC=Object.assign({},m.sp);chars=[mkChar(0,m.h,220,240),mkChar(1,m.g,196,248)];cam.x=chars[1].x;cam.y=chars[1].y;go('play');setHud();wake();arriveFx()}
 function openSkills(){const c=meC();if(!c)return;const I=window.DD_ICONS||{};
-  $('skW').innerHTML=c.weapons.map(w=>{const d=WDEF[w.id];const ev=w.lv>=5;return`<div class="ski" style="--wc:${ev?C.gold:WCOL[w.id]}"><img src="${I[w.id]||''}" alt=""><div class="t"><b>${ev?'★ '+d.evo:d.name}</b><span>Level ${w.lv}${ev?' · evolved':''}. ${ev?d.evoD:d.desc}${!ev&&w.lv>=3?' '+d.up3:''}${!ev?' Evolves at level 5 with '+PAS[d.need].name+'.':''}</span></div></div>`}).join('')+Object.entries(c.pv||{}).map(([p,l])=>`<div class="ski" style="--wc:${PCOL[p]}"><img src="${I['p_'+p]||''}" alt=""><div class="t"><b>${PAS[p].name} · ${l}</b><span>${PAS[p].desc}</span></div></div>`).join('');
+  const pips=(lv,col)=>`<span class="pp2" style="--pc:${col}">${[1,2,3,4,5].map(i=>`<i class="${i<=lv?'on':''}"></i>`).join('')}</span>`;
+  const abRow=(id,lv,col,lock)=>{const d=WDEF[id],ev=lv>=5,nxt=lv<=0?'':lv>=5?'Fully evolved.':lv===4?'Next: evolves into <b>'+d.evo+'</b>. '+d.evoD:'Next, level '+(lv+1)+': '+upText(id,lv+1);
+    return`<div class="ski${lv?'':' lock'}" style="--wc:${ev?C.gold:col}"><img src="${I[id]||''}" alt=""><div class="t"><b>${ev?'★ '+d.evo:d.name} ${lv?pips(lv,ev?C.gold:col):''}</b><span>${lock||(ev?d.evoD:d.desc)}</span>${nxt?`<span class="nx">${nxt}</span>`:''}</div></div>`};
+  const PS=PATHS[c.spec]||[],on=pathsOf(c);let h='<div class="skp" style="--pc:'+(CL[c.cls].color||C.gold)+'"><div class="skh"><b>Basic</b></div>'+(BASICS[c.spec]||[]).map(id=>{const w=c.weapons.find(x=>x.id===id);return w?abRow(id,w.lv,WCOL[id]||C.gold):''}).join('')+'</div>';
+  for(const P of on){const L=pathLv(c,P),n=L.reduce((x,y)=>x+y,0),tot=P.ab.length*5,i=pathNext(P,L);
+    h+=`<div class="skp" style="--pc:${P.col}"><div class="skh"><b>${P.name} path</b><span>Step ${n} of ${tot}</span><i><u style="width:${Math.round(n/tot*100)}%"></u></i></div>`+P.ab.map((id,j)=>abRow(id,L[j],P.col,L[j]?'':'Unlocks when '+WDEF[P.ab[j-1]].name+' reaches level 2.')).join('')+(i>=0?`<div class="sknext">Next level-up offers: <b>${L[i]?WDEF[P.ab[i]].name+' level '+(L[i]+1):'unlock '+WDEF[P.ab[i]].name}</b></div>`:'<div class="sknext">Path complete.</div>')+'</div>'}
+  const rest=PS.filter(P=>!on.includes(P));if(rest.length)h+=`<div class="skp skrest"><div class="skh"><b>${on.length<MAXPATHS?'Paths you can still start':'Other paths'}</b><span>${on.length<MAXPATHS?(MAXPATHS-on.length)+' more allowed':'You follow 2 paths this run'}</span></div>`+rest.map(P=>`<div class="skr" style="--pc:${P.col}"><b>${P.name}</b> ${P.ab.map(a=>WDEF[a].name).join(' → ')}</div>`).join('')+'</div>';
+  h+=Object.entries(c.pv||{}).map(([p,l])=>`<div class="ski" style="--wc:${PCOL[p]}"><img src="${I['p_'+p]||''}" alt=""><div class="t"><b>${PAS[p].name} ${pips(l,PCOL[p])}</b><span>${PAS[p].desc}</span></div></div>`).join('');
+  $('skW').innerHTML=h;
   const rows=[...c.mods].map(k=>`<div class="ski" style="--wc:${C.cyan}"><img src="${I[k]||''}" alt=""><div class="t"><b>${MODS[k].name}</b><span>${MODS[k].desc}</span></div></div>`);
   rows.push(...[...teamMods].map(k=>`<div class="ski" style="--wc:${C.pink}"><img src="${I[k]||''}" alt=""><div class="t"><b>${PAIRS[k].name}</b><span>Pair card. ${PAIRS[k].desc}</span></div></div>`));
   const st=[];if(c.st.dmg>1.001)st.push('+'+Math.round((c.st.dmg-1)*100)+'% damage');if(c.st.spd>1.001)st.push('+'+Math.round((c.st.spd-1)*100)+'% speed');if(c.st.cdr>.001)st.push(Math.round(c.st.cdr*100)+'% faster attacks');if(c.st.mag>1.001)st.push('+'+Math.round((c.st.mag-1)*100)+'% gem reach');st.push(Math.round(c.max)+' max health');
@@ -631,7 +639,7 @@ function hud(){const me=meC();if(!me)return;rotHud(me);
   $('xpfill').style.width=clamp(xp/need(level),0,1)*100+'%';$('lvl').textContent=level;
   const tt=Math.floor(T);$('timer').textContent=String(Math.floor(tt/60)).padStart(2,'0')+':'+String(tt%60).padStart(2,'0');$('timer').style.color=T>=BOSS_T?'#ff8aa5':'';
   const k=me.weapons.map(w=>w.id+w.lv).join(',')+'|'+JSON.stringify(me.pv||{});if(k!==kitKey){kitKey=k;rotKey='';const I=window.DD_ICONS||{};$('kit').innerHTML=me.weapons.map(w=>`<span class="kw${w.lv>=5?' evo':''}" data-w="${w.id}" title="${w.lv>=5?WDEF[w.id].evo:WDEF[w.id].name}" style="--wc:${w.lv>=5?C.gold:WCOL[w.id]}"><img src="${I[w.id]||''}" alt=""><span class="pp">${[1,2,3,4,5].map(i=>`<i class="${i<=w.lv?'on':''}"></i>`).join('')}</span><span class="cdb"><b></b></span></span>`).join('')+Object.entries(me.pv||{}).map(([p,l])=>`<span class="kp" title="${PAS[p].name}" style="--wc:${PCOL[p]}"><img src="${I['p_'+p]||''}" alt=""><b>${l}</b></span>`).join('')}
-  for(const w of me.weapons){const el=document.querySelector('.kw[data-w="'+w.id+'"] .cdb b');if(el)el.style.width=((isHost?wFrac(w):(w.fr??1))*100)+'%'}
+  for(const w of me.weapons){const el=document.querySelector('.kw[data-w="'+w.id+'"] .cdb b');if(el){const fr=isHost?wFrac(w):(w.fr??1);el.style.width=(fr*100)+'%';el.parentNode.parentNode.classList.toggle('cool',fr<.999)}}
   if(boss&&!boss.dead){$('boss').hidden=false;$('bossHp').style.width=clamp(boss.hp/boss.max,0,1)*100+'%'}else $('boss').hidden=true;
   if(me.cls==='warden'){$('rowRage').hidden=false;const rg=clamp((me.rage||0)/100,0,1);$('rageB').style.width=rg*100+'%';const full=rg>=1&&!(me.bs>0);$('rowRage').classList.toggle('full',full);$('rowRage').classList.toggle('enr',me.enr>0||me.bs>0);
     const ex=me.spec==='exec',lab=ex?(full?'GRAND':'VERDICT'):full?'STORM':'LEAP';{const bn=$('bbN');if(bn){const v=ex?Math.floor(me.bb||0):0;bn.hidden=!ex;const t=v+'/'+BB_MAX;if(bn.dataset.v!==t){bn.dataset.v=t;bn.innerHTML='<i>BLOOD BOIL</i> '+v;bn.classList.toggle('max',v>=BB_MAX);bn.style.setProperty('--k',v/BB_MAX)}}}if($('b1').textContent!==lab){$('b1').textContent=lab;$('n1').textContent=(document.body.classList.contains('touch')?'':'Q · ')+(ex?(full?'Grand Verdict':'Verdict'):full?'Bladestorm':'Leap')}$('b1').classList.toggle('storm',full);$('b1').style.setProperty('--sym','url(ui/sym_'+(ex?'verdict':full?'storm':'leap')+'.png)')}
@@ -1170,7 +1178,7 @@ function rekindle(a,b){const mx=(a.x+b.x)/2,my=(a.y+b.y)/2;emit('pfx','healring'
 /* ================= host: enemies ================= */
 const EK=['shadow','brute','gunman','bomber','elite','boss'];
 // pace (27 Nov 2026): fewer enemies on screen, each tougher and a little slower, so fights read clearly
-const EPACK=.55,ETOUGH=1.6,EPACE=.85;
+const EPACK=.55,ETOUGH=1.4,EPACE=.85;
 function newE(kind,x,y,delay=0){const hp=[34,260,40,30,1500,4200][kind]*(kind<4?ETOUGH:1)*(kind>=4?1+T/200:hpMul())*(kind>=4&&chars.length>1?1.4:1)*(chars.length<2?.5:1);
   return{id:++eid,kind,x,y,rx:x,ry:y,z:0,vz:0,kx:0,ky:0,hp,max:hp,hit:0,sq:0,spawn:(kind===1||kind>=4?1.2:.7)+delay,t:rnd()*5,f:1,dead:false,atkT:0,st:0,stt:0,ax:0,ay:1,cd:1.5+rnd()*1.5,strafe:rnd()<.5?1:-1,stun:0,burn:0,burnT:0,flyT:0,phase:0}}
 function spawnPack(){let tgt=chars.filter(c=>c.state==='ok')[0]||chars[0];if(DIVON){const ok=chars.filter(c=>c.state==='ok');if(ok.length)tgt=ok[(packN++)%ok.length]}let px,py,tries=0;const q=offScreen(tgt,30);if(q){[px,py]=q}else do{const a=rnd()*TAU,r=80+rnd()*50;px=tgt.x+Math.cos(a)*r;py=tgt.y+Math.sin(a)*r*.7;tries++}while(!walkable(px,py)&&tries<30);if(!walkable(px,py))return;
@@ -1300,29 +1308,47 @@ function showEnd(){const s=endState;rlEnd(s);if(!s._rec&&!/[?&](dummy|fxlab)/.te
   $('bAgain').hidden=!isHost;$('endNote').textContent=isHost?'':'Waiting for the host to start another run.';if(s.win)SFX.win()}
 
 /* ================= level-ups ================= */
-function genOffers(c){const own=new Map(c.weapons.map(w=>[w.id,w])),newA=[],rest=[];
-  for(const [k,d] of Object.entries(WDEF)){if(d.cls!==c.cls||(d.spec&&d.spec!==c.spec))continue;const w=own.get(k);
-    if(w){if(w.lv<4)rest.push({id:'w:'+k,wt:w.lv===2?3.2:2.4});else if(w.lv===4&&(c.pv[d.need]||0)>0)rest.push({id:'w:'+k,wt:5})}else if(c.weapons.length<6)newA.push({id:'w:'+k,wt:1})}
-  const np=Object.keys(c.pv).length;for(const k of Object.keys(PAS)){const lv=c.pv[k]||0;if(lv>0&&lv<5)rest.push({id:'v:'+k,wt:1.5});else if(!lv&&np<4)rest.push({id:'v:'+k,wt:1.15})}
-  for(const [k,d] of Object.entries(MODS))if(d.cls===c.cls&&(!d.sp||d.sp===c.spec)&&!c.mods.has(k))rest.push({id:'m:'+k,wt:.35});
-  if(chars.length>1){const okReq=r=>!r||Object.entries(r).every(([cl,sp])=>chars.some(q=>q.cls===cl&&q.spec===sp));for(const k of ['litsteel','ward','bond','kindred','witness'])if(!teamMods.has(k)&&okReq(PAIRS[k].req))rest.push({id:'p:'+k,wt:.25});for(const k of duoReady())rest.push({id:'p:'+k,wt:3})}
-  const pick=(pool,n,out)=>{while(n-->0&&pool.length){let s=pool.reduce((a,p)=>a+p.wt,0),r=rnd()*s,i=0;for(;i<pool.length;i++){r-=pool[i].wt;if(r<=0)break}out.push(pool.splice(Math.min(i,pool.length-1),1)[0])}};
-  const out=[];pick(newA,c.weapons.length<6?2:0,out);pick(rest,3-out.length,out);pick(newA,3-out.length,out);
+/* Ability paths (27 Nov 2026): each spec has 3-4 paths of 2-4 abilities that unlock in order; a run follows at most 2.
+   Next step in a path: unlock the next ability once the previous one is level 2, otherwise raise the lowest-level ability.
+   Level 5 = evolved (no passive needed any more). */
+const PATHS={
+  berserk:[{k:'storm',name:'Storm',col:'#4fd6ff',ab:['shield','ravager','vortex']},{k:'blood',name:'Blood',col:'#ff4a5a',ab:['blood','carnage','bloodmoon']},{k:'thunder',name:'Thunder',col:'#b48cff',ab:['slam','charge','thunder']},{k:'war',name:'Warcry',col:'#ffb84a',ab:['shout','banner','wyrm']}],
+  exec:[{k:'judge',name:'Judgement',col:'#ff4a5a',ab:['rites','guillotine','knell']},{k:'chains',name:'Chains',col:'#ffb84a',ab:['hook','hellchain','grip']},{k:'earth',name:'Earth',col:'#d6b25a',ab:['earth','obelisk']},{k:'iron',name:'Iron',col:'#9fc3d6',ab:['riposte','legion']}],
+  heal:[{k:'prism',name:'Prism',col:'#4fd6ff',ab:['prism','chain','constellation']},{k:'sanct',name:'Sanctuary',col:'#6fe08a',ab:['garden','halo','kite','clock']},{k:'heaven',name:'Heavens',col:'#ffd27a',ab:['starfall','heaven','starwell']},{k:'radiance',name:'Radiance',col:'#ff9ad5',ab:['lighthouse','cranes','rose','aurora']}],
+  fire:[{k:'swarm',name:'Swarm',col:'#ffb84a',ab:['flies','moths','wisp']},{k:'snare',name:'Snares',col:'#ff6a3a',ab:['candle','firewall','pyre']},{k:'sky',name:'Skyfire',col:'#ff9ad5',ab:['lanterns','phoenix','fireworks']}]};
+const BASICS={berserk:['cleave','whirl'],exec:['reaper'],heal:['beam'],fire:['cinder']},MAXPATHS=2;
+function pathLv(c,P){return P.ab.map(id=>{const w=c.weapons.find(x=>x.id===id);return w?w.lv:0})}
+function pathNext(P,L){for(let i=0;i<P.ab.length;i++)if(!L[i]){if(i===0||L[i-1]>=2)return i;break}
+  let b=-1;for(let i=0;i<P.ab.length;i++)if(L[i]>0&&L[i]<5&&(b<0||L[i]<L[b]))b=i;return b}
+function pathsOf(c){return (PATHS[c.spec]||[]).filter(P=>P.ab.some(id=>c.weapons.some(w=>w.id===id)))}
+function pathOfAb(spec,id){return (PATHS[spec]||[]).find(P=>P.ab.includes(id))}
+function genOffers(c){const PS=PATHS[c.spec]||[],started=pathsOf(c),out=[];
+  for(const P of started){const i=pathNext(P,pathLv(c,P));if(i>=0)out.push({id:'w:'+P.ab[i]})}
+  if(started.length<MAXPATHS){const fresh=PS.filter(P=>!started.includes(P)).sort(()=>rnd()-.5),want=started.length?2:3;for(const P of fresh){if(out.length>=want)break;out.push({id:'w:'+P.ab[0]})}}
+  const pool=[];
+  for(const id of BASICS[c.spec]||[]){const w=c.weapons.find(x=>x.id===id);if(w&&w.lv<5)pool.push({id:'w:'+id,wt:2.2})}
+  const np=Object.keys(c.pv).length;for(const k of Object.keys(PAS)){const lv=c.pv[k]||0;if(lv>0&&lv<5)pool.push({id:'v:'+k,wt:1.5});else if(!lv&&np<4)pool.push({id:'v:'+k,wt:1.15})}
+  for(const [k,d] of Object.entries(MODS))if(d.cls===c.cls&&(!d.sp||d.sp===c.spec)&&!c.mods.has(k))pool.push({id:'m:'+k,wt:.35});
+  if(chars.length>1){const okReq=r=>!r||Object.entries(r).every(([cl,sp])=>chars.some(q=>q.cls===cl&&q.spec===sp));for(const k of ['litsteel','ward','bond','kindred','witness'])if(!teamMods.has(k)&&okReq(PAIRS[k].req))pool.push({id:'p:'+k,wt:.25});for(const k of duoReady())pool.push({id:'p:'+k,wt:3})}
+  const pick=(pl,n,o)=>{while(n-->0&&pl.length){let s=pl.reduce((a,p)=>a+p.wt,0),r=rnd()*s,i=0;for(;i<pl.length;i++){r-=pl[i].wt;if(r<=0)break}o.push(pl.splice(Math.min(i,pl.length-1),1)[0])}};
+  pick(pool,3-out.length,out);
   if(!out.length)out.push({id:'s:hp'},{id:'s:dmg'},{id:'s:spd'});
   return out.map(o=>cardInfo(c,o))}
 function chestOffers(c){const out=[];
-  for(const w of c.weapons){const d=WDEF[w.id];if(w.lv===4&&(c.pv[d.need]||0)>0)out.push({id:'w:'+w.id})}
+  for(const w of c.weapons)if(w.lv===4)out.push({id:'w:'+w.id});
+  for(const P of pathsOf(c)){const i=pathNext(P,pathLv(c,P));if(i>=0&&!out.some(o=>o.id==='w:'+P.ab[i]))out.push({id:'w:'+P.ab[i]})}
   for(const k of duoReady())out.push({id:'p:'+k});
   if(out.length<3)for(const w of [...c.weapons].sort(()=>rnd()-.5)){if(out.length>=3)break;if(w.lv<4&&!out.some(o=>o.id==='w:'+w.id))out.push({id:'w:'+w.id})}
   if(out.length<3)for(const k of Object.keys(c.pv)){if(out.length>=3)break;if(c.pv[k]<5)out.push({id:'v:'+k})}
   if(!out.length)out.push({id:'g:heal'},{id:'g:power'});
   return out.slice(0,3).map(o=>{const ci=cardInfo(c,o);if(ci.t!=='evo'&&ci.t!=='pair')ci.tag='Treasure · '+ci.tag;return ci})}
 function cardInfo(c,o){const [kind,k]=o.id.split(':');
-  if(kind==='w'){const d=WDEF[k],w=c.weapons.find(x=>x.id===k);if(!w)return{id:o.id,t:'new',tag:'New ability',name:d.name,desc:d.desc};
-    if(w.lv===4)return{id:o.id,t:'evo',tag:'Evolution',name:d.evo,desc:d.evoD};
-    const nx=w.lv+1,hint=nx===4?' <span class="need">Evolves with '+PAS[d.need].name+'</span>':'';
-    return{id:o.id,t:nx===3?'up3':'up',tag:nx===3?'Level 3 · new effect':'Level '+nx,name:d.name,desc:upText(k,nx)+hint}}
-  if(kind==='v'){const lv=(c.pv[k]||0)+1,ev=Object.values(WDEF).filter(d=>d.cls===c.cls&&d.need===k).map(d=>d.evo);return{id:o.id,t:'pas',tag:lv>1?'Passive · level '+lv:'New passive',name:PAS[k].name,desc:PAS[k].desc+(ev.length?' <span class="need">Unlocks '+ev.join(', ')+'</span>':'')}}
+  if(kind==='w'){const d=WDEF[k],w=c.weapons.find(x=>x.id===k),P=pathOfAb(c.spec,k),L=P?pathLv(c,P):null,lv=w?w.lv:0,nx=lv+1,
+      base={id:o.id,lv,nx,pc:P?P.col:null,pn:P?P.name:null,step:P?L.reduce((a,b)=>a+b,0)+1:0,tot:P?P.ab.length*5:0};
+    if(!w){const first=P&&L.every(v=>!v);return{...base,t:'new',tag:first?'New path':P?'Unlocks':'New ability',name:d.name,desc:d.desc+(first?' <span class="pl">Path: '+P.ab.map(a=>WDEF[a].name).join(' → ')+'</span>':'')}}
+    if(w.lv===4)return{...base,t:'evo',tag:'Evolution',name:d.evo,desc:d.evoD};
+    return{...base,t:nx===3?'up3':'up',tag:'Level '+lv+' → '+nx,name:d.name,desc:upText(k,nx)}}
+  if(kind==='v'){const lv=(c.pv[k]||0)+1,ev=Object.values(WDEF).filter(d=>d.cls===c.cls&&d.need===k).map(d=>d.evo);return{id:o.id,t:'pas',lv:lv-1,nx:lv,tag:lv>1?'Passive · level '+(lv-1)+' → '+lv:'New passive',name:PAS[k].name,desc:PAS[k].desc}}
   if(kind==='m')return{id:o.id,t:'mod',tag:'Skill change',name:MODS[k].name,desc:MODS[k].desc};
   if(kind==='s')return{id:o.id,t:'stat',tag:'Stat',name:STATS[k].name,desc:STATS[k].desc};
   if(kind==='g')return{id:o.id,t:'gift',tag:'Treasure',name:k==='heal'?'Restoration':'Spotlight',desc:k==='heal'?'Restore 60% of your health now.':'+12% damage for the rest of the run.'};
@@ -1330,7 +1356,7 @@ function cardInfo(c,o){const [kind,k]=o.id.split(':');
 function applyPassive(c,k){const lv=(c.pv[k]||0)+1;c.pv[k]=lv;const s=c.st;
   if(k==='might')s.dmg+=.12;else if(k==='haste')s.cdr=Math.min(.5,s.cdr+.07);else if(k==='reach')s.area=(s.area||1)+.1;else if(k==='dur')s.dur=(s.dur||1)+.12;else if(k==='volley')s.proj=Math.floor((lv+1)/2);else if(k==='lode')s.mag+=.4;else if(k==='armor')s.arm=(s.arm||0)+.06;else if(k==='regen')s.reg=(s.reg||0)+.4}
 function applyCard(c,id){rlEv('pick',c.cls,id);const [kind,k]=id.split(':');
-  if(kind==='w'){const w=c.weapons.find(x=>x.id===k);if(w)w.lv=Math.min(5,w.lv+1);else if(c.weapons.length<6)c.weapons.push({id:k,lv:1,cd:.5})}
+  if(kind==='w'){const w=c.weapons.find(x=>x.id===k);if(w)w.lv=Math.min(5,w.lv+1);else if(c.weapons.length<12)c.weapons.push({id:k,lv:1,cd:.5})}
   else if(kind==='v')applyPassive(c,k);
   else if(kind==='m')c.mods.add(k);
   else if(kind==='s'){if(k==='hp'){const add=c.max*.2;c.max+=add;c.hp+=add+20;c.hp=Math.min(c.hp,c.max)}else if(k==='dmg')c.st.dmg+=.15;else if(k==='spd')c.st.spd+=.1;else if(k==='cdr')c.st.cdr=Math.min(.5,c.st.cdr+.08);else if(k==='mag')c.st.mag+=.5}
@@ -1361,14 +1387,15 @@ function showOffers(){if(!LV){closeLevel();return}const mine=LV.offers[ME];if(!m
     ban.textContent=kind==='muse'?'The Muse sings':kind==='broker'?'The Broker deals':kind==='chest'?'Treasure':'Level Up';
     $('lvlSub').innerHTML=kind==='chest'?'A Gatekeeper dropped a chest. Choose one.':kind==='muse'?'She offers you a gift. Choose one.':kind==='broker'?'Make a deal? Lose <b>20% max health</b> to get:':'Level '+(level+1)+' · choose a new skill';
     sl.classList.remove('go','dim');void sl.offsetWidth;sl.classList.add('dim');cerT.push(setTimeout(()=>sl.classList.add('go'),140));
-    box.className='offers';box.innerHTML='';const icons=Object.values(window.DD_ICONS||{});
-    mine.forEach((cd,i)=>{const r=RAR[cd.t]||'common',b=document.createElement('button');b.className='pick r-'+r+' f-'+(FRM[cd.t]||'common')+' rolling';b.disabled=true;
-      b.innerHTML=`<span class="pillar"></span><span class="fr"><span class="rar">${cd.tag}</span><span class="ic"><img alt=""></span><span class="nm">${cd.name}</span></span><span class="d">${cd.desc}</span>`;
-      const img=b.querySelector('img');let k=(i*7)%Math.max(1,icons.length);img.src=icons[k]||'';
-      cerT.push(setTimeout(()=>{b.classList.add('show');SFX.tick();const roll=setInterval(()=>{img.src=icons[(k++)%icons.length]||''},65);cerT.push(roll);
-        cerT.push(setTimeout(()=>{clearInterval(roll);img.src=iconFor(cd.id);b.classList.remove('rolling');b.classList.add('landed');SFX.land(i)},420+i*240))},300+i*120));
-      cerT.push(setTimeout(()=>{b.classList.add('open');b.disabled=false;if(i===0)b.focus({preventScroll:true})},300+mine.length*120+420+mine.length*240+80));
-      b.addEventListener('click',()=>{if(LV&&LV.picked&&LV.picked[ME])return;audioInit();b.classList.add('chosen');box.classList.add('locked');if(isHost)applyPick(ME,i);else{send({t:'pk',id:LV.id,i});LV.picked=LV.picked||{};LV.picked[ME]=1;SFX.pick();showOffers()}});box.appendChild(b)})}
+    box.className='offers v2';box.innerHTML='';const ok=$('lvOk');let sel=-1;
+    const commit=i=>{if(!LV||(LV.picked&&LV.picked[ME]))return;audioInit();const bb=box.children[i];if(bb)bb.classList.add('chosen');box.classList.add('locked');if(ok)ok.hidden=true;if(isHost)applyPick(ME,i);else{send({t:'pk',id:LV.id,i});LV.picked=LV.picked||{};LV.picked[ME]=1;SFX.pick();showOffers()}};
+    if(ok){ok.hidden=true;ok.onclick=()=>{if(sel>=0)commit(sel)}}
+    mine.forEach((cd,i)=>{const r=RAR[cd.t]||'common',b=document.createElement('button');b.className='pick r-'+r;if(cd.pc)b.style.setProperty('--rc',cd.pc);
+      const pp=cd.nx&&cd.t!=='gift'&&cd.t!=='pact'?`<span class="pp">${[1,2,3,4,5].map(k=>`<i class="${k<=cd.lv?'on':k===cd.nx?'nw':''}"></i>`).join('')}</span>`:'';
+      const pth=cd.pn?`<span class="pth">${cd.pn} · step ${cd.step} of ${cd.tot}</span>`:'';
+      b.innerHTML=`<span class="ic"><img alt="" src="${iconFor(cd.id)}"></span><span class="rar">${cd.tag}</span><span class="nm">${cd.name}</span><span class="d">${cd.desc}</span>${pp}${pth}`;
+      cerT.push(setTimeout(()=>{b.classList.add('show');SFX.tick();if(i===mine.length-1)SFX.land(i)},160+i*110));
+      b.addEventListener('click',()=>{if(LV&&LV.picked&&LV.picked[ME])return;if(sel===i){commit(i);return}sel=i;for(const x of box.children)x.classList.toggle('sel',x===b);if(ok){ok.hidden=false;ok.textContent='Confirm '+cd.name}SFX.tick()});box.appendChild(b)})}
   const m=mateC();let t='';if(m){const nm=solo?'Bot':'Partner';t=LV.picked&&LV.picked[m.idx]?nm+' chose '+(LV.names&&LV.names[m.idx]||'an upgrade'):nm+' is choosing…'}
   if(LV.picked&&LV.picked[ME]&&!(m&&LV.picked[m.idx]))t=(m?((solo?'Bot':'Partner')+' is choosing…'):'');$('mateChoice').textContent=t}
 
