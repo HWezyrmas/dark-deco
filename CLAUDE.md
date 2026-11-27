@@ -28,7 +28,7 @@ Full documentation (gameplay, every system, ability catalog, pipelines, decision
 - Snapshot `C` (characters) and `E` (enemies) are positional arrays: append new fields at the END and read them in the guest unpacking line.
 - `?local` runs host+guest in two tabs of one browser (BroadcastChannel). `solo` = bot partner; `alone` = one hero ("Bot off").
 - Rendering: low-res canvas `LOW` (lg) + emissive `EM` (eg), upscaled pixelated to the screen canvas; `hiQ` draws hero sprites at full res.
-  Canvas = 2 pixels per game pixel on 3x phones; 60 fps cap; `SAVER` battery mode (30 fps, no bloom). Keep full-screen passes to a minimum (phones run hot).
+  Canvas = 2 pixels per game pixel on 3x phones; the world layers LOW/EM now render at that resolution too (`Q`, set in `resize`; 1 in battery saver) with `lg`/`eg` transformed by Q each frame, and enemy/prop sprites prepared at Q and drawn with explicit sizes. 60 fps cap; `SAVER` battery mode (30 fps, no bloom). Keep full-screen passes to a minimum (phones run hot).
 - Combat: one action per hero per beat (`BEAT=.5`), 3-step basic attack cycles (`cmbNext`). Specs: Warden = Berserker / Executioner, Lamplighter = Healer / Firebrand.
 - Abilities = weapons in `WDEF` (cls, spec, name, desc, up3, evo); per-ability logic in the `AB` table; levels 1-5 (3 = extra effect, 5 = evolved).
 - The Divide (T=290 and 515): bridges burn for 35s, heroes split. "Not Without You": each hero holds one Memory per Divide that auto-saves the partner from going down.

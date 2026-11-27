@@ -23,13 +23,13 @@ const RUN=720,ELITE_T=[240,480],BOSS_T=660,EVENTS=[{t:120,k:'muse'},{t:330,k:'br
 let evDone=[],dangerDone=[];
 
 /* ================= canvases ================= */
-let W=0,H=0,DPR=1,PX=3,lw=0,lh=0;let SAVER=false;try{SAVER=localStorage.getItem('dd_saver')==='1'}catch(_){}
+let W=0,H=0,DPR=1,PX=3,lw=0,lh=0,Q=1;let SAVER=false;try{SAVER=localStorage.getItem('dd_saver')==='1'}catch(_){}
 const VIG=mk(1,1);function mkVig(){VIG.width=lw;VIG.height=lh;const g=VIG.getContext('2d'),v=g.createRadialGradient(lw/2,lh/2,Math.min(lw,lh)*.35,lw/2,lh/2,Math.max(lw,lh)*.75);v.addColorStop(0,'rgba(5,3,12,0)');v.addColorStop(1,'rgba(5,3,12,.38)');g.fillStyle=v;g.fillRect(0,0,lw,lh)}
 const LOW=mk(1,1),EM=mk(1,1),B1=mk(1,1),b1=B1.getContext('2d'),B2=mk(1,1),b2=B2.getContext('2d');let lg=LOW.getContext('2d'),eg=EM.getContext('2d');
 // Sharpness: each game pixel covers a whole number of the phone's real pixels (s). The canvas holds up to 3 pixels per game pixel and the
 // browser enlarges it without smoothing (CSS pixelated), so 3x phones stay crisp without paying for a full-resolution canvas.
 function resize(){W=innerWidth;H=innerHeight;const dd=Math.min(3,Math.round(window.devicePixelRatio||1)||1);
-  const s=Math.max(2,Math.round(Math.min(W,H)*dd/300));PX=s/dd;lw=Math.ceil(W/PX);lh=Math.ceil(H/PX);const cs=SAVER?Math.min(s,2):s%2===0?2:Math.min(s,3);DPR=cs/PX;cv.width=lw*cs;cv.height=lh*cs;LOW.width=EM.width=lw;LOW.height=EM.height=lh;
+  const s=Math.max(2,Math.round(Math.min(W,H)*dd/300));PX=s/dd;lw=Math.ceil(W/PX);lh=Math.ceil(H/PX);const cs=SAVER?Math.min(s,2):s%2===0?2:Math.min(s,3);DPR=cs/PX;cv.width=lw*cs;cv.height=lh*cs;Q=SAVER?1:cs;LOW.width=EM.width=lw*Q;LOW.height=EM.height=lh*Q;
   B1.width=Math.ceil(lw/2);B1.height=Math.ceil(lh/2);B2.width=Math.ceil(lw/5);B2.height=Math.ceil(lh/5);lg.imageSmoothingEnabled=eg.imageSmoothingEnabled=false;mkVig()}
 addEventListener('resize',resize);resize();
 
@@ -1787,12 +1787,12 @@ function drawThreats(){drawWP();drawAim();drawAltars();
 function domeScale(){if(!dome)return 0;const t=dome.t;if(t<.22){const k=t/.22;return k*(1.2-.2*k)}if(dome.life-t<.3)return Math.max(0,(dome.life-t)/.3);return 1+.03*Math.sin(tAll*6)}
 // painted rooftop props (sheet G): drawn bottom-centred; bright pixels also go to the emissive layer so lamps and neon glow
 const PW={};const PH={pylon_c:30,pylon_p:30,vent:22,tower:58,gargoyle:30,spire:40,sign:36,crates:28,chimney:40,antenna:34,planter:28,hut:44},PSPR={};
-for(const n in PH){const im=new Image();im.onload=()=>{const c=mk(im.width,im.height);c.getContext('2d').drawImage(im,0,0);let h=PH[n],w=Math.max(1,Math.round(im.width*h/im.height));if(PW[n]){w=PW[n];h=Math.max(1,Math.round(im.height*w/im.width))}const sc=boxDown(c,im.width,im.height,w,h);
-  const em=mk(w,h),g=em.getContext('2d');g.drawImage(sc,0,0);const d=g.getImageData(0,0,w,h),a=d.data;for(let i=0;i<a.length;i+=4){const l=.3*a[i]+.59*a[i+1]+.11*a[i+2],mx=Math.max(a[i],a[i+1],a[i+2]);if(!(l>175||mx>235&&l>120))a[i+3]=0}g.putImageData(d,0,0);
+for(const n in PH){const im=new Image();im.onload=()=>{const c=mk(im.width,im.height);c.getContext('2d').drawImage(im,0,0);let h=PH[n],w=Math.max(1,Math.round(im.width*h/im.height));if(PW[n]){w=PW[n];h=Math.max(1,Math.round(im.height*w/im.width))}const sc=boxDown(c,im.width,im.height,Math.round(w*Q),Math.round(h*Q));
+  const em=mk(sc.width,sc.height),g=em.getContext('2d');g.drawImage(sc,0,0);const d=g.getImageData(0,0,sc.width,sc.height),a=d.data;for(let i=0;i<a.length;i+=4){const l=.3*a[i]+.59*a[i+1]+.11*a[i+2],mx=Math.max(a[i],a[i+1],a[i+2]);if(!(l>175||mx>235&&l>120))a[i+3]=0}g.putImageData(d,0,0);
   PSPR[n]={s:sc,em,w,h}};im.src='props/'+n+'.png?v=1'}
 function drawProp(p){const n=p.k==='pylon'?(p.c===C.cyan?'pylon_c':'pylon_p'):p.k,S=PSPR[n];if(!S)return drawPropOld(p);const x=Math.round(p.x+ox),y=Math.round(p.y+oy);
-  lg.fillStyle='rgba(0,0,0,.38)';lg.beginPath();lg.ellipse(x,y,Math.round(S.w*.45),3,0,0,TAU);lg.fill();lg.drawImage(S.s,x-(S.w>>1),y-S.h+2);
-  const on=p.k!=='pylon'||Math.sin(tAll*1.7+p.x)>-.9;if(on){eg.globalAlpha=p.k==='antenna'?.5+.5*Math.sin(tAll*5):.85;eg.drawImage(S.em,x-(S.w>>1),y-S.h+2);eg.globalAlpha=1}}
+  lg.fillStyle='rgba(0,0,0,.38)';lg.beginPath();lg.ellipse(x,y,Math.round(S.w*.45),3,0,0,TAU);lg.fill();lg.drawImage(S.s,x-(S.w>>1),y-S.h+2,S.w,S.h);
+  const on=p.k!=='pylon'||Math.sin(tAll*1.7+p.x)>-.9;if(on){eg.globalAlpha=p.k==='antenna'?.5+.5*Math.sin(tAll*5):.85;eg.drawImage(S.em,x-(S.w>>1),y-S.h+2,S.w,S.h);eg.globalAlpha=1}}
 function drawPropOld(p){const x=p.x+ox,y=p.y+oy;
   if(p.k==='pylon'){lg.fillStyle='rgba(0,0,0,.4)';lg.fillRect(x-2,y,5,1);lg.fillStyle='#2a2846';lg.fillRect(x-1,y-16,3,16);lg.fillStyle=C.gold;lg.fillRect(x-2,y-17,5,1);lg.fillRect(x-1,y-2,3,1);const on=Math.sin(tAll*1.7+p.x)>-.9;lg.fillStyle=on?p.c:'#333';lg.fillRect(x-1,y-21,3,4);lg.fillStyle=C.gold;lg.fillRect(x,y-23,1,2);if(on){eg.fillStyle=p.c;eg.fillRect(x-1,y-21,3,4)}}
   else if(p.k==='vent'){lg.fillStyle='rgba(0,0,0,.35)';lg.fillRect(x-8,y,17,2);lg.fillStyle='#24223c';lg.fillRect(x-8,y-9,17,9);lg.fillStyle='#2e2c4c';lg.fillRect(x-6,y-12,13,3);lg.fillRect(x-4,y-14,9,2);lg.fillStyle=C.goldD;lg.fillRect(x-8,y-9,17,1);lg.fillStyle='#16152a';for(let i=-6;i<7;i+=3)lg.fillRect(x+i,y-7,2,6)}}
@@ -1809,9 +1809,9 @@ function hueCv(src,deg){const w=src.width,h=src.height,c=mk(w,h),g=c.getContext(
   for(let i=0;i<a.length;i+=4){if(!a[i+3])continue;const r=a[i]/255,gg=a[i+1]/255,b=a[i+2]/255,mx=Math.max(r,gg,b),mn=Math.min(r,gg,b),dl=mx-mn;if(dl<.08)continue;let hh=mx===r?((gg-b)/dl)%6:mx===gg?(b-r)/dl+2:(r-gg)/dl+4;hh*=60;if(hh<0)hh+=360;
     if(hh<230||hh>335)continue;hh=(hh+deg+360)%360;const C2=dl,X=C2*(1-Math.abs((hh/60)%2-1)),m=mn;let rr,g2,bb;const k=(hh/60)|0;[rr,g2,bb]=[[C2,X,0],[X,C2,0],[0,C2,X],[0,X,C2],[X,0,C2],[C2,0,X]][k%6];a[i]=(rr+m)*255;a[i+1]=(g2+m)*255;a[i+2]=(bb+m)*255}
   g.putImageData(d,0,0);return c}
-ENAMES.forEach((n,k)=>{const im=new Image();im.onload=()=>{const cw0=im.width/8,ch0=im.height,sc=EH[k]/128,cw=Math.max(1,Math.round(cw0*sc)),ch=Math.max(1,Math.round(ch0*sc)),c=mk(im.width,ch0);c.getContext('2d').drawImage(im,0,0);const st=boxDown(c,im.width,ch0,cw*8,ch);
-  const A={s:st,wh:tintCv(st,'#ffffff'),rd:tintCv(st,'#ff4a3a'),cw,ch,hue:k===0?[0,-100,115,45,-45].map(d=>d?hueCv(st,d):st):null};const go=()=>{if(ESPR[k])ESPR[k].an=A;else setTimeout(go,200)};go()};im.onerror=()=>{};im.src='enemies/anim/'+n+'.png?v=1'});
-ENAMES.forEach((n,k)=>{const im=new Image();im.onload=()=>{const c=mk(im.width,im.height);c.getContext('2d').drawImage(im,0,0);const h=EH[k],w=Math.max(1,Math.round(im.width*h/im.height)),sc=boxDown(c,im.width,im.height,w,h);
+ENAMES.forEach((n,k)=>{const im=new Image();im.onload=()=>{const cw0=im.width/8,ch0=im.height,sc=EH[k]/128,cw=Math.max(1,Math.round(cw0*sc)),ch=Math.max(1,Math.round(ch0*sc)),q=Q,cq=Math.round(cw*q),hq=Math.round(ch*q),c=mk(im.width,ch0);c.getContext('2d').drawImage(im,0,0);const st=boxDown(c,im.width,ch0,cq*8,hq);
+  const A={s:st,wh:tintCv(st,'#ffffff'),rd:tintCv(st,'#ff4a3a'),cw,ch,kq:cq/cw,kh:hq/ch,hue:k===0?[0,-100,115,45,-45].map(d=>d?hueCv(st,d):st):null};const go=()=>{if(ESPR[k])ESPR[k].an=A;else setTimeout(go,200)};go()};im.onerror=()=>{};im.src='enemies/anim/'+n+'.png?v=1'});
+ENAMES.forEach((n,k)=>{const im=new Image();im.onload=()=>{const c=mk(im.width,im.height);c.getContext('2d').drawImage(im,0,0);const h=EH[k],w=Math.max(1,Math.round(im.width*h/im.height)),sc=boxDown(c,im.width,im.height,Math.round(w*Q),Math.round(h*Q));
   ESPR[k]={s:sc,wh:tintCv(sc,'#ffffff'),rd:tintCv(sc,'#ff4a3a'),w,h,st:k===0?[0,-100,115,45,-45].map(d=>d?hueCv(sc,d):sc):null}};im.src='enemies/'+n+'.png?v=1'});
 // Enemy motion: painted sprites are single poses, so movement is sold with a per-kind gait driven by distance walked
 // (hop/stomp/float, squash on landing, rocking, lean into travel, smooth turn-around, pop-in on spawn, wind-up on attacks)
@@ -1848,18 +1848,18 @@ function drawESpr(e,x,yb,sq,hitc,kind){const S=ESPR[kind],G=GAIT[kind];let img=S
     else fi=moving||G.ty===2?Math.floor(e._ph*4)%4:0}
   const bx=x,by=yb-Math.round(hop);
   if(A){const src=hitc?A.wh:(kind===3&&e.st===2&&Math.sin(tAll*30)>0)?A.rd:A.hue?A.hue[Math.min(A.hue.length-1,Math.floor(T/150))]:A.s,cw=A.cw,ch=A.ch;
-    if(kind===0&&!hitc){lg.globalAlpha=.25;lg.save();lg.translate(bx-(e._fs<0?-4:4),by+2);lg.scale(fs*sx*.95,sy*.95);lg.drawImage(src,fi*cw,0,cw,ch,-(cw>>1),-ch+1,cw,ch);lg.restore();lg.globalAlpha=1}
-    lg.save();lg.translate(bx,by);lg.rotate(rot);lg.scale(fs*sx,sy);lg.drawImage(src,fi*cw,0,cw,ch,-(cw>>1),-ch+1,cw,ch);lg.restore()}
+    if(kind===0&&!hitc){lg.globalAlpha=.25;lg.save();lg.translate(bx-(e._fs<0?-4:4),by+2);lg.scale(fs*sx*.95,sy*.95);lg.drawImage(src,fi*cw*A.kq,0,cw*A.kq,ch*A.kh,-(cw>>1),-ch+1,cw,ch);lg.restore();lg.globalAlpha=1}
+    lg.save();lg.translate(bx,by);lg.rotate(rot);lg.scale(fs*sx,sy);lg.drawImage(src,fi*cw*A.kq,0,cw*A.kq,ch*A.kh,-(cw>>1),-ch+1,cw,ch);lg.restore()}
   else{
-  if(kind===0&&!hitc){lg.globalAlpha=.25;lg.save();lg.translate(bx-(e._fs<0?-4:4),by+2);lg.rotate(rot*.6);lg.scale(fs*sx*.95,sy*.95);lg.drawImage(img,-(S.w>>1),-S.h+1);lg.restore();lg.globalAlpha=1}
-  lg.save();lg.translate(bx,by);lg.rotate(rot);lg.scale(fs*sx,sy);lg.drawImage(img,-(S.w>>1),-S.h+1);lg.restore()}
+  if(kind===0&&!hitc){lg.globalAlpha=.25;lg.save();lg.translate(bx-(e._fs<0?-4:4),by+2);lg.rotate(rot*.6);lg.scale(fs*sx*.95,sy*.95);lg.drawImage(img,-(S.w>>1),-S.h+1,S.w,S.h);lg.restore();lg.globalAlpha=1}
+  lg.save();lg.translate(bx,by);lg.rotate(rot);lg.scale(fs*sx,sy);lg.drawImage(img,-(S.w>>1),-S.h+1,S.w,S.h);lg.restore()}
   const eyeH=S.h*(kind===5?.62:kind===1?.72:kind===3?.42:.6)*sy;
   if(kind===0||kind===1||kind===3||kind===5){eg.globalAlpha=.55+.25*Math.sin(now*6+e.id);const ex=bx+Math.sin(rot)*eyeH,ey=Math.round(by-eyeH);eg.fillStyle=kind===5?'#ff7a1a':'#ffd23a';eg.fillRect(Math.round(ex)-2,ey,4,2);eg.globalAlpha=1}
   if(kind===3){const spc=e.st===2?'#ffffff':'#ff9a3a',fx=bx+(e.f<0?1:-1)*Math.round(S.w*.22*sx),fy=by-Math.round(S.h*sy)+2;eg.fillStyle=spc;const z2=rnd()<.5?3:2;eg.fillRect(fx-1,fy-1,z2,z2);if(rnd()<.3&&parts.length<490)parts.push({x:fx-ox,y:fy-oy,vx:(rnd()-.5)*30,vy:-20-rnd()*20,life:.25,max:.25,col:spc,em:true,sz:1})}
   return hop}
 // death pop: the painted sprite flashes white, bursts wide and fades (local only, from the replicated kill event)
-function drawEDie(s){const S=ESPR[s.kind];if(!S)return;const k=s.t/s.life,x=Math.round(s.x+ox),y=Math.round(s.y+oy);lg.save();lg.globalAlpha=Math.max(0,1-k);lg.translate(x,y);lg.scale((s.f<0?-1:1)*(1+k*.5),1-k*.55);lg.drawImage(S.wh,-(S.w>>1),-S.h+1);lg.restore();
-  eg.save();eg.globalAlpha=Math.max(0,.6-k);eg.translate(x,y);eg.scale((s.f<0?-1:1)*(1+k*.7),1-k*.5);eg.drawImage(S.wh,-(S.w>>1),-S.h+1);eg.restore()}
+function drawEDie(s){const S=ESPR[s.kind];if(!S)return;const k=s.t/s.life,x=Math.round(s.x+ox),y=Math.round(s.y+oy);lg.save();lg.globalAlpha=Math.max(0,1-k);lg.translate(x,y);lg.scale((s.f<0?-1:1)*(1+k*.5),1-k*.55);lg.drawImage(S.wh,-(S.w>>1),-S.h+1,S.w,S.h);lg.restore();
+  eg.save();eg.globalAlpha=Math.max(0,.6-k);eg.translate(x,y);eg.scale((s.f<0?-1:1)*(1+k*.7),1-k*.5);eg.drawImage(S.wh,-(S.w>>1),-S.h+1,S.w,S.h);eg.restore()}
 function drawEnemy(e){if(e.dummy){drawDummy(e);return}const x=Math.round(e.x+ox)+(e.hit>0.04?(Math.floor(tAll*60)%2?1:-1):0),y=Math.round(e.y+oy),z=Math.round(e.z);const kind=e.kind,big=kind===1||kind>=4;
   if(e.spawn>0){const k=clamp(1-e.spawn/(big?1.2:.7),0,1),s=kind===5?3:kind===4?2.2:big?2:1;lg.fillStyle='rgba(8,6,15,'+(.4+.5*k)+')';lg.beginPath();lg.ellipse(x,y,(3+6*k)*s,(1+2*k)*s,0,0,TAU);lg.fill();for(let i=0;i<3*s;i++)lg.fillRect(x-3*s+i*3,y-Math.round(k*7*s*Math.abs(Math.sin(tAll*9+i))),1,Math.round(k*7*s));if(rnd()<.3){eg.fillStyle=C.red;eg.fillRect(x+(rnd()*6|0)-3,y-2,1,1)}return}
   const w=Math.sin(e.t*10)>0?1:0,sq=e.sq||0,hitc=e.hit>0,EP=kind===0?STAGEPAL[Math.min(STAGEPAL.length-1,Math.floor(T/150))]:EPAL[kind];const body=hitc?'#ffffff':EP.m,edge=hitc?'#ffffff':EP.o;const sc=kind===5?3.2:kind===4?2.4:kind===1?2:1;
@@ -2336,11 +2336,12 @@ function atmos(){if(!NEWFX||mode!=='play')return;const dt=Math.min(.1,tAll-(atmo
   const it=tAll-irisT,m=PFXM.iris;if(m&&it>=0&&it<(m.n-15)*m.fd)pfxScr('iris',1,Math.min(m.n-1,15+((it/m.fd)|0)))}
 function render(){pfxBN=0;
   ox=Math.round(lw/2)-Math.round(cam.x)+Math.round(shk.x);oy=Math.round(lh/2)-Math.round(cam.y)+Math.round(shk.y);
+  lg.setTransform(Q,0,0,Q,0,0);eg.setTransform(Q,0,0,Q,0,0);lg.imageSmoothingEnabled=eg.imageSmoothingEnabled=false;
   eg.clearRect(0,0,lw,lh);hiQ=[];HOLO.length=0;bg();world();
   const inGame=mode==='play'||mode==='pick'||mode==='end';
   if(inGame){const list=[];for(const p of PROPS)list.push({y:p.y,d:()=>drawProp(p)});for(const e of en)list.push({y:e.y,d:()=>drawEnemy(e)});for(const c of chars)list.push({y:c.y,d:()=>drawChar(c)});list.sort((a,b)=>a.y-b.y);for(const o of list)o.d();effects();atmos()}
   else for(const p of PROPS)drawProp(p);
-  {const me0=meC(),lowHp0=inGame&&me0&&me0.state==='ok'&&me0.hp/me0.max<.3;lg.save();lg.setTransform(1,0,0,1,0,0);lg.globalAlpha=1;
+  {const me0=meC(),lowHp0=inGame&&me0&&me0.state==='ok'&&me0.hp/me0.max<.3;lg.save();lg.setTransform(Q,0,0,Q,0,0);lg.globalAlpha=1;
     for(let i=0;i<2;i++){const a=-Math.PI/2+Math.sin(tAll*.3+i*2.1)*.55,bx=(i?.85:.15)*lw,by=lh*1.05,Ln=Math.max(lw,lh)*1.6;const g=lg.createLinearGradient(bx,by,bx+Math.cos(a)*Ln,by+Math.sin(a)*Ln);g.addColorStop(0,'rgba(180,170,255,.09)');g.addColorStop(1,'rgba(180,170,255,0)');lg.fillStyle=g;lg.beginPath();lg.moveTo(bx,by);lg.lineTo(bx+Math.cos(a-.06)*Ln,by+Math.sin(a-.06)*Ln);lg.lineTo(bx+Math.cos(a+.06)*Ln,by+Math.sin(a+.06)*Ln);lg.closePath();lg.fill()}
     lg.drawImage(VIG,0,0);if(lowHp0){const v=lg.createRadialGradient(lw/2,lh/2,Math.min(lw,lh)*.35,lw/2,lh/2,Math.max(lw,lh)*.75);v.addColorStop(0,'rgba(90,6,24,0)');v.addColorStop(1,'rgba(90,6,24,'+(.45+.15*Math.sin(tAll*6))+')');lg.fillStyle=v;lg.fillRect(0,0,lw,lh)}lg.restore()}
   ctx.setTransform(1,0,0,1,0,0);ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1;ctx.imageSmoothingEnabled=false;
