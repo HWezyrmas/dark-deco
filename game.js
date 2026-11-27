@@ -41,7 +41,7 @@ const WALK=[...ROOFS,BRIDGE,BRIDGE2],FACE=120;
 function walkable(x,y){for(const r of WALK){const br=r===BRIDGE||r===BRIDGE2;if(br&&DIVON)continue;const m=br?-8:4;if(x>r.x+m&&x<r.x+r.w-m&&y>r.y+6&&y<r.y+r.h-3)return true}return false}
 {const R=rng(5);for(const r of ROOFS){r.win=[];for(let x=r.x+3;x<r.x+r.w-3;x+=6)for(let y=8;y<FACE-24;y+=7)if(R()<.12)r.win.push([x,y,R()<.6?C.cyan:C.pink,.3+R()*.6])}}
 const PROPS=[{k:'pylon',x:10,y:12,c:C.cyan},{k:'pylon',x:430,y:12,c:C.pink},{k:'pylon',x:10,y:466,c:C.pink},{k:'pylon',x:430,y:466,c:C.cyan},
-  {k:'pylon',x:530,y:48,c:C.cyan},{k:'pylon',x:750,y:436,c:C.pink},{k:'pylon',x:530,y:436,c:C.cyan},{k:'hut',x:62,y:26},{k:'sign',x:200,y:16},{k:'tower',x:372,y:30},{k:'x_tree',x:290,y:22},{k:'spire',x:132,y:14},{k:'gargoyle',x:16,y:250},{k:'gargoyle',x:426,y:300},{k:'x_junk',x:380,y:205},{k:'crates',x:72,y:410},{k:'x_rubble',x:220,y:462},{k:'x_junk',x:340,y:440},{k:'antenna',x:700,y:66},{k:'tower',x:600,y:58},{k:'spire',x:752,y:240},{k:'x_tree',x:640,y:310},{k:'crates',x:700,y:420},{k:'x_rubble',x:600,y:432},{k:'gargoyle',x:528,y:240}];
+  {k:'pylon',x:530,y:48,c:C.cyan},{k:'pylon',x:750,y:436,c:C.pink},{k:'pylon',x:530,y:436,c:C.cyan},{k:'hut',x:62,y:26},{k:'sign',x:200,y:16},{k:'tower',x:372,y:30},{k:'chimney',x:290,y:22},{k:'spire',x:132,y:14},{k:'gargoyle',x:16,y:250},{k:'gargoyle',x:426,y:300},{k:'vent',x:380,y:205},{k:'crates',x:72,y:410},{k:'planter',x:220,y:462},{k:'vent',x:340,y:440},{k:'antenna',x:700,y:66},{k:'tower',x:600,y:58},{k:'spire',x:752,y:240},{k:'chimney',x:640,y:310},{k:'crates',x:700,y:420},{k:'planter',x:600,y:432},{k:'gargoyle',x:528,y:240}];
 const TOW=[[],[]];{const R=rng(9);for(let L=0;L<2;L++){for(let i=0;i<(L?30:46);i++)TOW[L].push({x:-600+R()*2100,w:(L?26:14)+R()*(L?36:22),h:(L?90:60)+R()*(L?140:90),steps:1+(R()*3|0),ant:R()<.4,seed:R()*1000|0,neon:R()<.5?C.cyan:C.pink});TOW[L].sort((a,b)=>a.h-b.h)}}
 
 /* ================= audio ================= */
@@ -1684,7 +1684,7 @@ function staticWorld(){
     lg.fillStyle=C.sky1;for(let i=6;i<b.w-8;i+=18){lg.fillRect(x+i,y+b.h+7,12,9);lg.fillRect(x+i+1,y+b.h+6,10,1)}lg.fillStyle=C.lip;lg.fillRect(x,y,b.w,1);lg.fillRect(x,y+b.h-1,b.w,1);
     for(let i=4;i<b.w;i+=8){lg.fillStyle=C.goldD;lg.fillRect(x+i,y+13,3,1);lg.fillRect(x+i+1,y+12,1,1);lg.fillRect(x+i+1,y+14,1,1)}}
   for(const r of ROOFS){const x=r.x+ox,y=r.y+oy,RR=rng((r.x*7+r.y*13)|0);lg.fillStyle=C.roof;lg.fillRect(x,y,r.w,r.h);
-    if(FLOOR.complete&&FLOOR.naturalWidth){lg.save();lg.fillStyle=lg.createPattern(FLOOR,'repeat');lg.translate(x,y);lg.fillRect(0,0,r.w,r.h);lg.restore();overgrowRoof(r,x,y)}else
+    if(FLOOR.complete&&FLOOR.naturalWidth){lg.save();lg.fillStyle=lg.createPattern(FLOOR,'repeat');lg.translate(x,y);lg.fillRect(0,0,r.w,r.h);lg.restore()}else
     for(let j=0,tj=0;j<r.h;j+=12,tj++)for(let i=0,ti=0;i<r.w;i+=16,ti++){const v=RR();lg.fillStyle=(ti+tj)%2?'#4c4966':'#423f5b';if(v<.12)lg.fillStyle='#3b3852';lg.fillRect(x+i,y+j,16,12);lg.fillStyle='rgba(255,255,255,.06)';lg.fillRect(x+i,y+j,16,1);lg.fillStyle='#2c2942';lg.fillRect(x+i+15,y+j,1,12);lg.fillRect(x+i,y+j+11,16,1);
       if(v>.93){lg.fillStyle='rgba(20,16,36,.35)';lg.fillRect(x+i+3+((v*97)|0)%8,y+j+3+((v*53)|0)%5,3,2)}
       if(ti%4===0&&tj%3===0&&ti>0&&tj>0){const cx=x+i,cy=y+j;lg.fillStyle=C.goldD;lg.fillRect(cx-2,cy,5,1);lg.fillRect(cx,cy-2,1,5);lg.fillRect(cx-1,cy-1,3,3);lg.fillStyle=C.gold;lg.fillRect(cx,cy,1,1)}}
@@ -1697,12 +1697,7 @@ function staticWorld(){
 // painted roof floor (sheet H), squashed to the 3/4 camera; the static world is rebuilt once it loads
 const FLOOR=new Image();FLOOR.onload=()=>{STW=null};FLOOR.src='floor/roof.png?v=1';
 const SCRAP={};{const im=new Image();im.onload=()=>{const c=mk(im.width,im.height);c.getContext('2d').drawImage(im,0,0);for(const [k,w] of [['s',8],['b',12]]){const h=Math.max(1,Math.round(im.height*w/im.width));SCRAP[k]=boxDown(c,im.width,im.height,w,h)}};im.src='art/base/25-pickup-scrap.png'}
-// overgrowth on the roofs (zombie pivot art, art/base): flat marks only (moss, cracks, puddles, leaves, roots), nothing that looks solid
-const OVG=[];{const L=[['31-decals-overgrowth',[5,6,7,12]],['32-decals-damage',[0,3,4,5,7,10,13,15]]];let n=0;for(const [d,ids] of L)for(const i of ids){const im=new Image();im.onload=()=>{OVG.push(im);if(++n>=12)STW=null};im.src='art/base/'+d+'/'+String(i).padStart(2,'0')+'.png'}}
-function overgrowRoof(r,x,y){const R2=rng((r.x*31+r.y*17)|0);lg.save();lg.globalAlpha=.16;lg.fillStyle='#2f5a2a';lg.fillRect(x,y,r.w,r.h);lg.globalAlpha=1;
-  if(OVG.length){const n=Math.round(r.w*r.h/1500);lg.imageSmoothingEnabled=true;for(let i=0;i<n;i++){const im=OVG[(R2()*OVG.length)|0],sz=10+R2()*14,s2=sz/Math.max(im.width,im.height),w=im.width*s2,h=im.height*s2,px=x+10+R2()*(r.w-20)-w/2,py=y+10+R2()*(r.h-20)-h/2;lg.globalAlpha=.38+R2()*.2;lg.drawImage(im,px,py,w,h)}lg.imageSmoothingEnabled=false;lg.globalAlpha=1}
-  for(let i=0;i<r.w*r.h/90;i++){const ex=R2()<.6,px=ex?(R2()<.5?x+R2()*14:x+r.w-R2()*14):x+R2()*r.w,py=y+R2()*r.h;lg.fillStyle=R2()<.5?'#3e6b2e':'#2c5124';lg.fillRect(px|0,py|0,1+(R2()*2|0),1)}
-  lg.restore()}
+
 function buildStatic(){STW=mk(820,660);STE=mk(820,660);const sl=lg,se=eg,a=ox,b=oy;lg=STW.getContext('2d');eg=STE.getContext('2d');ox=STX;oy=STY;staticWorld();lg=sl;eg=se;ox=a;oy=b}
 function world(){
   if(!STW)buildStatic();for(const r of ROOFS)eg.clearRect(Math.round(r.x+ox),Math.round(r.y+oy-9),r.w,r.h+9+FACE);for(const r of [BRIDGE,BRIDGE2])eg.clearRect(Math.round(r.x+ox),Math.round(r.y+oy),r.w,r.h+16);lg.drawImage(STW,ox-STX,oy-STY);eg.drawImage(STE,ox-STX,oy-STY);
@@ -1791,7 +1786,7 @@ function drawThreats(){drawWP();drawAim();drawAltars();
     lg.globalAlpha=eg.globalAlpha=1;lg.lineWidth=eg.lineWidth=1}}
 function domeScale(){if(!dome)return 0;const t=dome.t;if(t<.22){const k=t/.22;return k*(1.2-.2*k)}if(dome.life-t<.3)return Math.max(0,(dome.life-t)/.3);return 1+.03*Math.sin(tAll*6)}
 // painted rooftop props (sheet G): drawn bottom-centred; bright pixels also go to the emissive layer so lamps and neon glow
-const PW={x_tree:46,x_junk:40,x_rubble:46};const PH={x_tree:1,x_junk:1,x_rubble:1,pylon_c:30,pylon_p:30,vent:22,tower:58,gargoyle:30,spire:40,sign:36,crates:28,chimney:40,antenna:34,planter:28,hut:44},PSPR={};
+const PW={};const PH={pylon_c:30,pylon_p:30,vent:22,tower:58,gargoyle:30,spire:40,sign:36,crates:28,chimney:40,antenna:34,planter:28,hut:44},PSPR={};
 for(const n in PH){const im=new Image();im.onload=()=>{const c=mk(im.width,im.height);c.getContext('2d').drawImage(im,0,0);let h=PH[n],w=Math.max(1,Math.round(im.width*h/im.height));if(PW[n]){w=PW[n];h=Math.max(1,Math.round(im.height*w/im.width))}const sc=boxDown(c,im.width,im.height,w,h);
   const em=mk(w,h),g=em.getContext('2d');g.drawImage(sc,0,0);const d=g.getImageData(0,0,w,h),a=d.data;for(let i=0;i<a.length;i+=4){const l=.3*a[i]+.59*a[i+1]+.11*a[i+2],mx=Math.max(a[i],a[i+1],a[i+2]);if(!(l>175||mx>235&&l>120))a[i+3]=0}g.putImageData(d,0,0);
   PSPR[n]={s:sc,em,w,h}};im.src='props/'+n+'.png?v=1'}
