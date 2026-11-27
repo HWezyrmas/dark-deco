@@ -35,7 +35,7 @@ Full documentation (gameplay, every system, ability catalog, pipelines, decision
 - The Divide (T=290 and 515): bridges burn for 35s, heroes split. "Not Without You": each hero holds one Memory per Divide that auto-saves the partner from going down.
 - Pace (27 Nov 2026): `EPACK` (pack size x.55), `ETOUGH` (normal enemy HP x1.4), `EPACE` (walk speed x.85) next to `EK`; XP per kill is back to the original values (doubling it made levels come too fast; Hamza 27 Nov), so runs end around level 21-22 instead of 29. Ability effects are faded by `FXQ` (.62) and capped in `pfxPush`; `FXKEEP` lists effects that stay full strength (basic swings, warnings, revives, the `zburst` death burst).
 - Zombie-pivot art in the original game: only the scrap pickup sprite (`SCRAP`) and the `zburst` death burst. The ChatGPT props and floor marks were removed (27 Nov): they are isometric and painted, which looks skewed and mushy on the straight-on, low-resolution roofs.
-- Executioner: Blood Boil stacks from kills (cap 50, decays after 6s); Grand Verdict spends them (up to 2.5x damage). Grand Verdict uses `sprites/warden/grand/east.png`.
+- Executioner: Judgement Dome (27 Nov): enemies may walk into the dome (no more shove); inside they are slowed, take +30% damage, the Executioner executes them under 30% (in `hitE`), kills inside give +2 Blood Boil, Last Rites/Death Knell thresholds +10% inside, Iron Skin recharges 2x inside. Executioner path abilities get x1.45 damage (`SPECB` in `AP`). Blood Boil stacks from kills (cap 50, decays after 6s); Grand Verdict spends them (up to 2.5x damage). Grand Verdict uses `sprites/warden/grand/east.png`.
 
 ## Effects (PixelFX)
 - `NEWFX` switch (localStorage `dd_fx`, "Effects: New/Classic" button) keeps the classic effects as a fallback.
