@@ -672,7 +672,7 @@ function hitE(e,base,src,o={}){if(!alive(e))return false;if(o.w&&QUIETW.has(o.w)
 const BB_MAX=50;
 function killE(e,dir){if(e===boss)rlEv('bosskill');e.dead=true;kills++;{const k=e.ls;if(k&&k.spec==='exec'&&k.state==='ok'){const was=k.bb|0;k.bb=Math.min(BB_MAX,was+(e.exK?3:2)+(e.kind===1||e.kind>=4?3:0));k.bbT=T;if(was<BB_MAX&&k.bb>=BB_MAX)emit('msgP',k.idx,'Blood Boil maxed: Grand Verdict at full power','His Blood Boil is maxed')}}
   if(e.burn>0&&chars.some(q=>q.spec==='fire'))for(const c of chars)if(c.state==='ok'&&len(c.x-e.x,c.y-e.y)<85)healP(c,c.cls==='warden'?2:1.4,false);if(e.ls&&e.ls.moonT>0)healP(e.ls,1.2,false);if(e.ls&&e.ls.carnP&&e.ls.weapons&&e.ls.weapons.some(w=>w.id==='carnage'))carnage(e.ls,e);if(e.ls&&e.ls.weapons&&e.ls.weapons.some(w=>w.id==='blood'))e.ls.bloodK=(e.ls.bloodK||0)+1;if(e.kind===4)gems.push({x:e.x,y:e.y,v:0,chest:1,vx:0,vy:0,hold:.6});const big=e.kind===1||e.kind>=4;emit('pfx','zburst',r1(e.x),r1(e.y+3),big?.42:.24);emit('kill',e.x,e.y-6-e.z,big?1:0,dir,(e.lw&&WCOL[e.lw])||null,e.kind,e.f);emit('ink',e.x,e.y,big?1:0);
-  const v=[2,10,4,4,30,0][e.kind];for(let i=0;i<(e.kind===4?6:1);i++)if(v)gems.push({x:e.x+(i?(rnd()-.5)*20:0),y:e.y+(i?(rnd()-.5)*10:0),v:e.kind===4?5:v,vx:0,vy:0,hold:.3,life:16});
+  const v=[1,6,2,2,30,0][e.kind];for(let i=0;i<(e.kind===4?6:1);i++)if(v)gems.push({x:e.x+(i?(rnd()-.5)*20:0),y:e.y+(i?(rnd()-.5)*10:0),v:e.kind===4?5:v,vx:0,vy:0,hold:.3,life:16});
   {const hn=gems.filter(g=>g.heart).length,nh=e.kind>=4?2:(rnd()<(e.kind===1?.12:.009)&&hn<3?1:0);for(let i=0;i<nh;i++)gems.push({x:e.x+(rnd()-.5)*24,y:e.y+(rnd()-.5)*14,v:0,heart:1,vx:0,vy:0,hold:.4,life:25})}
   if(e.kind===3)bomberBlast(e,true);
   if(e.kind===4)emit('pfx','darkexp',r1(e.x),r1(e.y),.4);
