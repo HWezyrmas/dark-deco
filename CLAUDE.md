@@ -69,6 +69,6 @@ Full documentation (gameplay, every system, ability catalog, pipelines, decision
 - Grand Verdict frames 4-12 show him without armor (PixelLab glitch); swap in a regenerated strip when he sends it (17 frames, 128x128, impact on frame 12).
 - On hold (roadmap: no new abilities until playtests): his picks from the "New Spec Abilities to Choose From" doc; build them later with icon prompts.
 - **Story and dialogue are placeholders** (intro, prologue, lines, Foreman, portraits, story stills): a test only, to be fully reworked with Hamza. Don't treat them as canon or expand them.
-- Base mode and environment art: `docs/art/BASE_ASSETS.md` (ChatGPT prompts 0-46). Hamza sends files named by number; they go in `art/base/`. Tell him which are missing when base or environment work comes up.
+- Base mode and environment art: `docs/art/BASE_ASSETS.md` (ChatGPT prompts 0-46) and `docs/art/CHATGPT_BRIEF.md` (the same list as a self-running brief he uploads to ChatGPT). Hamza sends files named by number; they go in `art/base/`. Tell him which are missing when base or environment work comes up.
 - **Zombie pivot** (27 Nov 2026): Raid mode (the current run) + Base mode (prototype in `proto/base/index.html`, standalone, uses repo assets via `../../`). See `docs/ROADMAP.md`.
 - Next phase: level design. Real two-phone testing over mobile data is still worth doing.
