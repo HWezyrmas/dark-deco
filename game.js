@@ -302,6 +302,7 @@ const FXF={
   wisp(pts,evo,dl){spx.push({k:'wisp',pts,evo,t:-(dl||0),life:(pts.length/2-1)*.2+.45})},
   imp(n,x,y,h,dur){if(NEWFX&&PFXMAP[n]){const [k,f]=PFXMAP[n];pfxPush(k,x,y,h*f/PFXM[k].h);return}if(n==='eshock'){if(NEWFX)return;n='shock'}if(n==='fwall')n='fire';impFx(n,x,y,h,dur)},
   pfx(k,x,y,sc,flip,st,rot){pfxPush(k,x,y,sc,flip,st,1,rot)},
+  pfxa(k,x,y,sc,st,al){pfxPush(k,x,y,sc,false,st,al,0)},
   story(k,b){if(!SCRIPT[k]||!window.DLG)return;if(k==='pro7'){try{localStorage.setItem('dd_prologue_done','1')}catch(_){}}DLG.play(SCRIPT[k](),{bark:!!b},()=>{if(isHost&&STORY.cb){const f=STORY.cb;STORY.cb=null;f()}})},
   obj(t){const o=$('obj');if(!o)return;if(!t){o.hidden=true;return}if(o.textContent!==t){o.textContent=t;o.hidden=false;o.classList.remove('pop');void o.offsetWidth;o.classList.add('pop')}},
   wp(x,y){WP=x||y?[x,y]:null},
@@ -822,7 +823,7 @@ function axeThrow(c,aim,k){k=Math.max(0,Math.min(1,k||0));const w=execW(c),L=lvm
   for(const e of en){if(!alive(e))continue;const px=e.x-x0,py=e.y-c.y,al=(px*sx+py*sy)/sl,pp=Math.abs(px*sy-py*sx)/sl;if(al<0||al>sl-IR*.6||pp>10+12*sc+rad(e)*.5)continue;
     later.push({t:ft*al/sl,f:()=>{if(alive(e))hitE(e,pass,c,{w:'axethrow',kx:D[0]*160,ky:D[1]*110,up:60,col:'#ff7a2a',dir:Math.atan2(D[1],D[0]),frz:.06})}})}
   later.push({t:ft,f:()=>{emit('sfx','slam');emit('sfx','boom');emit('big',.25+.3*k,1.04+.03*k,k>.8?.06:0,4+4*k);emit('shake',0,1,3.5+4*k,null);
-    emit('pfx','lavaimp',r1(x1),r1(y1+4),r2(IR*2.6/100),false,0);emit('wave',x1,y1,.45,IR*1.6,'#ff7a2a',4,0);emit('crack',x1,y1,'#ff7a2a');emit('puff',x1,y1,14+16*k,'#ff8a3a',110,.5,true,10,1);
+    emit('pfx','lavaimp',r1(x1),r1(y1+4),r2(IR*2/100),false,0);emit('pfxa',k<.6?'boom':'bigboom',r1(x1),r1(y1+4),r2(k<.6?IR*2.2/150:IR*2.6/220),0,1.6);emit('pfxa','firering',r1(x1),r1(y1+3),r2(IR*2.2/170),-.05,1.4);if(k>=.95)emit('pfxa','fpillar',r1(x1),r1(y1+2),.42,-.08,1.6);emit('wave',x1,y1,.45,IR*1.6,'#ff7a2a',4,0);emit('crack',x1,y1,'#ff7a2a');emit('puff',x1,y1,14+16*k,'#ff8a3a',110,.5,true,10,1);
     let ex=false;for(const e of en){if(!alive(e))continue;const dx=e.x-x1,dy=(e.y-y1)*1.4,d=len(dx,dy)||1;if(d>IR+rad(e)*.5)continue;const exe=e.kind!==5&&e.hp<e.max*.35;if(exe)ex=true;
       hitE(e,imp*(exe?3:1),c,{w:'axethrow',exec:exe,kx:dx/d*240,ky:dy/d*170,up:120,col:'#ff7a2a',dir:Math.atan2(dy,dx),frz:.1})}
     if(ex)emit('sfx','exec');addRage(c,8+10*k);
@@ -838,6 +839,7 @@ function drawLava(){for(const L of lavaV){const a=tAll-L.st;if(a>L.life)continue
     const gS=lg.createLinearGradient(0,y-r*.42,0,y+r*.12);gS.addColorStop(0,'rgba(12,4,2,.9)');gS.addColorStop(1,'rgba(12,4,2,0)');lg.fillStyle=gS;lg.fillRect(x-r,y-r*.45,r*2,r*.6);lg.restore();
     lg.globalAlpha=.6*fi;lg.strokeStyle='#6a3a24';lg.lineWidth=1;lg.beginPath();lg.ellipse(x,y+1,r*.93,r*.43,0,.2,Math.PI-.2);lg.stroke();
     eg.globalAlpha=.32*fi*pul;eg.fillStyle='#ff6a2a';eg.beginPath();eg.ellipse(x,y+2,r*.8,r*.34,0,0,TAU);eg.fill();lg.globalAlpha=eg.globalAlpha=1;
+    {const nF=2+Math.floor(r/18);for(let q=0;q<nF;q++){const a=L.seed*3+q*2.4,d=q?.55:0;pfxLoop('burnS',x+Math.cos(a)*r*d,y+2+Math.sin(a)*r*.32*d,.3+.12*(r/50),0,.85*fi,L.seed+q*.37)}}
     // splashes: single drops and the odd bloop of several
     const dt0=Math.min(.05,tAll-(L.lt||tAll));L.lt=tAll;const sp=(n)=>{for(let q=0;q<n;q++){const a=rnd()*TAU,d=Math.sqrt(rnd())*.7,sx=L.x+Math.cos(a)*r*d,sy=L.y+1+Math.sin(a)*r*.4*d,o=a+(rnd()-.5);lavaS.push({x:sx,y:sy,vx:Math.cos(o)*(8+rnd()*22),vy:Math.sin(o)*(5+rnd()*12),z:0,vz:45+rnd()*55,s:1+rnd()*1.4})}};
     if(rnd()<dt0*2.2*(r/36)*fi)sp(1);if(rnd()<dt0*.7*fi)sp(3+(rnd()*3|0));continue}}
@@ -2469,7 +2471,7 @@ function render(){pfxBN=0;
   if(inGame&&FXME){const m0=meC(),cx=DX+(m0.x+ox)*sc,cy=DY+(m0.y+oy)*sc,hy=DY+(m0.y-16+oy)*sc;ctx.save();const g=ctx.createRadialGradient(cx,hy,0,cx,hy,30*sc);g.addColorStop(0,'rgba(10,8,24,.38)');g.addColorStop(1,'rgba(10,8,24,0)');ctx.fillStyle=g;ctx.fillRect(cx-30*sc,hy-30*sc,60*sc,60*sc);ctx.globalAlpha=.85;ctx.strokeStyle=CL[m0.cls].color;ctx.lineWidth=Math.max(2,sc*.9);ctx.beginPath();ctx.ellipse(cx,cy+1*sc,12*sc,5*sc,0,0,TAU);ctx.stroke();ctx.restore()}// own-hero halo + ring: always findable (28 Nov)
   if(hiQ.length){ctx.save();ctx.imageSmoothingEnabled=false;ctx.setTransform(sc,0,0,sc,DX,DY);for(const q of hiQ)blit(ctx,...q);for(const o of chars){if(o.hiHead||o.state==='out'||!o._fb||o._fb[7]!==tAll||!(o.y>hiQ.ys))continue;const art=chars.find(q=>q.hiHead);if(art&&Math.abs(o.x-art.x)<34&&Math.abs(o.y-art.y)<40)blit(ctx,o.fin,...o._fb.slice(0,7))}ctx.restore();hiQ=[]}
   for(const c of chars){const k=c.axc||0;if(c.spec!=='exec'||c.state!=='ok'){c._full=0;continue}
-    if(k>=1&&!c._full){c._full=1;c._peakT=tAll;if(c.idx===ME)try{SFX.flare()}catch(_){}}else if(k<1&&!(c.thrT>tAll-.05))c._full=k>=1?1:0;
+    if(k>=1&&!c._full){c._full=1;c._peakT=tAll;pfxPush('firering',c.x,c.y+2,.3,false,0,1.6,0);if(c.idx===ME)try{SFX.flare()}catch(_){}}else if(k<1&&!(c.thrT>tAll-.05))c._full=k>=1?1:0;
     const pk=c._peakT?tAll-c._peakT:9;if(k<=0&&pk>.45)continue;const cx=DX+(c.x+ox)*sc,fy=DY+(c.y+oy)*sc,u=sc;ctx.save();ctx.globalCompositeOperation='lighter';
     if(k>0){const full=k>=1,pul=full?.75+.25*Math.sin(tAll*22):1,col=full?'255,210,122':'255,106,42';
       // glow column and ground ring that grow with the charge
