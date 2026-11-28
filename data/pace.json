@@ -1,0 +1,6 @@
+{
+ "pack_size_mult": 0.55,
+ "enemy_hp_mult": 1.4,
+ "enemy_speed_mult": 0.85,
+ "busy_cap": 55
+}

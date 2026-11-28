@@ -26,14 +26,14 @@
  "mirror": {
   "cls": "warden",
   "sp": "exec",
-  "name": "Mirror Dome",
-  "desc": "The Dome reflects bullets back as your own."
+  "name": "Heavy Head",
+  "desc": "Headsman's Throw: the axe is bigger and its impact and lava pool are 25% wider."
  },
  "longwatch": {
   "cls": "warden",
   "sp": "exec",
-  "name": "Long Watch",
-  "desc": "The Dome lasts 2 seconds longer."
+  "name": "Long Burn",
+  "desc": "Headsman's Throw: the lava pool burns 2 seconds longer."
  },
  "firebash": {
   "cls": "warden",

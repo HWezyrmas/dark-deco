@@ -10,7 +10,8 @@ This file sets the order of work. `docs/GODOT_PORT_PLAN.md` has the port details
   Look: same pixel-art style, swapped to an overgrown, abandoned city. Base mode is a calm builder (losing a night costs part of the base, not the run).
 - **Prototype:** `proto/base/` (live at https://hwezyrmas.github.io/dark-deco/proto/base/). Warden only, placeholder art (enemies tinted as zombies, props as buildings). Self-contained; reads assets from the repo root.
 - **No new abilities** until playtests show the current ones are understood and balanced (review: scope control).
-- **Before the port:** Phases 1 and 2 run on the web build. This is an exception to "web is bug fixes only": logging, the stress scene and readability fixes are allowed, new content is not.
+- **Port starts now (28 Nov 2026, Hamza).** Phase 2 readability and performance work is mostly done on the web build; Phase 1 playtests have not run yet and can continue on the live web build while the port is built. Start from `docs/PORT_KICKOFF.md`. The web build is frozen as the reference (bug fixes only).
+- **Before the port (original plan, 27 Nov):** Phases 1 and 2 run on the web build. This is an exception to "web is bug fixes only": logging, the stress scene and readability fixes are allowed, new content is not.
 
 ## What the review gets right / what we cut
 - Kept: validate the co-op loop with real pairs, combat readability under max effects, prove each co-op mechanic changes decisions, replayability (scored 6.5, the weakest area), balance tests, parity-first port.
@@ -29,6 +30,7 @@ Goal: learn from real players before porting. No new content.
 - [ ] **Claude:** turn the logs and notes into a prioritised findings list (comprehension, balance, friction, technical, engagement).
 
 ## Phase 2: Core fixes (web build)
+Done 27-28 Nov: ability paths (max 2 per run, clear next step, level pips), slower pace, quieter effects, a clear zone and ring for your own hero, partner effects dimmed to 35%, fluidity (wider view, sub-pixel motion, hit-stop/shake only on big moments), performance and auto quality, effect memory budget (fixed the 5-minute iPhone crash), Executioner rework (Headsman's Throw and lava).
 - Readability: one visual priority order (telegraphs, own hero, partner state, revive prompts first; ambient effects last); fade effects in crowds; reduced-effects setting; tune shake, damage numbers and telegraph contrast. Re-check with the stress scene.
 - Co-op contracts: one paragraph per mechanic (Bond, Rekindle, twin altars, Divide, Not Without You, Duo cards, partner abilities): what it should make players do, and whether the sessions showed it. Cut or redesign what players ignored.
 - Fix the top Phase 1 findings.

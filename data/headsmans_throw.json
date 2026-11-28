@@ -1,0 +1,16 @@
+{
+ "charge_seconds": 1.2,
+ "cooldown": 8,
+ "range": "80 + 110*charge",
+ "axe_scale": "0.55 + 0.75*charge",
+ "impact_radius": "24 + 30*charge",
+ "pass_damage": "(45 + 120*charge) * level_mult * spec_damage_bonus",
+ "impact_damage": "(100 + 280*charge) * level_mult * spec_damage_bonus, x3 and Execute under 35%",
+ "flight_seconds": "0.26 + range*0.0016",
+ "lava": {
+  "radius": "impact_radius*1.05",
+  "seconds": "3.5 + 2.5*charge",
+  "dps": "(18 + 30*charge) * level_mult * spec_damage_bonus, ticks every 0.5 s",
+  "judgement_zone": "slowed, +30% damage taken, Executioner executes under 30%, kill gives +2 Blood Boil, Last Rites/Death Knell +10%, Iron Skin recharges 2x"
+ }
+}

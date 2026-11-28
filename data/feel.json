@@ -1,0 +1,19 @@
+{
+ "view_game_px_short_side": 345,
+ "hitstop_min_request": 0.05,
+ "hitstop_max": 0.07,
+ "shake_min": 3.5,
+ "cast_move_mult": {
+  "cast": 0.8,
+  "verdict": 0.7,
+  "grand_verdict": 0.3
+ },
+ "ability_fx_alpha": 0.5,
+ "ability_fx_cap": 70,
+ "damage_numbers_cap": 14,
+ "partner_fx_alpha": 0.35,
+ "partner_flash_mult": 0.3,
+ "fx_memory_budget_mb": 140,
+ "clear_zone": "soft radial clear zone of 34 game px around your own hero: 60% of the pre-effects picture is laid back on top of effects",
+ "auto_quality": "below 80% of target fps for two 3 s windows: level 1 no bloom/atmosphere overlays; level 2 also fx cap 35, particles 140, damage numbers 8"
+}

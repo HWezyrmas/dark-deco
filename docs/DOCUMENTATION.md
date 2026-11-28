@@ -1,7 +1,7 @@
 # Dark Deco: full project documentation
 
 Everything needed to pick this project up in Claude Code (or anywhere else) without the original chat history.
-Last updated: 26 November 2026. Companion files: `CLAUDE.md` (the short working rules Claude Code loads automatically) and `docs/ability-matrix.html`.
+Last updated: 28 November 2026 (the Godot port starts from here: see `docs/PORT_KICKOFF.md`). Companion files: `CLAUDE.md` (the short working rules Claude Code loads automatically) and `docs/ability-matrix.html`.
 
 - **Live game:** https://hwezyrmas.github.io/dark-deco/
 - **Repo:** https://github.com/HWezyrmas/dark-deco (branch `main`, deployed to GitHub Pages by Actions on every push)
@@ -16,7 +16,7 @@ Dark Deco is a **two-player online co-op survivors-like for phones**, played in 
 
 - You move with a floating joystick. Basic attacks fire on their own; you dash and cast skills with buttons.
 - Combat runs on a **beat**: each hero takes one action every 0.5 seconds, and basic attacks are **3-step cycles** with a distinct third hit.
-- Killing enemies drops XP gems. Each level-up both players pick a card: a new ability, an upgrade, a passive or a team bonus.
+- Killing enemies drops XP (scrap). Each level-up both players pick a card: the next step of one of their **ability paths**, an upgrade, a passive or a team bonus.
 - Staying close fills a shared **Bond**; being apart drains it. Reuniting **Rekindles** (heals and empowers both).
 - Twice per run **the Divide** burns the bridges between the two rooftops: the heroes fight apart for 35 seconds. Each carries one **Memory** that saves the partner from going down ("Not Without You").
 - One phone **hosts** (runs the whole game), the other **joins** with a 4-letter code. There is no game server.
@@ -51,7 +51,7 @@ Each player picks a hero (Warden or Lamplighter) and a spec. In Solo you also pi
 | 11:00 | **The Foreman** (boss) arrives. Divides stop once he is out |
 | 12:00 | **Dawn**: victory |
 
-**Losing:** a hero at 0 HP goes **down** for 20 s. The partner revives them by standing next to them (2.5 s, longer after each down; twice as fast inside the Dome). If not revived they are **out** for 20 s and then respawn beside the partner. The run is lost when both heroes are down or out at the same time.
+**Losing:** a hero at 0 HP goes **down** for 20 s. The partner revives them by standing next to them (2.5 s, longer after each down). If not revived they are **out** for 20 s and then respawn beside the partner. The run is lost when both heroes are down or out at the same time.
 
 ### Bond and Rekindle
 The Bond bar fills when the heroes are close and drains when apart. Below 30% the game says "Apart, your bond fades" and the screen edges darken slightly. Coming back together above 55% **Rekindles**: both heal 20 and get Empowered for 3 s. Several cards and the healer's abilities only work at range of the partner.
@@ -64,10 +64,19 @@ During the Divide each hero carries **one Memory** (glowing two-hands icon, labe
 XP needed per level: `9 + 7*level + floor(0.4*level^2)`. Each level both players pick from their own offers:
 - **New ability** (rare) or **ability upgrade** (common). Abilities level 1 to 5: level 3 adds an extra effect, level 5 evolves it.
 - **Passives** (Might, Haste, Reach, Duration, Volley, Lodestone, Armor, Regeneration).
-- **Skill mods** (epic), e.g. Swift Judgement, Mirror Dome, Burning Leap, Second Dawn.
+- **Skill mods** (epic), e.g. Swift Judgement, Heavy Head, Burning Leap, Second Dawn.
 - **Team cards** (legendary), including **Duo** cards that combine one ability from each hero while they stand close.
 - Muse **gifts** and Broker **pacts** use the same card screen.
-A run reaches about level 25 to 30.
+A run reaches about level 21 to 22.
+
+**Ability paths (27 Nov 2026).** Each spec's abilities are grouped into 3-4 themed paths of 2-4 abilities (`PATHS`; data in `data/ability_paths.json`). A run follows at most 2 paths. A path's next ability unlocks once the previous one is level 2; after that the card raises the lowest. Level-up offers: the next step of each started path, path starts while under 2 paths, and one card from basics, passives, mods or team cards. Each level adds +30% damage; level 5 evolves the ability without needing a passive. The level-up screen shows tall framed cards with level pips, the exact change and the path step, then a Confirm button. The skills screen is grouped by path with what comes next.
+
+| Spec | Paths (abilities in order) |
+|---|---|
+| Berserker | Storm (shield, ravager, vortex) · Blood (blood, carnage, bloodmoon) · Thunder (slam, charge, thunder) · Warcry (shout, banner, wyrm) |
+| Executioner | Judgement (rites, guillotine, knell) · Chains (hook, hellchain, grip) · Earth (earth, obelisk) · Iron (riposte, legion) |
+| Healer | Prism (prism, chain, constellation) · Sanctuary (garden, halo, kite, clock) · Heaven (starfall, heaven, starwell) · Radiance (lighthouse, cranes, rose, aurora) |
+| Firebrand | Swarm (flies, moths, wisp) · Snare (candle, firewall, pyre) · Sky (lanterns, phoenix, fireworks) |
 
 ---
 
@@ -89,7 +98,8 @@ A run reaches about level 25 to 30.
 - Q Verdict: plant feet and cleave a wide arc, Executes under 35% (earth stomp effect).
 - RAGE **Grand Verdict**: a 1.15 s untouchable wind-up (custom PixelLab animation), then a slam all around him that Executes under 50%.
 - **Blood Boil**: kills stack it (+1, Execute +2, big enemies +3 more), cap 50, drains 2/s after 6 s without a kill. Grand Verdict spends all stacks: up to x2.5 damage, up to 45% wider, a ring of earth spikes at 15+, a dark blast at 35+, a burning explosion at 50. A red steam aura grows with the stacks; counter under the Rage bar.
-- E The Dome: a shield bubble for both heroes.
+- E **Headsman's Throw** (28 Nov 2026, replaced the Dome): hold to charge (1.2 s), drag to aim, release. He lifts the axe as it charges (a burst of flame when full), then throws it in an arc with a neon trail. It passes through enemies, lands with an explosion (bigger with charge, a flame pillar at full charge) that Executes under 35%, and leaves a sunk **lava pool** for 3.5-6 s. The lava is a judgement zone: enemies are slowed, take 30% more damage and are Executed under 30%; kills there give extra Blood Boil, Last Rites and Death Knell reach 10% higher, Iron Skin recharges twice as fast. Cooldown 8 s. Numbers in `data/headsmans_throw.json`.
+- Executioner path abilities deal x1.45 damage (`SPECB`).
 
 **Healer (Lamplighter): "Keep his light burning."**
 - AUTO Light Bolts: one fast bolt, twin bolts, then a fan of five piercing bolts. Bolts that pass through the Warden heal him.
@@ -176,7 +186,7 @@ A run reaches about level 25 to 30.
 
 ### Passives, mods, team cards
 - **Passives (`PAS`):** Might +12% damage/level; Haste 7% faster recharge/level; Reach 10% bigger/level; Duration 12% longer/level; Volley +1 projectile at levels 1, 3, 5; Lodestone 40% farther pickup/level; Armor 6% less damage/level; Regeneration 0.4 HP/s per level.
-- **Skill mods (`MODS`):** Swift Judgement, Long Charge, Wildfire, Hearth, Mirror Dome, Long Watch, Burning Leap, Quick Leap, Second Dawn, Bright Lance, Twin Step, Light Feet.
+- **Skill mods (`MODS`):** Swift Judgement, Long Charge, Wildfire, Hearth, Heavy Head, Long Burn (both for Headsman's Throw since 28 Nov; keys `mirror`, `longwatch`), Burning Leap, Quick Leap, Second Dawn, Bright Lance, Twin Step, Light Feet.
 - **Team cards (`PAIRS`):** Lit Steel, Kindred Flames, Witness, Lantern Ward, Bond of Light.
 - **Duo cards (`DUOS`)**, active while standing close: Ember Storm (Whirlwind + Fireflies), Lightning Rod (Thunder Clap + Spark Chain), Prismatic Axe (Hurled Axe + Prism), Sanctuary (War Banner + Glow Garden), Blood Phoenix (Blood Moon + Phoenix), Hellfire (Hellchains + Firewall), Verdict of Light (Guillotine + Rose Window), Doom Clock (Death Knell + Clockwork Halt).
 
@@ -193,7 +203,7 @@ A run reaches about level 25 to 30.
 | 4 | Gatekeeper | Elite at 4:00 and 8:00: telegraphed slams, drops a chest and big gems |
 | 5 | The Foreman | Boss at 11:00: slams, a charge, stone rain. A storm rolls in while he lives |
 
-Enemy HP scales with time (`hpMul = 1 + T/240 + (T/560)^2`) and their damage with `1 + T/540`. Packs spawn just off screen around a hero. Red markings on the floor always warn before a big hit.
+Enemy HP scales with time (`hpMul = 1 + T/240 + (T/560)^2`) and their damage with `1 + T/540`. Normal enemies (kinds 0-3) have x1.4 HP, packs are 55% size and walk speed is x0.85 (`EPACK`, `ETOUGH`, `EPACE`, 27 Nov: slower, clearer fights). Enemy sprites are drawn 25% bigger than their hitboxes. Packs spawn just off screen around a hero. Red markings on the floor always warn before a big hit.
 
 ---
 
@@ -239,14 +249,17 @@ Plain HTML, CSS and JavaScript, no build step, no framework, no server. Canvas 2
 7. `?local` replaces PeerJS with a BroadcastChannel so two tabs of one browser can play together (used by the tests).
 
 ### Rendering and performance
-- The world is drawn into a tiny low-resolution canvas (`LOW`, context `lg`) plus an emissive layer (`EM`, `eg`) for glows, then scaled up pixelated to the screen canvas. Hero sprites are drawn at full resolution (`hiQ`).
-- On 3x phones the screen canvas uses 2 pixels per game pixel (crisp and 2.25x cheaper than 3).
+- The view is 345 game pixels across the short side (`ZOOMV`). The world is drawn straight onto the screen canvas through a transform (`lg` = the screen context, `LT` = scale `Q` plus offset), plus an emissive layer (`EM`, `eg`) for glows and bloom. Hero sprites are drawn at full resolution (`hiQ`). Camera and enemies move in sub-pixel steps (`rq()`).
+- On 3x phones the canvas is about half the device resolution (`Q` = device pixels / a whole number), upscaled cleanly.
+- Readability: a soft clear zone around your own hero, a ring and halo under your hero, ability effects at 50% alpha with caps, the partner's effects at 35% (`PFA`, every effect carries its owner), hit-stop and shake only on big moments.
+- **Auto quality** (`AQ`): if fps stays under 80% of the target, it drops bloom and full-screen atmosphere, then effect counts. Frame rate is logged per run.
+- **Effect memory:** PixelFX sheets load on first use; above 140 MB decoded the least recently used are dropped. Loading all of them once crashed iPhones around 5 minutes in.
 - Frame rate is capped at 60 fps (iPhones refresh at 120 Hz). **Battery saver** (Learned skills screen) caps at 30 fps and turns off bloom.
 - Bloom is one full-screen pass; the vignette and light beams are drawn into the small canvas. Rule: avoid adding full-screen passes, the phone heats up.
-- **Effects:** two sets. "Classic" (hand-made) and "New" (PixelFX, default). The switch is in Learned skills (`localStorage.dd_fx`). New effects load lazily, one sheet at a time.
+- **Effects:** two sets. "Classic" (hand-made) and "New" (PixelFX, default). The switch is in Learned skills (`localStorage.dd_fx`).
 
 ### Persistence (localStorage keys)
-`dd_intro_seen`, `dd_prologue_done`, `dd_seen` (guide), `dd_div_seen`, `dd_fx` (effects), `dd_saver` (battery saver), `dd_nums` (damage numbers), `dd_tg` (training ground setup), `dd_rec` (record: runs, dawns, best).
+`dd_log` and `dd_log_live` (run log), `dd_intro_seen`, `dd_prologue_done`, `dd_seen` (guide), `dd_div_seen`, `dd_fx` (effects), `dd_saver` (battery saver), `dd_nums` (damage numbers), `dd_tg` (training ground setup), `dd_rec` (record: runs, dawns, best).
 
 ---
 
@@ -316,15 +329,26 @@ Screenshots go to `tools/test/out/` (gitignored). Needs `npm i -g playwright` an
 - **Blood Boil:** gives the Executioner a reason to chain kills before spending his ultimate.
 - **Performance pass:** the phone got hot. Capped fps, cut full-screen passes, smaller canvas, battery saver.
 - **Gamified menu:** a record strip, a co-op panel and mode tiles instead of a plain button list.
+- **Zombie pivot (27 Nov):** the game becomes Raid (the current run) + Base (build and defend) in an overgrown abandoned city. Prototype in `proto/base/`, art in `art/base/`.
+- **Slower, clearer combat (27 Nov):** levelling came too fast and fights were unreadable, so packs got smaller and tougher, effects quieter, XP back to the original values.
+- **Ability paths (27 Nov):** abilities were overflowing with no direction; now a run follows at most 2 themed paths with a visible next step.
+- **Executioner: Dome to Headsman's Throw (28 Nov):** the dome and his abilities had no synergy. The judgement-zone idea moved into the lava pool left by a charged axe throw, which is also more fun to aim.
+- **Fluidity pass (28 Nov):** compared with another survivors game, ours stuttered: hit-stop on every hit, pixel-stepping, constant shake. Fixed.
+- **Readability and partner dimming (28 Nov):** at high levels effects flooded the screen; your own hero gets a clear zone and the partner's effects are dimmed on your phone.
+- **Memory crash (28 Nov):** loading every effect sheet (~400 MB decoded) killed the page on iPhones around 5 minutes; now lazy with a budget.
+- **Port starts (28 Nov):** Hamza decided to begin the Godot migration now; the web build is the frozen reference.
 - **Hala's Arcade removed from this repo** (it lived in `arcade/`); restore with `git checkout a04d0b9 -- arcade`.
 
 ---
 
 ## 10. Open items and backlog
 
-- **Next phase: port to Godot 4** for levels, story and a Steam / App Store / Google Play launch with cross-play. Plan: `docs/GODOT_PORT_PLAN.md`. Data tables are exported to `data/*.json` by `tools/data/export.cjs`.
+- **Now: port to Godot 4** (started 28 Nov). Start with `docs/PORT_KICKOFF.md`, then `docs/GODOT_PORT_PLAN.md`. Data tables are exported to `data/*.json` by `tools/data/export.cjs`.
+- Phase 1 playtests with outside pairs (roadmap) can still run on the live web build; paste the run log (now with frame rate) to Claude.
 
 - **Grand Verdict frames 4-12** show the Warden without armour (PixelLab glitch). Regenerate with "he keeps his full dark plate armor and pauldrons in every frame" and swap the strip (`sprites/warden/grand/east.png`).
+- **Base-mode art still missing:** see `art/base/README.md` (generator half-damaged, riot zombie, floor chevron, top-down roof tile, water tower, AC unit, gargoyle, laundry line).
+- **Lava pool sprite** is drawn at about 2x its size; a 256x128 version would be sharper.
 - **New spec abilities:** Hamza is choosing from the "New Spec Abilities to Choose From" doc (12 ideas per spec, plus replacing generic stat upgrades with spec-specific ones). Build the picks, with icon prompts.
 - **Executioner big axe sprites:** a full Executioner sprite set carrying one big greataxe (walk, idle, 3 attacks, cast, hurt, down) was requested from PixelLab; wire it to the Executioner only.
 - **Lamplighter moves:** the PixelFX "moves" that suit casters (fireball throw, ice lance (recoloured gold), lightning call, meteor call, holy smite) are not used yet.

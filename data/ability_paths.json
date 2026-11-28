@@ -1,0 +1,182 @@
+{
+ "paths": {
+  "berserk": [
+   {
+    "k": "storm",
+    "name": "Storm",
+    "col": "#4fd6ff",
+    "ab": [
+     "shield",
+     "ravager",
+     "vortex"
+    ]
+   },
+   {
+    "k": "blood",
+    "name": "Blood",
+    "col": "#ff4a5a",
+    "ab": [
+     "blood",
+     "carnage",
+     "bloodmoon"
+    ]
+   },
+   {
+    "k": "thunder",
+    "name": "Thunder",
+    "col": "#b48cff",
+    "ab": [
+     "slam",
+     "charge",
+     "thunder"
+    ]
+   },
+   {
+    "k": "war",
+    "name": "Warcry",
+    "col": "#ffb84a",
+    "ab": [
+     "shout",
+     "banner",
+     "wyrm"
+    ]
+   }
+  ],
+  "exec": [
+   {
+    "k": "judge",
+    "name": "Judgement",
+    "col": "#ff4a5a",
+    "ab": [
+     "rites",
+     "guillotine",
+     "knell"
+    ]
+   },
+   {
+    "k": "chains",
+    "name": "Chains",
+    "col": "#ffb84a",
+    "ab": [
+     "hook",
+     "hellchain",
+     "grip"
+    ]
+   },
+   {
+    "k": "earth",
+    "name": "Earth",
+    "col": "#d6b25a",
+    "ab": [
+     "earth",
+     "obelisk"
+    ]
+   },
+   {
+    "k": "iron",
+    "name": "Iron",
+    "col": "#9fc3d6",
+    "ab": [
+     "riposte",
+     "legion"
+    ]
+   }
+  ],
+  "heal": [
+   {
+    "k": "prism",
+    "name": "Prism",
+    "col": "#4fd6ff",
+    "ab": [
+     "prism",
+     "chain",
+     "constellation"
+    ]
+   },
+   {
+    "k": "sanct",
+    "name": "Sanctuary",
+    "col": "#6fe08a",
+    "ab": [
+     "garden",
+     "halo",
+     "kite",
+     "clock"
+    ]
+   },
+   {
+    "k": "heaven",
+    "name": "Heavens",
+    "col": "#ffd27a",
+    "ab": [
+     "starfall",
+     "heaven",
+     "starwell"
+    ]
+   },
+   {
+    "k": "radiance",
+    "name": "Radiance",
+    "col": "#ff9ad5",
+    "ab": [
+     "lighthouse",
+     "cranes",
+     "rose",
+     "aurora"
+    ]
+   }
+  ],
+  "fire": [
+   {
+    "k": "swarm",
+    "name": "Swarm",
+    "col": "#ffb84a",
+    "ab": [
+     "flies",
+     "moths",
+     "wisp"
+    ]
+   },
+   {
+    "k": "snare",
+    "name": "Snares",
+    "col": "#ff6a3a",
+    "ab": [
+     "candle",
+     "firewall",
+     "pyre"
+    ]
+   },
+   {
+    "k": "sky",
+    "name": "Skyfire",
+    "col": "#ff9ad5",
+    "ab": [
+     "lanterns",
+     "phoenix",
+     "fireworks"
+    ]
+   }
+  ]
+ },
+ "basics": {
+  "berserk": [
+   "cleave",
+   "whirl"
+  ],
+  "exec": [
+   "reaper"
+  ],
+  "heal": [
+   "beam"
+  ],
+  "fire": [
+   "cinder"
+  ]
+ },
+ "max_paths_per_run": 2,
+ "spec_damage_bonus": {
+  "exec": 1.45
+ },
+ "rules": "A run follows at most max_paths_per_run paths. Next step of a path unlocks once the previous ability is level 2; otherwise raise the lowest. Level-up offers: next step of each started path, path starts while under the max, one card from basics/passives/mods/team. Damage +30% per level, +40% more at level 5 (evolution). Spec path abilities (not basics) multiply damage by spec_damage_bonus."
+}

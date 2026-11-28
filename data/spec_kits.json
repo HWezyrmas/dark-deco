@@ -59,9 +59,9 @@
    ],
    [
     "E",
-    "ui/sym_dome.png",
-    "The Dome",
-    "A shield for you both. +40 health, and he takes 25% less damage while standing still."
+    "icons/headsman.png",
+    "Headsman's Throw",
+    "Hold to charge, drag to aim, let go. The longer the charge, the bigger the axe, the farther it flies and the harder it lands. Lava erupts where it lands: enemies in it burn, are slowed, take 30% more damage, and are Executed under 30%. Kills in the lava give extra Blood Boil."
    ],
    [
     "RAGE",

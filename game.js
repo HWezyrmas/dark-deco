@@ -209,8 +209,8 @@ const MODS={
   longstride:{cls:'warden',sp:'berserk',name:'Long Charge',desc:'Reckless Charge goes 40% farther and hits 30% harder.'},
   wildfire:{cls:'lamp',sp:'fire',name:'Wildfire',desc:'Flashfire\'s trail burns twice as long.'},
   hearth:{cls:'lamp',sp:'fire',name:'Hearth',desc:'Kindle also heals him for 25 and lasts 4 seconds longer.'},
-  mirror:{cls:'warden',sp:'exec',name:'Mirror Dome',desc:'The Dome reflects bullets back as your own.'},
-  longwatch:{cls:'warden',sp:'exec',name:'Long Watch',desc:'The Dome lasts 2 seconds longer.'},
+  mirror:{cls:'warden',sp:'exec',name:'Heavy Head',desc:'Headsman\'s Throw: the axe is bigger and its impact and lava pool are 25% wider.'},
+  longwatch:{cls:'warden',sp:'exec',name:'Long Burn',desc:'Headsman\'s Throw: the lava pool burns 2 seconds longer.'},
   firebash:{cls:'warden',sp:'berserk',name:'Burning Leap',desc:'Heroic Leap lands in a ring of fire that keeps burning.'},
   quickbash:{cls:'warden',sp:'berserk',name:'Quick Leap',desc:'Heroic Leap recharges 1.5 seconds faster.'},
   dawn:{cls:'lamp',sp:'heal',name:'Second Dawn',desc:'The Solar Lance revives a fallen partner it touches.'},
@@ -831,7 +831,7 @@ function skill2_0(c,remote,aim,chg){if(c.state!=='ok')return;if(!remote){if(c.cd
 function axeAim(c,R){let best=null,bs=0;for(const e of en){if(!alive(e))continue;const d=len(e.x-c.x,e.y-c.y);if(d>R*1.15||d<20)continue;let n=0;for(const o of en)if(alive(o)&&len(o.x-e.x,(o.y-e.y)*1.4)<40)n+=o.kind>=4?4:o.kind===1?2:1;if(n>bs){bs=n;best=[e.x-c.x,e.y-c.y]}}return best||dirOf(c)}
 function axeThrow(c,aim,k){k=Math.max(0,Math.min(1,k||0));const w=execW(c),L=lvm(w),SB=SPECB.exec||1,RNG=80+110*k;let D=aim&&len(aim[0],aim[1])>.1?aim:axeAim(c,RNG);{const l=len(D[0],D[1])||1;D=[D[0]/l,D[1]/l]}
   if(D[0])c.f=D[0]>0?1:-1;let x1=c.x+D[0]*RNG,y1=c.y+D[1]*RNG*.85;for(let i=0;i<12&&!walkable(x1,y1);i++){x1-=D[0]*RNG/12;y1-=D[1]*RNG*.85/12}
-  const sc=.55+.75*k,ft=.26+RNG*.0016,IR=24+30*k,pass=(45+120*k)*L.d*SB,imp=(100+280*k)*L.d*SB,x0=c.x,y0=c.y-16;
+  const HH=c.mods.has('mirror')?1.25:1,sc=(.55+.75*k)*HH,ft=.26+RNG*.0016,IR=(24+30*k)*HH,pass=(45+120*k)*L.d*SB,imp=(100+280*k)*L.d*SB,x0=c.x,y0=c.y-16;
   emit('axethrow',r1(x0),r1(y0),r1(x1),r1(y1),r2(sc),r2(ft),c.idx);emit('sfx','charge');emit('recoil',c.idx,D[0],D[1],3+3*k);c.pose=.35;
   const sx=x1-x0,sy=y1-c.y,sl=len(sx,sy)||1;
   for(const e of en){if(!alive(e))continue;const px=e.x-x0,py=e.y-c.y,al=(px*sx+py*sy)/sl,pp=Math.abs(px*sy-py*sx)/sl;if(al<0||al>sl-IR*.6||pp>10+12*sc+rad(e)*.5)continue;
@@ -841,7 +841,7 @@ function axeThrow(c,aim,k){k=Math.max(0,Math.min(1,k||0));const w=execW(c),L=lvm
     let ex=false;for(const e of en){if(!alive(e))continue;const dx=e.x-x1,dy=(e.y-y1)*1.4,d=len(dx,dy)||1;if(d>IR+rad(e)*.5)continue;const exe=e.kind!==5&&e.hp<e.max*.35;if(exe)ex=true;
       hitE(e,imp*(exe?3:1),c,{w:'axethrow',exec:exe,kx:dx/d*240,ky:dy/d*170,up:120,col:'#ff7a2a',dir:Math.atan2(dy,dx),frz:.1})}
     if(ex)emit('sfx','exec');addRage(c,8+10*k);
-    const LR=IR*1.05,life=3.5+2.5*k;lavas.push({x:x1,y:y1,r:LR,life,t:0,tk:.25,dps:(18+30*k)*L.d*SB,o:c});emit('lava',r1(x1),r1(y1),r1(LR),r2(life));
+    const LR=IR*1.05,life=3.5+2.5*k+(c.mods.has('longwatch')?2:0);lavas.push({x:x1,y:y1,r:LR,life,t:0,tk:.25,dps:(18+30*k)*L.d*SB,o:c});emit('lava',r1(x1),r1(y1),r1(LR),r2(life));
     if(!c._axeTip){c._axeTip=1;emit('msgP',c.idx,'The weak die in the lava','Lava erupts')}}})}
 function updLava(dt){for(const L of lavas){L.t+=dt;L.tk-=dt;const tick=L.tk<=0;if(tick)L.tk=.5;for(const e of en){if(!alive(e))continue;const dx=(e.x-L.x)/L.r,dy=(e.y-L.y)/(L.r*.5);if(dx*dx+dy*dy>=1)continue;
   if(e.kind<5){e.slowT=Math.max(e.slowT||0,.25);e.judged=T+.3}if(tick)hitE(e,L.dps*.5,L.o&&L.o.state==='ok'?L.o:null,{w:'lava',col:'#ff7a2a',crit:false})}}lavas=lavas.filter(L=>L.t<L.life)}

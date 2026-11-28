@@ -10,6 +10,8 @@
 
 **Update 27 Nov 2026:** `docs/ROADMAP.md` now sets the order: playtest and readability work on the web build first (roadmap Phases 1-2), then this port. The zombie pivot (Raid + Base modes) reshapes phase 3 onwards here: levels become raid locations and the base mode is added.
 
+**Update 28 Nov 2026: the port starts now** (Hamza's decision, ahead of the roadmap's Phase 1 playtests, which can continue on the web build in parallel). Start from `docs/PORT_KICKOFF.md`: current state, everything that changed in the web game since this plan, the asset inventory and the first sessions.
+
 Read with `docs/DOCUMENTATION.md`, which describes every system being ported.
 
 ---
@@ -51,8 +53,9 @@ tests/                GUT unit tests for the simulation
 ## Phase 0: data out of the web game (done)
 
 - `tools/data/export.cjs` in the web repo writes the game's tables to `data/*.json`: classes, spec kits, all 50 abilities with descriptions and levels, ability cooldown bases and colours, passives, skill mods, team and duo cards, enemy names and base health, run timings (720 s run, 0.5 s beat, elites at 240/480, Divides at 290/515 for 35 s, boss at 660, Muse/Broker events), and the PixelFX manifest.
+- Added 28 Nov: `ability_paths.json` (paths, basics, max 2 paths, spec damage bonus, offer rules), `pace.json` (pack size, enemy HP and speed multipliers), `feel.json` (view size, hit-stop, shake, effect alpha and caps, partner dimming, clear zone, auto quality, effect memory budget), `headsmans_throw.json` (the Executioner's charged throw and lava).
 - Re-run it whenever the web game's numbers change: `node tools/data/export.cjs`.
-- Still in code and to be ported by hand: per-ability behaviour (`AB` table and the weapon branches), enemy AI, spawn rules, the Divide, Not Without You, Blood Boil.
+- Still in code and to be ported by hand: per-ability behaviour (`AB` table and the weapon branches), enemy AI, spawn rules, the Divide, Not Without You, Blood Boil, the Headsman's Throw and lava, effect ownership (partner dimming), the clear zone, auto quality.
 
 ## Phase 1: Godot vertical slice
 
