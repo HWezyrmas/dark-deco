@@ -88,11 +88,11 @@ for(const n of['gunman','shadow','brute','bomber','boss','elite'])SRC['z_'+n]='.
 for(const d of DIRS){SRC['walk_'+d]='../../sprites/warden/walk/'+d+'.png';SRC['rot_'+d]='../../sprites/warden/rot/'+d+'.png'}
 for(const a of['attack','attack2','attack3'])for(const d of['east','south-east'])SRC[a+'_'+d]='../../sprites/warden/'+a+'/'+d+'.png';
 // new art (ChatGPT set, cleaned into art/base): props/buildings/zombies; falls back to the old placeholders when missing
-const ART='../../art/base/',NEWP={a_gen:'01-generator',a_wall:'04-barricade-intact',a_gate:'13-gate',a_mast:'17-radio-mast',a_clock:'42-street-clock',a_pylonF:'11-pylon-firing',a_parts:'26-pickup-parts',a_pylon:'11-pylon-tesla',a_lamp:'12-floodlight',a_spikes:'08-spikes-new',a_bench:'15-workbench',a_tent:'16-infirmary',a_stock:'18-stockpile',a_rubble:'33-rubble',a_sign:'35-neon-sign-fallen',a_tree:'38-skylight-tree',a_car:'39-car',a_junk:'41-junk',a_scrap:'25-pickup-scrap'};
+const ART='../../art/base/',NEWP={a_genX:'03-generator-wrecked',a_wallD:'05-barricade-damaged',a_gateO:'14-gate-open',a_spikesW:'09-spikes-worn',a_relay:'x-power-pylon',a_junk2:'x-junk2',a_gen:'01-generator',a_wall:'04-barricade-intact',a_gate:'13-gate',a_mast:'17-radio-mast',a_clock:'42-street-clock',a_pylonF:'11-pylon-firing',a_parts:'26-pickup-parts',a_pylon:'11-pylon-tesla',a_lamp:'12-floodlight',a_spikes:'08-spikes-new',a_bench:'15-workbench',a_tent:'16-infirmary',a_stock:'18-stockpile',a_rubble:'33-rubble',a_sign:'35-neon-sign-fallen',a_tree:'38-skylight-tree',a_car:'39-car',a_junk:'41-junk',a_scrap:'25-pickup-scrap'};
 for(const k in NEWP)SRC['p_'+k]=ART+NEWP[k]+'.png';
 const NEWZ={hound:'x-zombie-dog',walker:'19-zombie-walker',runner:'20-zombie-runner',brute:'21-zombie-brute',bloater:'22-zombie-bloater',boss:'24-zombie-rotking'};for(const k in NEWZ)SRC['nz_'+k]=ART+NEWZ[k]+'.png';
 SRC.ground=ART+'30-ground-concrete.png';SRC.fx_zburst=ART+'45-fx-zombie-burst.png';SRC.fx_bdust=ART+'46-fx-build-dust.png';
-const DEC_G=[4,5,6,7,8,10,11],DEC_D=[0,1,2,3,4,6,7,8,10,11,12,14],KIT=[...Array(28).keys()];
+const DEC_G=[4,5,6,7,8,10,11],DEC_D=[0,1,2,3,4,5,6,8,9,10,12,13,14],KIT=[...Array(52).keys()];
 for(const i of DEC_G)SRC['dg'+i]=ART+'31-decals-overgrowth/'+String(i).padStart(2,'0')+'.png';for(const i of DEC_D)SRC['dd'+i]=ART+'32-decals-damage/'+String(i).padStart(2,'0')+'.png';for(const i of KIT)SRC['kit'+i]=ART+'x-rubble-kit/'+String(i).padStart(2,'0')+'.png';
 const IM={};
 function load(){return Promise.all(Object.entries(SRC).map(([k,s])=>new Promise(r=>{const i=new Image();i.onload=()=>{IM[k]=i;r()};i.onerror=()=>r();i.src=s})))}
@@ -112,8 +112,8 @@ function overgrow(c,amt){const w=c.width,h=c.height;pixels(c,(a,i)=>{const l=.3*
 // zombie rot tint: grey-green flesh, keep glowing eyes
 function rot(c){return pixels(c,(a,i)=>{const r=a[i],gg=a[i+1],b=a[i+2],l=.3*r+.59*gg+.11*b;if(l>170&&r>200&&gg>120)return;a[i]=clamp(l*.62+r*.18,0,255);a[i+1]=clamp(l*.86+gg*.12+8,0,255);a[i+2]=clamp(l*.5+b*.15,0,255)})}
 
-const PROPH={a_gen:34,a_wall:20,a_gate:22,a_mast:44,a_clock:42,a_pylonF:34,a_parts:9,a_pylon:34,a_lamp:38,a_spikes:12,a_bench:28,a_tent:32,a_stock:28,a_rubble:24,a_sign:22,a_tree:34,a_car:26,a_junk:30,a_scrap:9,hut:50,crates:19,pylon_p:32,pylon_c:32,chimney:40,gargoyle:30,planter:28,spire:46,tower:58,vent:22,sign:34,antenna:34};
-const PS={};const PROPW={a_gen:46,a_wall:22,a_gate:28,a_mast:36,a_clock:28,a_pylonF:30,a_parts:11,a_pylon:20,a_lamp:16,a_spikes:17,a_bench:32,a_tent:34,a_stock:32,a_rubble:50,a_sign:52,a_tree:46,a_car:54,a_junk:40,a_scrap:10};
+const PROPH={a_genX:30,a_wallD:20,a_gateO:22,a_spikesW:12,a_relay:34,a_junk2:30,a_gen:34,a_wall:20,a_gate:22,a_mast:44,a_clock:42,a_pylonF:34,a_parts:9,a_pylon:34,a_lamp:38,a_spikes:12,a_bench:28,a_tent:32,a_stock:28,a_rubble:24,a_sign:22,a_tree:34,a_car:26,a_junk:30,a_scrap:9,hut:50,crates:19,pylon_p:32,pylon_c:32,chimney:40,gargoyle:30,planter:28,spire:46,tower:58,vent:22,sign:34,antenna:34};
+const PS={};const PROPW={a_genX:46,a_wallD:24,a_gateO:28,a_spikesW:17,a_relay:24,a_junk2:40,a_gen:46,a_wall:22,a_gate:28,a_mast:36,a_clock:28,a_pylonF:30,a_parts:11,a_pylon:20,a_lamp:16,a_spikes:17,a_bench:32,a_tent:34,a_stock:32,a_rubble:50,a_sign:52,a_tree:46,a_car:54,a_junk:40,a_scrap:10};
 const ZDEF={
   walker:{img:'gunman',h:28,nh:30,hp:34,spd:13,dmg:7,bd:8,r:5,rate:1,drop:[2,0],name:'Walker'},
   hound:{img:'shadow',h:16,nh:18,hp:14,spd:42,dmg:4,bd:4,r:4,rate:.55,drop:[1,0],name:'Hound'},
@@ -152,7 +152,7 @@ const BDEF={
   spike:{name:'Spikes',cost:[12,0],uses:36},
   pylon:{name:'Arc Pylon',cost:[22,12],hp:90,img:'a_pylon',old:'pylon_p',range:84,rate:.65,dmg:9},
   lamp:{name:'Lamp',cost:[10,8],hp:70,img:'a_lamp',old:'pylon_c',rad:74}};
-let builds=[],props=[];let core;const WIDE={a_mast:2,a_clock:1,a_car:3,a_rubble:3,a_sign:3,a_junk:2,a_tent:2,a_bench:2,a_stock:2,a_tree:3,tower:2,sign:2,antenna:2};const PN=n=>PS[n]?n:n==='a_pylon'?'pylon_p':n==='a_lamp'?'pylon_c':(n==='a_wall'||n==='a_gate')?'crates':n==='a_gen'?'hut':n;
+let builds=[],props=[];let core;const WIDE={a_junk2:2,a_mast:2,a_clock:1,a_car:3,a_rubble:3,a_sign:3,a_junk:2,a_tent:2,a_bench:2,a_stock:2,a_tree:3,tower:2,sign:2,antenna:2};const PN=n=>PS[n]?n:n==='a_pylon'?'pylon_p':n==='a_lamp'?'pylon_c':(n==='a_wall'||n==='a_gate')?'crates':n==='a_gen'?'hut':n;
 function placeB(k,x,y,free){const D=BDEF[k],b={k,tx:x,ty:y,x:x*TS+8,y:y*TS+8,hp:D.hp||1,max:D.hp||1,cd:rnd(),uses:D.uses||0,flash:0,born:T};grid[id(x,y)]=b;builds.push(b);return b}
 function buildMap(){
   // edge rubble ring with gaps at the four gates
@@ -166,12 +166,12 @@ function buildMap(){
   line(7,9,7,14);line(26,9,26,14);line(7,25,7,30);line(26,25,26,30);
   line(11,9,13,11);line(22,9,20,11);line(11,30,13,28);line(22,30,20,28);
   const land=(x,y,n)=>{const p={k:'ruin',tx:x,ty:y,img:n};grid[id(x,y)]=p;props.push(p);for(let i=1;i<(WIDE[n]||1);i++)if(inb(x+i,y)&&!grid[id(x+i,y)])grid[id(x+i,y)]={k:'ruin',tx:x+i,ty:y}};
-  land(2,3,'a_car');land(27,3,'a_junk');land(2,36,'a_junk');land(27,36,'a_car');land(2,12,'a_tree');land(28,27,'a_tree');land(28,11,'a_sign');land(4,15,'a_clock');land(2,27,'a_rubble');
+  land(2,3,'a_car');land(27,3,'a_junk');land(2,36,'a_junk2');land(27,36,'a_car');land(2,12,'a_tree');land(28,27,'a_tree');land(28,11,'a_sign');land(4,15,'a_clock');land(2,27,'a_rubble');
   // a starter barricade line near the core so the first look is a base, not an empty roof
   [[15,17],[18,17],[15,22],[18,22]].forEach(([x,y])=>placeB('wall',x,y));
   placeB('lamp',14,20);placeB('pylon',19,19);
   // base dressing: the survivors' camp around the generator (blocking, not attackable)
-  [[11,18,'a_bench'],[21,21,'a_tent'],[12,23,'a_stock'],[21,15,'a_mast']].forEach(([x,y,n])=>{const p={k:'ruin',tx:x,ty:y,img:n,camp:1};grid[id(x,y)]=p;props.push(p);for(let i=1;i<(WIDE[n]||1);i++)if(!grid[id(x+i,y)])grid[id(x+i,y)]={k:'ruin',tx:x+i,ty:y}});
+  [[11,18,'a_bench'],[21,21,'a_tent'],[12,23,'a_stock'],[21,15,'a_mast'],[20,24,'a_relay']].forEach(([x,y,n])=>{const p={k:'ruin',tx:x,ty:y,img:n,camp:1};grid[id(x,y)]=p;props.push(p);for(let i=1;i<(WIDE[n]||1);i++)if(!grid[id(x+i,y)])grid[id(x+i,y)]={k:'ruin',tx:x+i,ty:y}});
 }
 
 /* ground: worn deco rooftop swallowed by moss */
@@ -386,7 +386,7 @@ function drawZ(z){const S=ZS[z.k];if(!S)return;const D=ZDEF[z.k],f=S.one?0:Math.
   if(z.hp<z.max&&z.k!=='walker'&&z.k!=='runner'&&z.k!=='hound'&&z.k!=='boss'){const w=14;g.fillStyle='#000';g.fillRect(x-w/2-1,y-S.h-1,w+2,3);g.fillStyle='#9ed34a';g.fillRect(x-w/2,y-S.h,Math.max(0,w*z.hp/z.max)|0,1)}}
 function drawProp(n,x,y,flash,shadow){n=PN(n);const S=PS[n];if(!S)return;if(shadow){g.fillStyle='rgba(0,0,0,.45)';g.beginPath();g.ellipse(x+ox,y+oy-1,Math.min(S.w*.5,shadow*8+1),3.2,0,0,7);g.fill()}const X=x+ox-S.w/2,Y=y+oy-S.h;g.drawImage(S.c,X,Y,S.w,S.h);if(flash>0){g.globalAlpha=Math.min(1,flash/.12);g.drawImage(S.wh,X,Y,S.w,S.h);g.globalAlpha=1}}
 function bar(x,y,v,w){g.fillStyle='#000';g.fillRect(Math.round(x+ox-w/2-1),Math.round(y+oy),w+2,3);g.fillStyle=v>.5?'#e7c56a':v>.25?'#e08a3a':'#d94a3a';g.fillRect(Math.round(x+ox-w/2),Math.round(y+oy+1),Math.max(0,Math.round(w*v)),1)}
-function drawSpike(b){const P=PS.a_spikes;if(P){const wear=b.uses/BDEF.spike.uses,X=Math.round(b.x+ox-P.w/2),Y=Math.round(b.y+oy-P.h/2+1);g.globalAlpha=.55+.45*wear;g.drawImage(P.c,X,Y,P.w,P.h);if(b.flash>0){g.globalAlpha=.8;g.drawImage(P.wh,X,Y,P.w,P.h)}g.globalAlpha=1;return}const X=Math.round(b.tx*TS+ox),Y=Math.round(b.ty*TS+oy),wear=b.uses/BDEF.spike.uses;g.fillStyle='#1a1a1a';g.fillRect(X+1,Y+3,14,11);
+function drawSpike(b){const P=(b.uses<BDEF.spike.uses*.5&&PS.a_spikesW)||PS.a_spikes;if(P){const wear=b.uses/BDEF.spike.uses,X=Math.round(b.x+ox-P.w/2),Y=Math.round(b.y+oy-P.h/2+1);g.globalAlpha=.55+.45*wear;g.drawImage(P.c,X,Y,P.w,P.h);if(b.flash>0){g.globalAlpha=.8;g.drawImage(P.wh,X,Y,P.w,P.h)}g.globalAlpha=1;return}const X=Math.round(b.tx*TS+ox),Y=Math.round(b.ty*TS+oy),wear=b.uses/BDEF.spike.uses;g.fillStyle='#1a1a1a';g.fillRect(X+1,Y+3,14,11);
   for(let i=0;i<3;i++)for(let j=0;j<3;j++){if(wear<.4&&(i+j)%2)continue;const sx=X+3+i*4,sy=Y+5+j*3;g.fillStyle=b.flash>0?'#fff':'#8a8f96';g.fillRect(sx,sy,1,2);g.fillStyle='#cfd5da';g.fillRect(sx,sy-1,1,1);g.fillStyle='#5a3a2a';g.fillRect(sx+1,sy+1,1,1)}}
 function drawFx(s){const m=PFXM[s.k],im=IM['fx_'+s.k];if(!im)return;const fi=Math.min(m.n-1,(s.t/m.fd)|0),sx=(fi%m.c)*m.w,sy=((fi/m.c)|0)*m.h;
   g.save();g.globalAlpha=s.al;g.translate(Math.round(s.x+ox),Math.round(s.y+oy));if(s.rot)g.rotate(s.rot);if(s.flip)g.scale(-1,1);g.drawImage(im,sx,sy,m.w,m.h,-m.ax*s.sc,-m.ay*s.sc,m.w*s.sc,m.h*s.sc);g.restore()}
@@ -412,7 +412,7 @@ function render(){
   // y-sorted world
   const L=[];for(const p of props)L.push([p.ty*TS+14,0,p]);for(const b of builds)if(b.k!=='spike')L.push([b.y+6,1,b]);L.push([core.y,2,core]);for(const z of zs)L.push([z.y,3,z]);L.push([hero.y,4,hero]);L.sort((a,b)=>a[0]-b[0]);
   const ghost=pv&&tool===pv.k&&pv.k!=='spike'?pv:null;if(ghost)L.push([ghost.ty*TS+14,5,ghost]);L.sort((a,b)=>a[0]-b[0]);
-  for(const [,t,o] of L){if(t===5){g.globalAlpha=.6;drawProp(BDEF[o.k].img,o.tx*TS+8,o.ty*TS+14);g.globalAlpha=1;continue}if(t===0){const n=WIDE[o.img]||1;drawProp(o.img,o.tx*TS+n*TS/2,o.ty*TS+15,0,n)}else if(t===1){drawProp(o.k==='pylon'&&PS.a_pylonF&&T-(o.fireT||-9)<.14?'a_pylonF':BDEF[o.k].img,o.x,o.y+6,o.flash,1);if(o.hp<o.max)bar(o.x,o.y-(PS[PN(BDEF[o.k].img)]||{h:20}).h+4,o.hp/o.max,12)}else if(t===2){drawProp('a_gen',core.x,core.y,core.flash,2)}else if(t===3)drawZ(o);else drawHero()}
+  for(const [,t,o] of L){if(t===5){g.globalAlpha=.6;drawProp(BDEF[o.k].img,o.tx*TS+8,o.ty*TS+14);g.globalAlpha=1;continue}if(t===0){const n=WIDE[o.img]||1;drawProp(o.img,o.tx*TS+n*TS/2,o.ty*TS+15,0,n)}else if(t===1){drawProp(o.k==='pylon'&&PS.a_pylonF&&T-(o.fireT||-9)<.14?'a_pylonF':o.k==='wall'&&PS.a_wallD&&o.hp<o.max*.5?'a_wallD':o.k==='gate'&&PS.a_gateO&&phase==='day'?'a_gateO':BDEF[o.k].img,o.x,o.y+6,o.flash,1);if(o.hp<o.max)bar(o.x,o.y-(PS[PN(BDEF[o.k].img)]||{h:20}).h+4,o.hp/o.max,12)}else if(t===2){drawProp(core.hp<core.max*.4&&PS.a_genX?'a_genX':'a_gen',core.x,core.y,core.flash,2)}else if(t===3)drawZ(o);else drawHero()}
   // particles
   for(const p of parts_){g.fillStyle=p.c;g.fillRect(Math.round(p.x+ox),Math.round(p.y+oy),1,1)}
   // darkness with light holes
