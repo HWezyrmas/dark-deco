@@ -13,8 +13,11 @@ Hamza: "use these in the builder regardless" of the style mismatch (isometric vs
 Third batch (28 Nov 2026): 03 generator wrecked (core under 40% hp), 05 barricade damaged (concrete/wire design; barricade under 50% hp),
 09 spikes worn (under half uses; the old 09 strip is now x-spike-strip), 14 gate open (Steel Gate by day), 15 workbench (new), 19 walker and 21 brute (new),
 25/26/29 re-cut from the labelled sheet, 27-build-icons-b (11 icons), 31/32 decals (v2 grids), x-rubble-kit 28-51, x-junk2 and x-power-pylon (camp/landmarks),
-x-gate-wood-marker (plank gate with placement marker, unused). Still missing: 02 generator damaged, 06 barricade broken, 23 riot zombie, 28 chevron,
+x-gate-wood-marker (plank gate with placement marker, unused). Still missing: 02 generator damaged, 23 riot zombie, 28 chevron,
 29 as a flat top-down texture, 34 water tower, 36 AC unit, 37 gargoyle, 40 laundry line.
+
+Fourth batch (28 Nov 2026): 07 sandbag wall (now the Barricade's intact look), 06 barricade broken (under 25% hp), 22 bloater, 25 scrap, 18 stockpile, 35 neon sign (all new),
+x-junk3, x-rubble-heap2/3 (landmarks), x-gate-badge (unused UI badge). Duplicates of earlier images were skipped.
 
 In use: 08 spikes, 10 pylon, 12 floodlight, 15 workbench, 16 infirmary, 18 stockpile (camp dressing), 19-22 and 24 zombies,
 25 scrap, 30 ground, 31/32 decals, 33/35/38/39/41 ruins, 44 dusk sky (intro card), 45/46 effects, x-rubble-kit (map edge).
