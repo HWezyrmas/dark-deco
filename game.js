@@ -839,8 +839,16 @@ function drawLava(){for(const L of lavaV){const a=tAll-L.st;if(a>L.life)continue
   lg.globalAlpha=fi;for(let i=0;i<6;i++){const ph=(tAll*.9+i*.37+L.seed)%1,ang=i*1.7+L.seed,bx=x+Math.cos(ang)*r*.55,by=y+Math.sin(ang)*r*.25;lg.fillStyle=ph<.5?'#ffd27a':'#ff7a2a';const bs=ph<.7?1+ph*2:0;if(bs)lg.fillRect(bx-bs/2,by-bs/2,bs,bs)}
   if(rnd()<.25*fi)parts.push({x:L.x+(rnd()-.5)*r*1.4,y:L.y+(rnd()-.5)*r*.6,vx:(rnd()-.5)*10,vy:-25-rnd()*30,life:.6,max:.6,col:rnd()<.5?'#ffb347':'#ff5a1a',em:true});
   lg.globalAlpha=eg.globalAlpha=1}lavaV=lavaV.filter(L=>tAll-L.st<L.life)}
-function drawAxeFlight(){for(const a of axeV){const p=(tAll-a.st)/a.ft;if(p>1)continue;const x=a.x0+(a.x1-a.x0)*p+ox,y=a.y0+(a.y1-a.y0+16)*p+oy-Math.sin(Math.PI*p)*(18+len(a.x1-a.x0,a.y1-a.y0)*.18),h=Math.round(30*a.sc/2)*2;
-  drawFX('axe',x,y,h,1,{rot:p*TAU*2.2*(a.x1>=a.x0?1:-1),oy:h/2,glow:.7});if(rnd()<.8)parts.push({x:x-ox,y:y-oy,vx:0,vy:0,life:.25,max:.25,col:'#ff7a2a',em:true})}axeV=axeV.filter(a=>tAll-a.st<a.ft)}
+function drawAxeFlight(){const TL=.2;for(const a of axeV){const p=(tAll-a.st)/a.ft;a.tr=a.tr||[];
+  if(p>=0&&p<=1){const x=a.x0+(a.x1-a.x0)*p,y=a.y0+(a.y1-a.y0+16)*p-Math.sin(Math.PI*p)*(18+len(a.x1-a.x0,a.y1-a.y0)*.18);a.tr.push([x,y,tAll])}
+  while(a.tr.length&&tAll-a.tr[0][2]>TL)a.tr.shift();
+  // fast-decaying fiery neon trail: wide pink-orange glow, hot core
+  const T2=a.tr;if(T2.length>1){for(let i=1;i<T2.length;i++){const q=T2[i-1],r=T2[i],f=1-(tAll-r[2])/TL;if(f<=0)continue;const w=(2+5*a.sc)*f;
+    eg.globalAlpha=.85*f;eg.strokeStyle=i%2?'#ff3a8a':'#ff6a2a';eg.lineWidth=w*1.8;eg.lineCap='round';eg.beginPath();eg.moveTo(q[0]+ox,q[1]+oy);eg.lineTo(r[0]+ox,r[1]+oy);eg.stroke();
+    lg.globalAlpha=.9*f;lg.strokeStyle=f>.6?'#fff1c8':'#ffb347';lg.lineWidth=Math.max(.6,w*.45);lg.lineCap='round';lg.beginPath();lg.moveTo(q[0]+ox,q[1]+oy);lg.lineTo(r[0]+ox,r[1]+oy);lg.stroke()}
+    lg.globalAlpha=eg.globalAlpha=1;lg.lineCap=eg.lineCap='butt'}
+  if(p>=0&&p<=1){const h=Math.round(30*a.sc/2)*2,L2=T2[T2.length-1];drawFX('axe',L2[0]+ox,L2[1]+oy,h,1,{rot:p*TAU*2.2*(a.x1>=a.x0?1:-1),oy:h/2,glow:.7});if(rnd()<.9)parts.push({x:L2[0]+(rnd()-.5)*6,y:L2[1]+(rnd()-.5)*6,vx:(rnd()-.5)*30,vy:-10-rnd()*30,life:.3,max:.3,col:rnd()<.5?'#ff3a8a':'#ffb347',em:true})}}
+  axeV=axeV.filter(a=>tAll-a.st<a.ft+.25)}
 function release(c){
   if(c.cast.k==='verdict'){verdictHit(c);c.cast=null;c.pose=.3;return}
   if(c.cast.k==='condemn'){condemn(c);c.cast=null;c.pose=.2;return}
@@ -2447,6 +2455,21 @@ function render(){pfxBN=0;
   ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1;
   if(inGame&&FXME){const m0=meC(),cx=DX+(m0.x+ox)*sc,cy=DY+(m0.y+oy)*sc,hy=DY+(m0.y-16+oy)*sc;ctx.save();const g=ctx.createRadialGradient(cx,hy,0,cx,hy,30*sc);g.addColorStop(0,'rgba(10,8,24,.38)');g.addColorStop(1,'rgba(10,8,24,0)');ctx.fillStyle=g;ctx.fillRect(cx-30*sc,hy-30*sc,60*sc,60*sc);ctx.globalAlpha=.85;ctx.strokeStyle=CL[m0.cls].color;ctx.lineWidth=Math.max(2,sc*.9);ctx.beginPath();ctx.ellipse(cx,cy+1*sc,12*sc,5*sc,0,0,TAU);ctx.stroke();ctx.restore()}// own-hero halo + ring: always findable (28 Nov)
   if(hiQ.length){ctx.save();ctx.imageSmoothingEnabled=false;ctx.setTransform(sc,0,0,sc,DX,DY);for(const q of hiQ)blit(ctx,...q);for(const o of chars){if(o.hiHead||o.state==='out'||!o._fb||o._fb[7]!==tAll||!(o.y>hiQ.ys))continue;const art=chars.find(q=>q.hiHead);if(art&&Math.abs(o.x-art.x)<34&&Math.abs(o.y-art.y)<40)blit(ctx,o.fin,...o._fb.slice(0,7))}ctx.restore();hiQ=[]}
+  for(const c of chars){const k=c.axc||0;if(c.spec!=='exec'||c.state!=='ok'){c._full=0;continue}
+    if(k>=1&&!c._full){c._full=1;c._peakT=tAll;if(c.idx===ME)try{SFX.flare()}catch(_){}}else if(k<1&&!(c.thrT>tAll-.05))c._full=k>=1?1:0;
+    const pk=c._peakT?tAll-c._peakT:9;if(k<=0&&pk>.45)continue;const cx=DX+(c.x+ox)*sc,fy=DY+(c.y+oy)*sc,u=sc;ctx.save();ctx.globalCompositeOperation='lighter';
+    if(k>0){const full=k>=1,pul=full?.75+.25*Math.sin(tAll*22):1,col=full?'255,210,122':'255,106,42';
+      // glow column and ground ring that grow with the charge
+      const gr=ctx.createRadialGradient(cx,fy-14*u,0,cx,fy-14*u,(14+14*k)*u);gr.addColorStop(0,'rgba('+col+','+(.35*k*pul)+')');gr.addColorStop(1,'rgba('+col+',0)');ctx.fillStyle=gr;ctx.fillRect(cx-28*u,fy-42*u,56*u,56*u);
+      ctx.globalAlpha=(.4+.5*k)*pul;ctx.strokeStyle=full?'#ffd27a':'#ff5a2a';ctx.lineWidth=Math.max(1,(1+1.5*k)*u*.6);ctx.beginPath();ctx.ellipse(cx,fy,(10+8*k)*u,(4+3*k)*u,0,0,TAU);ctx.stroke();
+      // flame tongues rising around him, more and taller as it charges
+      const n=4+Math.floor(10*k);for(let i=0;i<n;i++){const ph=(tAll*(1.4+k)+i/n)%1,a=i/n*TAU+tAll*(1+2*k),rx=(9+6*k)*(1-ph*.6),fx2=cx+Math.cos(a)*rx*u,fy2=fy-(ph*(18+20*k)+2)*u+Math.sin(a)*3*u,s2=(1.2+2*k)*(1-ph)*u;
+        ctx.globalAlpha=(1-ph)*(.5+.5*k);ctx.fillStyle=ph<.35?'#fff1c8':i%3?'#ff6a2a':'#ff3a8a';ctx.beginPath();ctx.ellipse(fx2,fy2,s2*.7,s2*1.6,0,0,TAU);ctx.fill()}}
+    // peak: one bright burst the moment the charge is full
+    if(pk<.45){const q=pk/.45;ctx.globalAlpha=(1-q)*.9;ctx.strokeStyle='#fff1c8';ctx.lineWidth=Math.max(1,3*(1-q)*u);ctx.beginPath();ctx.ellipse(cx,fy-10*u,(12+40*q)*u,(8+26*q)*u,0,0,TAU);ctx.stroke();
+      ctx.strokeStyle='#ff3a8a';ctx.lineWidth=Math.max(1,2*(1-q)*u);ctx.beginPath();ctx.ellipse(cx,fy-10*u,(8+30*q)*u,(5+20*q)*u,0,0,TAU);ctx.stroke();
+      const g2=ctx.createRadialGradient(cx,fy-16*u,0,cx,fy-16*u,34*u);g2.addColorStop(0,'rgba(255,240,200,'+(.6*(1-q))+')');g2.addColorStop(1,'rgba(255,120,40,0)');ctx.globalAlpha=1;ctx.fillStyle=g2;ctx.fillRect(cx-34*u,fy-50*u,68*u,68*u)}
+    ctx.restore()}
   if(HOLO.length){ctx.save();ctx.setTransform(sc,0,0,sc,DX,DY);ctx.globalCompositeOperation='lighter';for(const h of HOLO)drawHoloAxe(ctx,...h);ctx.restore()}
   const me=meC(),lowHp=inGame&&me&&me.state==='ok'&&me.hp/me.max<.3;
   if(inGame&&chars.length>1&&bond<.3&&!DIV){const a=Math.min(.32,(.3-bond)*1.1),cx=W*DPR/2,cy=H*DPR/2,R=Math.hypot(cx,cy),g=ctx.createRadialGradient(cx,cy,R*.55,cx,cy,R);g.addColorStop(0,'rgba(6,4,14,0)');g.addColorStop(1,'rgba(6,4,14,'+a+')');ctx.fillStyle=g;ctx.fillRect(0,0,W*DPR,H*DPR)}
