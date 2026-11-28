@@ -25,12 +25,12 @@ let evDone=[],dangerDone=[];
 /* ================= canvases ================= */
 let W=0,H=0,DPR=1,PX=3,lw=0,lh=0,Q=1;const ZOOMV=345;let SAVER=false;try{SAVER=localStorage.getItem('dd_saver')==='1'}catch(_){}
 const VIG=mk(1,1);function mkVig(){VIG.width=lw;VIG.height=lh;const g=VIG.getContext('2d'),v=g.createRadialGradient(lw/2,lh/2,Math.min(lw,lh)*.35,lw/2,lh/2,Math.max(lw,lh)*.75);v.addColorStop(0,'rgba(5,3,12,0)');v.addColorStop(1,'rgba(5,3,12,.38)');g.fillStyle=v;g.fillRect(0,0,lw,lh)}
-const LOW=mk(1,1),EM=mk(1,1),B1=mk(1,1),b1=B1.getContext('2d'),B2=mk(1,1),b2=B2.getContext('2d');let lg=LOW.getContext('2d'),eg=EM.getContext('2d');const FXL=mk(1,1),FXE=mk(1,1),fxl=FXL.getContext('2d'),fxe=FXE.getContext('2d');
+const EM=mk(1,1),B1=mk(1,1),b1=B1.getContext('2d'),B2=mk(1,1),b2=B2.getContext('2d');let lg=ctx,eg=EM.getContext('2d');let LT=[1,0,0,1,0,0];const HOLE=mk(1,1),HOLE2=mk(1,1),HM=mk(1,1);// perf 28 Nov: world draws straight onto the screen canvas (lg=ctx, transform LT); the clear zone is a small snapshot, not full-screen layers
 // Sharpness: each game pixel covers a whole number of the phone's real pixels (s). The canvas holds up to 3 pixels per game pixel and the
 // browser enlarges it without smoothing (CSS pixelated), so 3x phones stay crisp without paying for a full-resolution canvas.
 function resize(){W=innerWidth;H=innerHeight;const dd=Math.min(3,Math.round(window.devicePixelRatio||1)||1);
   // ZOOMV: game pixels across the short side (300 before 28 Nov; 345 = ~15% wider view). Canvas = device pixels / k, k a whole number, so the screen upscale stays clean.
-  PX=Math.max(1,Math.min(W,H)/ZOOMV);lw=Math.ceil(W/PX);lh=Math.ceil(H/PX);const pd=PX*dd,k=SAVER?Math.max(1,Math.ceil(pd)):Math.max(1,Math.round(pd/2.2));Q=Math.max(1,pd/k);DPR=Q/PX;cv.width=Math.round(lw*Q);cv.height=Math.round(lh*Q);LOW.width=EM.width=cv.width;LOW.height=EM.height=cv.height;FXL.width=FXE.width=SAVER?1:cv.width;FXL.height=FXE.height=SAVER?1:cv.height;
+  PX=Math.max(1,Math.min(W,H)/ZOOMV);lw=Math.ceil(W/PX);lh=Math.ceil(H/PX);const pd=PX*dd,k=SAVER?Math.max(1,Math.ceil(pd)):Math.max(1,Math.round(pd/2.2));Q=Math.max(1,pd/k);DPR=Q/PX;cv.width=Math.round(lw*Q);cv.height=Math.round(lh*Q);EM.width=cv.width;EM.height=cv.height;
   B1.width=Math.ceil(lw/2);B1.height=Math.ceil(lh/2);B2.width=Math.ceil(lw/5);B2.height=Math.ceil(lh/5);lg.imageSmoothingEnabled=eg.imageSmoothingEnabled=false;mkVig()}
 addEventListener('resize',resize);resize();
 
@@ -664,7 +664,7 @@ function kick(dx,dy,m){if(RM)return;shkB=Math.min(6,shkB+(tAll-shkT)*10);if(m<3&
 function puff(x,y,n,col,sp=40,life=.5,em=false,up=0,sz=1){for(let i=0;i<n&&parts.length<500;i++){const a=rnd()*TAU,s=sp*(.3+rnd());parts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s*.6-up,life:life*(.5+rnd()*.7),max:life,col,em,sz})}}
 function sparks(x,y,dir,n,col){for(let i=0;i<n&&parts.length<500;i++){const a=dir+(rnd()-.5)*1.6,s=90+rnd()*140,arc=i%2===0;parts.push({x,y,vx:Math.cos(a)*s*(arc?.6:1),vy:Math.sin(a)*s*.62-(arc?70:0),life:arc?.35:.18+rnd()*.15,max:arc?.35:.3,col,em:true,streak:arc?0:1,grav:arc?1:0,sz:arc?1:undefined})}
   for(let i=0;i<3&&parts.length<500;i++){const a=dir+(rnd()-.5)*.35,s=240+rnd()*120;parts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s*.62,life:.16,max:.16,col:'#ffffff',em:true,streak:1})}}
-function num(x,y,txt,col,big=1){if(dn.length>14)dn.shift();dn.push({x:x+(rnd()-.5)*8,y,txt,col,big,t:0,vx:(rnd()-.5)*34})}
+function num(x,y,txt,col,big=1){if(dn.length>(AQ>=2?8:14))dn.shift();dn.push({x:x+(rnd()-.5)*8,y,txt,col,big,t:0,vx:(rnd()-.5)*34})}
 function bumpCombo(){combo++;comboT=2.2;const e=$('cnum');e.textContent=combo;if(tAll-(e._pt||0)>.15){e._pt=tAll;e.classList.remove('pop');void e.offsetWidth;e.classList.add('pop')}$('combo').classList.toggle('on',combo>=5)}
 function alive(e){return !e.dead&&e.spawn<=0}
 function nearestEnemy(p,range,skip){let b=null,bd=range;for(const e of en){if(!alive(e)||(skip&&skip.has(e))||!inAim(e))continue;const d=len(e.x-p.x,(e.y-p.y)*1.4);if(d<bd){bd=d;b=e}}return b}
@@ -1582,7 +1582,7 @@ function update(dt){tAll+=dt;beatTick(dt);if(msgT>0){msgT-=dt;if(msgT<=0)$('msg'
     for(const p of proj){if((p.k==='mote'||p.k==='moth')&&rnd()<.8)parts.push({x:p.x,y:p.y,vx:0,vy:0,life:.2,max:.2,col:C.amber,em:true});if(p.k==='blade'&&rnd()<.8)parts.push({x:p.x,y:p.y,vx:0,vy:0,life:.15,max:.15,col:C.cyan,em:true})}
     for(const z of zones)if(rnd()<dt*12)parts.push({x:z.x+(rnd()-.5)*z.r*2,y:z.y+(rnd()-.5)*z.r*.8,vx:0,vy:-24,life:.45,max:.45,col:z.col===C.cyan?C.cyan:'#ff7a3a',em:true});
     for(const e of en)if(e.burn&&rnd()<dt*8)parts.push({x:e.x+(rnd()-.5)*8,y:e.y-6-e.z,vx:0,vy:-26,life:.4,max:.4,col:rnd()<.5?C.amber:'#ff7a3a',em:true});
-    for(const p of parts){p.x+=p.vx*dt;p.y+=p.vy*dt;if(p.grav)p.vy+=260*dt;else{p.vx*=Math.pow(.05,dt);if(!p.plus)p.vy*=Math.pow(.05,dt)}p.life-=dt}parts=parts.filter(p=>p.life>0);
+    for(const p of parts){p.x+=p.vx*dt;p.y+=p.vy*dt;if(p.grav)p.vy+=260*dt;else{p.vx*=Math.pow(.05,dt);if(!p.plus)p.vy*=Math.pow(.05,dt)}p.life-=dt}parts=parts.filter(p=>p.life>0);if(AQ>=2&&parts.length>140)parts.splice(0,parts.length-140);
     for(const g of ghosts)g.life-=dt;ghosts=ghosts.filter(g=>g.life>0);
     for(const s of slashes)s.t+=dt;slashes=slashes.filter(s=>s.t<(s.twirl?.42:s.heavy===1?.34:.26));for(const s of spx)s.t+=dt;spx=spx.filter(s=>s.t<s.life);for(const q of tele)q.t+=dt;tele=tele.filter(q=>q.t<q.dur+.12);for(const p of puds)p.life-=dt;puds=puds.filter(p=>p.life>0);
     for(const d of decals)d.life-=dt;decals=decals.filter(d=>d.life>0);
@@ -2111,9 +2111,17 @@ function drawEchoes(){for(const E of echoes){if(!isHost)echoMove(E,Math.min(.1,t
 function drawEB(){
   for(const b of eb){const x=rq(b.x+ox),y=rq(b.y+oy);if(!b.big&&pfxLoop('laser',x,y,.3,Math.atan2(b.vy,b.vx),1,b.x*.01))continue;if(b.big){fillE(eg,x,y,5,5,'#ff4a7a',.8);fillE(lg,x,y,3,3,'#ffffff',1);continue}lg.fillStyle=C.red;lg.fillRect(x-1,y-1,3,3);lg.fillStyle='#fff';lg.fillRect(x,y,1,1);eg.fillStyle=C.red;eg.fillRect(x-2,y-2,5,5)}}
 // effects go to their own layer (FXL/FXE) so a soft hole can be cut around your hero, then are laid over the world (28 Nov). Enemy bullets stay outside it.
-function effectsL(){if(SAVER||!FXME){effects();drawEB();return}const L0=lg,E0=eg;for(const g of [fxl,fxe]){g.setTransform(1,0,0,1,0,0);g.globalCompositeOperation='source-over';g.globalAlpha=1;g.clearRect(0,0,FXL.width,FXL.height);g.setTransform(Q,0,0,Q,0,0);g.imageSmoothingEnabled=false}lg=fxl;eg=fxe;try{effects()}finally{lg=L0;eg=E0}
-  const hx=(FXME.x+ox)*Q,hy=(FXME.y+oy)*Q,r=34*Q;for(const g of [fxl,fxe]){g.setTransform(1,0,0,1,0,0);g.globalAlpha=1;g.globalCompositeOperation='destination-out';const gr=g.createRadialGradient(hx,hy,0,hx,hy,r);gr.addColorStop(0,'rgba(0,0,0,.6)');gr.addColorStop(.55,'rgba(0,0,0,.35)');gr.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=gr;g.fillRect(hx-r,hy-r,r*2,r*2);g.globalCompositeOperation='source-over'}
-  for(const [g,F] of [[lg,FXL],[eg,FXE]]){g.save();g.setTransform(1,0,0,1,0,0);g.globalAlpha=1;g.globalCompositeOperation='source-over';g.drawImage(F,0,0);g.restore()}drawEB()}
+// clear zone around your own hero: snapshot the area before effects, then lay 60% of it back on top (and pull 60% of the glow out of EM there)
+function holeMask(D){if(HM.width===D)return;HM.width=HM.height=D;const g=HM.getContext('2d'),R=D/2,gr=g.createRadialGradient(R,R,0,R,R,R);gr.addColorStop(0,'rgba(0,0,0,.6)');gr.addColorStop(.55,'rgba(0,0,0,.35)');gr.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=gr;g.fillRect(0,0,D,D)}
+function snapRect(C,src,x0,y0,D){if(C.width!==D){C.width=C.height=D}const g=C.getContext('2d');g.setTransform(1,0,0,1,0,0);g.globalCompositeOperation='source-over';g.globalAlpha=1;g.clearRect(0,0,D,D);
+  const sx=Math.max(0,x0),sy=Math.max(0,y0),ex=Math.min(src.width,x0+D),ey=Math.min(src.height,y0+D);if(ex>sx&&ey>sy)g.drawImage(src,sx,sy,ex-sx,ey-sy,sx-x0,sy-y0,ex-sx,ey-sy);g.globalCompositeOperation='destination-in';g.drawImage(HM,0,0);g.globalCompositeOperation='source-over'}
+function effectsL(){if(SAVER||!FXME){effects();drawEB();return}
+  const s1=LT[0],D=Math.ceil(68*s1/2)*2,x0=Math.round(LT[4]+(FXME.x+ox)*s1)-D/2,y0=Math.round(LT[5]+(FXME.y+oy)*s1)-D/2,De=Math.ceil(68*Q/2)*2,ex0=Math.round((FXME.x+ox)*Q)-De/2,ey0=Math.round((FXME.y+oy)*Q)-De/2;
+  holeMask(D);snapRect(HOLE,cv,x0,y0,D);if(De!==D)holeMask(De);snapRect(HOLE2,EM,ex0,ey0,De);
+  effects();
+  lg.save();lg.setTransform(1,0,0,1,0,0);lg.globalAlpha=1;lg.globalCompositeOperation='source-over';lg.drawImage(HOLE,x0,y0);lg.restore();
+  eg.save();eg.setTransform(1,0,0,1,0,0);eg.globalAlpha=1;eg.globalCompositeOperation='destination-out';eg.drawImage(HM,ex0,ey0,De,De);eg.globalCompositeOperation='lighter';eg.drawImage(HOLE2,ex0,ey0);eg.restore();
+  drawEB()}
 function effects(){drawDivide();drawEchoes();drawAxeFlight();
   for(const gh of ghosts){const t=tintOf(gh.c,gh.col);blit(lg,t,gh.x+ox,gh.y+oy,gh.f,1,1,gh.life/.25*.45);blit(eg,t,gh.x+ox,gh.y+oy,gh.f,1,1,gh.life/.25*.5)}
   for(const s of slashes){
@@ -2205,7 +2213,7 @@ const PFXST={slam:.3,smite:.4,bolt:.2};
 function swing(k,x,y,sc,ad,dl,tiltK){const m=PFXM[k];if(!m)return;const [fl,tl]=swTilt(ad);emit('pfx',k,r1(x),r1(y),r2(sc),fl,r2((m.hit||0)-(dl||0)),r2(tl*(tiltK??1)))}
 function swTilt(ad){const F=Math.cos(ad)>=0,a=F?ad:(ad>0?ad-Math.PI:ad+Math.PI);return [!F,r2(clamp(a*.6,-.55,.55))]}
 const FXKEEP=new Set(['esw','reapO','cleaveO','bsw','slash','bham','hth','hwh','hspin','fclaw','fdag','fup','gpound','estomp','dstrike','alert','count','revive','memory','hlost','levelup','lvlup','zburst','lavaimp','lavapool','eclipse','reunite','nwy']),FXQ=.5;let FXME=null;// FXME: own hero position this frame; ability effects fade near it so you can always see yourself (28 Nov)
-function pfxPush(k,x,y,sc,flip,st,al,rot){const m=PFXM[k];const kp=FXKEEP.has(k);if(!m||!NEWFX||spx.length>(kp?140:70))return;if(!kp)al=(al??1)*FXQ;pfxLoad(k);spx.push({k:'pfx',id:k,kp,x,y,sc:sc||.5,flip:!!flip,t:st??PFXST[k]??0,life:m.n*m.fd,al:al??1,rot:rot||0})}
+function pfxPush(k,x,y,sc,flip,st,al,rot){const m=PFXM[k];const kp=FXKEEP.has(k);if(!m||!NEWFX||spx.length>(kp?140:AQ>=2?35:70))return;if(!kp)al=(al??1)*FXQ;pfxLoad(k);spx.push({k:'pfx',id:k,kp,x,y,sc:sc||.5,flip:!!flip,t:st??PFXST[k]??0,life:m.n*m.fd,al:al??1,rot:rot||0})}
 function drawPfx(s){const m=PFXM[s.id],im=PFXI[s.id];PFXU[s.id]=tAll;if(!im&&m){pfxOne(s.id);return}if(!m||!im||!im.complete||!im.naturalWidth||s.t<0)return;const fi=Math.min(m.n-1,(s.t/m.fd)|0),sx=(fi%m.c)*m.w,sy=((fi/m.c)|0)*m.h,w=Math.round(m.w*s.sc),h=Math.round(m.h*s.sc);let fa=1;if(!s.kp&&FXME){const d=Math.hypot(s.x-FXME.x,(s.y-FXME.y)*1.3);if(d<70)fa=.3+.7*d/70}
   for(const [g,a] of [[lg,s.al*fa],[eg,s.al*.55*fa]]){g.save();g.globalAlpha=a;g.imageSmoothingEnabled=false;g.translate(rq(s.x+ox),rq(s.y+oy));if(s.rot)g.rotate(s.rot);if(s.flip)g.scale(-1,1);g.drawImage(im,sx,sy,m.w,m.h,-Math.round(m.ax*s.sc),-Math.round(m.ay*s.sc),w,h);g.restore()}}
 function pfxLoop(k,x,y,sc,ang,al,ph){const m=PFXM[k],im=PFXI[k];PFXU[k]=tAll;if(!m||!NEWFX)return false;if(!im){pfxLoad(k);return false}if(!im.complete||!im.naturalWidth)return false;const fl=sc<0;sc=Math.abs(sc);const fi=(((tAll+(ph||0))/m.fd)|0)%m.n,sx=(fi%m.c)*m.w,sy=((fi/m.c)|0)*m.h,w=Math.round(m.w*sc),h=Math.round(m.h*sc);
@@ -2439,7 +2447,7 @@ let pfxBN=0;
 let bats=[],batT=12,irisT=-9;
 function pfxScr(k,al,fi0){const m=PFXM[k];if(!m||al<=.01)return;const im=PFXI[k];PFXU[k]=tAll;if(!im){pfxLoad(k);return}if(!im.complete||!im.naturalWidth)return;const fi=fi0??(((tAll/m.fd)|0)%m.n),sx=(fi%m.c)*m.w,sy=((fi/m.c)|0)*m.h,s=Math.max(lw/m.w,lh/m.h),w=Math.ceil(m.w*s),h=Math.ceil(m.h*s);
   lg.save();lg.globalAlpha=Math.min(1,al);lg.imageSmoothingEnabled=m.w<300;lg.drawImage(im,sx,sy,m.w,m.h,Math.round((lw-w)/2),Math.round((lh-h)/2),w,h);lg.restore()}
-function atmos(){if(!NEWFX||mode!=='play')return;const dt=Math.min(.1,tAll-(atmos.lt??tAll));atmos.lt=tAll;
+function atmos(){if(!NEWFX||mode!=='play')return;if(AQ>=1){const it=tAll-irisT,m=PFXM.iris;if(m&&it>=0&&it<(m.n-15)*m.fd)pfxScr('iris',1,Math.min(m.n-1,15+((it/m.fd)|0)));return}const dt=Math.min(.1,tAll-(atmos.lt??tAll));atmos.lt=tAll;
   pfxScr('fog',.2);if(T<RUN*.5)pfxScr('stars',.42*Math.min(1,(RUN*.5-T)/40));
   const bs=boss&&boss.hp>0;atmos.st=Math.max(0,Math.min(1,(atmos.st||0)+(bs?dt:-dt)*.5));pfxScr('storm',.5*atmos.st);
   if(T>RUN-60)pfxScr('rays',Math.min(.55,(T-(RUN-60))/40));
@@ -2447,20 +2455,21 @@ function atmos(){if(!NEWFX||mode!=='play')return;const dt=Math.min(.1,tAll-(atmo
   for(const b of bats){b.x+=b.v*dt;pfxLoop('bat',b.x,b.y+Math.sin(tAll*3+b.ph)*6,b.v>0?-.28:.28,0,.85,b.ph)}bats=bats.filter(b=>b.x>-60&&b.x<lw+60);
   if(atmos.force&&tAll<atmos.fT){if(atmos.force==='bat'){if(!bats.length)batT=0}else if(atmos.force==='iris'){if(tAll-irisT>2.2)irisT=tAll}else pfxScr(atmos.force,.75)}
   const it=tAll-irisT,m=PFXM.iris;if(m&&it>=0&&it<(m.n-15)*m.fd)pfxScr('iris',1,Math.min(m.n-1,15+((it/m.fd)|0)))}
-function render(){pfxBN=0;
+let FSC=0;function render(){pfxBN=0;FSC=0;
   ox=rq(lw/2-cam.x+shk.x);oy=rq(lh/2-cam.y+shk.y);
-  lg.setTransform(Q,0,0,Q,0,0);eg.setTransform(Q,0,0,Q,0,0);lg.imageSmoothingEnabled=eg.imageSmoothingEnabled=false;
+  {const DW=lw*PX*DPR*zoom,DH=lh*PX*DPR*zoom,DX=Math.round((W*DPR-DW)/2),DY=Math.round((H*DPR-DH)/2);LT=[Q*zoom,0,0,Q*zoom,DX,DY];lg=ctx;ctx.setTransform(1,0,0,1,0,0);ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1;if(zoom<1){ctx.fillStyle='#0d0b1c';ctx.fillRect(0,0,cv.width,cv.height)}}
+  lg.setTransform(...LT);eg.setTransform(Q,0,0,Q,0,0);lg.imageSmoothingEnabled=eg.imageSmoothingEnabled=false;
   eg.clearRect(0,0,lw,lh);hiQ=[];HOLO.length=0;{const m0=meC();FXME=m0&&m0.state==='ok'?{x:m0.x,y:m0.y-12}:null;if(m0&&m0.spec==='exec'){const ch=aimDrag&&aimDrag.ex?axeChg(aimDrag):keyE?axeChg({t0:keyE}):0;m0.axc=m0.cd2>0?0:ch;if(ch&&aimDrag){const dx=aimDrag.x-aimDrag.ox;if(Math.abs(dx)>18)m0.f=dx>0?1:-1}}}bg();world();
   const inGame=mode==='play'||mode==='pick'||mode==='end';
   if(inGame){const list=[];for(const p of PROPS)list.push({y:p.y,d:()=>drawProp(p)});for(const e of en)list.push({y:e.y,d:()=>drawEnemy(e)});for(const c of chars)list.push({y:c.y,d:()=>drawChar(c)});list.sort((a,b)=>a.y-b.y);for(const o of list)o.d();effectsL();atmos()}
   else for(const p of PROPS)drawProp(p);
-  {const me0=meC(),lowHp0=inGame&&me0&&me0.state==='ok'&&me0.hp/me0.max<.3;lg.save();lg.setTransform(Q,0,0,Q,0,0);lg.globalAlpha=1;
+  {const me0=meC(),lowHp0=inGame&&me0&&me0.state==='ok'&&me0.hp/me0.max<.3;lg.save();lg.setTransform(...LT);lg.globalAlpha=1;
     for(let i=0;i<2;i++){const a=-Math.PI/2+Math.sin(tAll*.3+i*2.1)*.55,bx=(i?.85:.15)*lw,by=lh*1.05,Ln=Math.max(lw,lh)*1.6;const g=lg.createLinearGradient(bx,by,bx+Math.cos(a)*Ln,by+Math.sin(a)*Ln);g.addColorStop(0,'rgba(180,170,255,.09)');g.addColorStop(1,'rgba(180,170,255,0)');lg.fillStyle=g;lg.beginPath();lg.moveTo(bx,by);lg.lineTo(bx+Math.cos(a-.06)*Ln,by+Math.sin(a-.06)*Ln);lg.lineTo(bx+Math.cos(a+.06)*Ln,by+Math.sin(a+.06)*Ln);lg.closePath();lg.fill()}
     lg.drawImage(VIG,0,0);if(lowHp0){const v=lg.createRadialGradient(lw/2,lh/2,Math.min(lw,lh)*.35,lw/2,lh/2,Math.max(lw,lh)*.75);v.addColorStop(0,'rgba(90,6,24,0)');v.addColorStop(1,'rgba(90,6,24,'+(.45+.15*Math.sin(tAll*6))+')');lg.fillStyle=v;lg.fillRect(0,0,lw,lh)}lg.restore()}
   ctx.setTransform(1,0,0,1,0,0);ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1;ctx.imageSmoothingEnabled=false;
-  const DW=lw*PX*DPR*zoom,DH=lh*PX*DPR*zoom,DX=Math.round((W*DPR-DW)/2),DY=Math.round((H*DPR-DH)/2);if(zoom<1){ctx.fillStyle='#0d0b1c';ctx.fillRect(0,0,W*DPR,H*DPR)}ctx.drawImage(LOW,DX,DY,DW,DH);
+  const DW=lw*PX*DPR*zoom,DH=lh*PX*DPR*zoom,DX=Math.round((W*DPR-DW)/2),DY=Math.round((H*DPR-DH)/2);
   ctx.globalCompositeOperation='lighter';ctx.globalAlpha=SAVER?.5:.32;ctx.drawImage(EM,DX,DY,DW,DH);
-  if(!SAVER){b1.globalCompositeOperation='source-over';b1.globalAlpha=1;b1.clearRect(0,0,B1.width,B1.height);b1.imageSmoothingEnabled=true;b1.drawImage(EM,0,0,B1.width,B1.height);b2.clearRect(0,0,B2.width,B2.height);b2.imageSmoothingEnabled=true;b2.drawImage(B1,0,0,B2.width,B2.height);b1.globalCompositeOperation='lighter';b1.globalAlpha=.9;b1.drawImage(B2,0,0,B1.width,B1.height);b1.globalCompositeOperation='source-over';b1.globalAlpha=1;
+  if(!SAVER&&AQ<1){b1.globalCompositeOperation='source-over';b1.globalAlpha=1;b1.clearRect(0,0,B1.width,B1.height);b1.imageSmoothingEnabled=true;b1.drawImage(EM,0,0,B1.width,B1.height);b2.clearRect(0,0,B2.width,B2.height);b2.imageSmoothingEnabled=true;b2.drawImage(B1,0,0,B2.width,B2.height);b1.globalCompositeOperation='lighter';b1.globalAlpha=.9;b1.drawImage(B2,0,0,B1.width,B1.height);b1.globalCompositeOperation='source-over';b1.globalAlpha=1;
     ctx.imageSmoothingEnabled=true;ctx.globalAlpha=.42;ctx.drawImage(B1,DX,DY,DW,DH)}
   const sc=PX*DPR*zoom,L=(wx,wy,r,col,a)=>{if(a<=.003||r<=0)return;const x=DX+(wx+ox)*sc,y=DY+(wy+oy)*sc,Rr=r*sc;ctx.globalAlpha=Math.min(1,a);ctx.drawImage(lightSpr(col),x-Rr,y-Rr,Rr*2,Rr*2);ctx.globalAlpha=1};
   if(inGame){for(const c of chars){if(c.state==='out')continue;const bk=chars.length>1?.55+.45*bond:1;if(c.cls==='lamp'&&c.lantern)L(c.x+(c.lantern[0]-FX)*c.f,c.y+c.lantern[1]-FY,44*bk,'rgba(255,190,90,A)',.13*bk);if(chars.length>1&&bond>.5)L(c.x,c.y-12,34,'rgba(255,215,120,A)',.2*bond);if(c.lance)L(c.x+c.lance.dx*120,c.y-16+c.lance.dy*120,150,'rgba(255,230,160,A)',.25);if(c.cls==='warden')L(c.x+4*c.f,c.y-34,16,'rgba(79,240,255,A)',.22);if(c.cast)L(c.x,c.y-16,40*clamp(c.cast.t/c.cast.dur,0,1)+10,c.cls==='warden'?'rgba(79,240,255,A)':'rgba(255,200,97,A)',.35)}
@@ -2492,16 +2501,16 @@ function render(){pfxBN=0;
   if(inGame){
     const mate=mateC();if(mate&&mate.state!=='out'){const sx=DX+(mate.x+ox)*sc,sy=DY+(mate.y-14+oy)*sc,m=30*DPR;if(sx<m||sx>W*DPR-m||sy<m*3||sy>H*DPR-m){const cx=clamp(sx,m,W*DPR-m),cy=clamp(sy,m*3,H*DPR-m*2),a=Math.atan2(sy-H*DPR/2,sx-W*DPR/2);ctx.save();ctx.translate(cx,cy);ctx.rotate(a);ctx.fillStyle=mate.state==='down'?C.red:CL[mate.cls].color;ctx.beginPath();ctx.moveTo(12*DPR,0);ctx.lineTo(-6*DPR,-8*DPR);ctx.lineTo(-2*DPR,0);ctx.lineTo(-6*DPR,8*DPR);ctx.closePath();ctx.fill();ctx.restore()}}
     ctx.textAlign='center';ctx.textBaseline='middle';ctx.lineJoin='round';
-    if(aimDrag&&aimDrag.thru){const p=mateC();if(p){const x=DX+(p.x+ox)*sc,y=DY+(p.y-60+oy)*sc;ctx.font=Math.round(9*DPR)+'px "Press Start 2P",monospace';ctx.lineWidth=4*DPR;ctx.strokeStyle='#120a22';ctx.strokeText('EMPOWER',x,y);ctx.fillStyle=C.amber;ctx.fillText('EMPOWER',x,y)}}
+    if(aimDrag&&aimDrag.thru){const p=mateC();if(p){const x=DX+(p.x+ox)*sc,y=DY+(p.y-60+oy)*sc;FSC=0,ctx.font=Math.round(9*DPR)+'px "Press Start 2P",monospace';ctx.lineWidth=4*DPR;ctx.strokeStyle='#120a22';ctx.strokeText('EMPOWER',x,y);ctx.fillStyle=C.amber;ctx.fillText('EMPOWER',x,y)}}
     for(const c of chars){if(c.state==='out')continue;const bw=40*DPR,bh=5*DPR,x=DX+(c.x+ox)*sc,y=DY+(c.y-(c.spr.height>S?(c.cls==='warden'?54:48):c.cls==='warden'||c.hiHead?54:48)+oy)*sc;const p=clamp(c.hp/c.max,0,1);
       ctx.fillStyle='rgba(10,8,22,.85)';ctx.fillRect(x-bw/2-DPR,y-DPR,bw+2*DPR,bh+2*DPR);ctx.fillStyle=c.state==='down'?C.red:p<.3?'#ff6a5a':'#5fe08a';ctx.fillRect(x-bw/2,y,bw*p,bh);
-      ctx.font=Math.round(7*DPR)+'px "Press Start 2P",monospace';ctx.lineWidth=3*DPR;ctx.strokeStyle='#120a22';const tx=c.state==='down'?'DOWN':String(Math.ceil(c.hp));ctx.strokeText(tx,x,y-5*DPR);ctx.fillStyle='#ffffff';ctx.fillText(tx,x,y-5*DPR)}
+      FSC=0,ctx.font=Math.round(7*DPR)+'px "Press Start 2P",monospace';ctx.lineWidth=3*DPR;ctx.strokeStyle='#120a22';const tx=c.state==='down'?'DOWN':String(Math.ceil(c.hp));ctx.strokeText(tx,x,y-5*DPR);ctx.fillStyle='#ffffff';ctx.fillText(tx,x,y-5*DPR)}
     for(const e of en){if(e.kind<4||e.dead||e.spawn>0)continue;const sx=DX+(e.x+ox)*sc,sy=DY+(e.y-20+oy)*sc,m=34*DPR;if(sx>m&&sx<W*DPR-m&&sy>m*3&&sy<H*DPR-m)continue;const cx=clamp(sx,m,W*DPR-m),cy=clamp(sy,m*3,H*DPR-m*2),a=Math.atan2(sy-H*DPR/2,sx-W*DPR/2),k=1+.15*Math.sin(tAll*8);
       ctx.save();ctx.translate(cx,cy);ctx.rotate(a);ctx.scale(k,k);ctx.fillStyle=e.kind===5?'#ff2a5c':'#c779ff';ctx.beginPath();ctx.moveTo(16*DPR,0);ctx.lineTo(-8*DPR,-11*DPR);ctx.lineTo(-3*DPR,0);ctx.lineTo(-8*DPR,11*DPR);ctx.closePath();ctx.fill();ctx.restore();
-      ctx.font=Math.round(7*DPR)+'px "Press Start 2P",monospace';ctx.fillStyle='#ffffff';ctx.fillText(e.kind===5?'BOSS':'ELITE',cx-Math.cos(a)*22*DPR,cy-Math.sin(a)*22*DPR)}
-    for(const b of banners){const p=b.t/2.4,a=p<.8?1:1-(p-.8)/.2,pop=b.t<.15?1.5-b.t/.15*.5:1;const x=DX+(b.c.x+ox)*sc,y=DY+(b.c.y-50-p*10+oy)*sc,fs=Math.round(DPR*Math.max(10,PX*3.6)*pop);ctx.font=fs+'px "Press Start 2P",monospace';ctx.globalAlpha=a;ctx.lineWidth=Math.max(3,fs*.35);ctx.strokeStyle='#120a22';ctx.strokeText(b.txt,x,y);ctx.fillStyle=b.col;ctx.fillText(b.txt,x,y)}ctx.globalAlpha=1;
+      FSC=0,ctx.font=Math.round(7*DPR)+'px "Press Start 2P",monospace';ctx.fillStyle='#ffffff';ctx.fillText(e.kind===5?'BOSS':'ELITE',cx-Math.cos(a)*22*DPR,cy-Math.sin(a)*22*DPR)}
+    for(const b of banners){const p=b.t/2.4,a=p<.8?1:1-(p-.8)/.2,pop=b.t<.15?1.5-b.t/.15*.5:1;const x=DX+(b.c.x+ox)*sc,y=DY+(b.c.y-50-p*10+oy)*sc,fs=Math.round(DPR*Math.max(10,PX*3.6)*pop);(fs!==FSC&&(ctx.font=fs+'px "Press Start 2P",monospace',FSC=fs));ctx.globalAlpha=a;ctx.lineWidth=Math.max(3,fs*.35);ctx.strokeStyle='#120a22';ctx.strokeText(b.txt,x,y);ctx.fillStyle=b.col;ctx.fillText(b.txt,x,y)}ctx.globalAlpha=1;
     if(mode==='play')for(const d of dn){const p=d.t/.8,pop=d.t<.1?1.7-d.t/.1*.7:1,a=(p<.65?1:1-(p-.65)/.35)*(FXME&&Math.abs(d.x-FXME.x)<22&&Math.abs(d.y-FXME.y-8)<26?.35:1),rise=(1-Math.pow(1-p,2))*22-p*p*8;const x=DX+(d.x+(d.vx||0)*p+ox)*sc,y=DY+(d.y-rise+oy)*sc,fs=Math.round(DPR*Math.max(9,PX*3.3)*d.big*pop);
-      ctx.font=fs+'px "Press Start 2P",monospace';ctx.globalAlpha=a;ctx.lineWidth=Math.max(3,fs*.32);ctx.strokeStyle='#120a22';ctx.strokeText(d.txt,x,y);ctx.fillStyle=d.col;ctx.fillText(d.txt,x,y)}ctx.globalAlpha=1;
+      (fs!==FSC&&(ctx.font=fs+'px "Press Start 2P",monospace',FSC=fs));ctx.globalAlpha=a;ctx.lineWidth=Math.max(3,fs*.32);ctx.strokeStyle='#120a22';ctx.strokeText(d.txt,x,y);ctx.fillStyle=d.col;ctx.fillText(d.txt,x,y)}ctx.globalAlpha=1;
     if(joy&&mode==='play'){ctx.setTransform(DPR,0,0,DPR,0,0);const R0=54,dx=joy.x-joy.ox,dy=joy.y-joy.oy,l=Math.min(R0,len(dx,dy)),a=Math.atan2(dy,dx),me2=meC(),jc=me2?CL[me2.cls].color:'#d9d4f0';
       if(JOYB.complete&&JOYB.naturalWidth){ctx.globalAlpha=.8;ctx.drawImage(JOYB,joy.ox-R0*1.25,joy.oy-R0*1.18,R0*2.5,R0*2.36);ctx.globalAlpha=1}else{ctx.fillStyle='rgba(13,11,28,.35)';ctx.beginPath();ctx.arc(joy.ox,joy.oy,R0,0,TAU);ctx.fill();ctx.strokeStyle='rgba(217,212,240,.4)';ctx.lineWidth=2;ctx.stroke()}
       if(l>8){ctx.strokeStyle=jc;ctx.lineWidth=5;ctx.lineCap='round';ctx.beginPath();ctx.arc(joy.ox,joy.oy,R0,a-.6,a+.6);ctx.stroke();ctx.lineCap='butt'}
@@ -2566,7 +2575,12 @@ function buildMag(){const I=window.DD_ICONS||{};gPlay('warden',0);gPlay('lamp',0
   addEventListener('keydown',e=>{if($('sGuide').hidden)return;if(e.key==='ArrowRight')magGo(magIdx()+1);if(e.key==='ArrowLeft')magGo(magIdx()-1)})}
 
 let last=performance.now();
-function frame(now){if(now-last<(SAVER?1000/30:1000/60)-2){requestAnimationFrame(frame);return}const dt=Math.min(.05,(now-last)/1000)*(FAST?4:1);last=now;
+// Auto quality (28 Nov): if a phone can't hold ~80% of the target frame rate for two 3s windows in a row, drop a level (1: no bloom or full-screen atmosphere; 2: also fewer effects, particles, numbers). Frame rate goes into the run log every 10s.
+let AQ=0,AQw={n:0,s:0,bad:0,t0:0},PFw={n:0,s:0,t0:0};
+function perfTick(ms,now){if(ms>250)return;AQw.n++;AQw.s+=ms;PFw.n++;PFw.s+=ms;const tgt=SAVER?30:60;
+  if(now-AQw.t0>3000){const fps=1000/(AQw.s/AQw.n);if(fps<tgt*.8){if(++AQw.bad>=2&&AQ<2){AQ++;AQw.bad=0;try{rlEv('aq',AQ,Math.round(fps))}catch(_){}}}else AQw.bad=0;AQw.n=AQw.s=0;AQw.t0=now}
+  if(now-PFw.t0>10000){if(PFw.n>20)try{rlEv('fps',Math.round(1000/(PFw.s/PFw.n)),AQ)}catch(_){}PFw.n=PFw.s=0;PFw.t0=now}}
+function frame(now){if(now-last<(SAVER?1000/30:1000/60)-2){requestAnimationFrame(frame);return}if(mode==='play')perfTick(now-last,now);const dt=Math.min(.05,(now-last)/1000)*(FAST?4:1);last=now;
   if(mode==='play'||mode==='pick'||mode==='end'){if(mode==='end'){tAll+=dt;if(isHost&&mateJoined){snapT-=dt;if(snapT<=0){snapT=.2;snapshot()}}render()}else update(Math.min(dt,FAST?.08:.05))}
   else{tAll+=dt;if(!document.body.classList.contains('intitle')){cam.x=220+Math.sin(tAll*.12)*160;cam.y=230+Math.cos(tAll*.09)*120;render()}}
   requestAnimationFrame(frame)}
@@ -2775,6 +2789,7 @@ function rlText(){const L=rlLoad();if(!L.length)return 'Dark Deco run log: no ru
   L.forEach((r,i)=>{const d=new Date(r.at),ev=r.ev||[],cnt=k=>ev.filter(e=>e[1]===k).length,bt=ev.find(e=>e[1]==='boss'),bk=ev.find(e=>e[1]==='bosskill');
     out.push('#'+(i+1)+' '+d.toLocaleDateString()+' '+d.toTimeString().slice(0,5)+' | '+r.mode+' | '+(r.heroes||[]).map(h=>{const [c,sp]=h.split(':');return(c==='warden'?'Warden':'Lamplighter')+'/'+(SPECN[sp]||sp)}).join(' + ')+(r.me?' | me: '+r.me:''));
     out.push('   result '+String(r.res||'?').toUpperCase()+' at '+rlT(r.T||0)+' | level '+(r.level||0)+' | kills '+(r.kills||0)+' | played again: '+(r.again?'yes':'no'));
+    {const F=ev.filter(e=>e[1]==='fps').map(e=>e[2]),Q2=ev.filter(e=>e[1]==='aq');if(F.length)out.push('   frame rate: avg '+Math.round(F.reduce((a,b)=>a+b,0)/F.length)+' fps, lowest 10s '+Math.min(...F)+' fps'+(Q2.length?' | auto quality lowered to '+Q2[Q2.length-1][2]+' at '+rlT(Q2[0][0]):''))}
     if(r.mode!=='online-guest'){out.push('   divides '+cnt('divide')+', reunited '+cnt('reunite')+', not reunited '+cnt('noreunite')+' | Not Without You saves '+cnt('nwy')+(bt?' | boss at '+rlT(bt[0])+(bk?', down at '+rlT(bk[0])+' ('+(bk[0]-bt[0])+'s)':', not killed'):''));
       for(const h of r.h||[])out.push('   '+H[h.cls]+' dmg '+h.dmg+' | taken '+h.taken+' | healed '+h.healed+' | downs '+h.downs+' | revived '+h.revived+' | outs '+h.outs+' | build '+h.w.join(' '));
       const P=ev.filter(e=>e[1]==='pick');if(P.length)out.push('   picks: '+P.map(e=>rlT(e[0])+' '+(H[e[2]]||e[2])+' '+rlName(e[3])).join(', '))}
